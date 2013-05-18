@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="comment">
+
+        <field name="comment" type="textarea" class="textarea"
+            label="COM_USERIDEAS_COMMENT" 
+            filter="trim"
+            rows="5" 
+            required="true"
+        />
+
+        <field name="published" type="list" 
+            label="JSTATUS" 
+            description="JFIELD_PUBLISHED_DESC" 
+            class="inputbox" 
+            filter="intval" 
+            size="1" 
+            default="1"
+        >
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+        </field>
+        
+        <field name="id" type="text" class="readonly" 
+            label="JGLOBAL_FIELD_ID_LABEL" 
+            description="JGLOBAL_FIELD_ID_DESC"
+            default="0" 
+            readonly="true" 
+        />
+            
+         <field name="project_id" type="text" class="readonly" 
+            label="COM_USERIDEAS_PROJECT_ID_LABEL" 
+            default="0" 
+            readonly="true" 
+        />
+         
+    </fieldset>
+</form>

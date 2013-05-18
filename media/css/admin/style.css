@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+
+.icon-48-itp-items 	    { background-image: url(../../images/items_48.png); }
+.icon-48-itp-add-item 	{ background-image: url(../../images/item_add_48.png); }
+.icon-48-itp-edit-item 	{ background-image: url(../../images/item_edit_48.png); }
+.icon-48-itp-votes 	    { background-image: url(../../images/votes_48.png); }
+
+.icon-48-itp-comments 	    { background-image: url(../../images/comments_48.png); }
+.icon-48-itp-edit-comment 	    { background-image: url(../../images/comment_edit_48.png); }
+
+
+.icon-48-itp-dashboard 	{ background-image: url(../../images/dashboard_48.png); }
+.icon-32-itp-dashboard-back { background-image: url(../../images/dashboard_back_32.png); }

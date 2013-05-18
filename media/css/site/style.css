@@ -1,0 +1,36 @@
+@CHARSET "UTF-8";
+
+.uf-item {
+	border: thin solid #c1c1c1;
+	padding: 3px;
+	background-color: #f9f9f9;
+}
+
+.uf-vote {
+	width: auto;
+	/*height: 80px;
+	 border: thin solid #c1c1c1 ; */
+}
+
+.uf-btn-vote {
+	text-transform: uppercase;
+	margin: 5px 3px 5px 3px;
+	font-weight: bold;
+	
+}
+
+.uf-vote-counter {
+	text-align: center;
+	vertical-align: middle;
+	font-size: xx-large;
+	padding: 15px;
+	border: thin solid #c1c1c1;
+	border-radius: 5px;
+}
+
+.ui-comment {
+	border: thin solid #e0e0e0 ;
+	background-color: #fbfced;
+	border-radius: 3px;
+	padding: 5px;
+}

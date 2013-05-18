@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.1" type="plugin" group="userideas" method="upgrade">
+    <name>PLG_USERIDEAS_VOTE</name>
+    <author>Todor Iliev</author>
+    <copyright>Copyright (C) 2010 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <authorEmail>todor@itprism.com</authorEmail>
+    <authorUrl>http://itprism.com</authorUrl>
+    <version>1.0</version>
+    <creationDate>19 May, 2013</creationDate>
+    <description>PLG_USERIDEAS_VOTE_DESC</description>
+    
+    <languages  folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_userideas_vote.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_userideas_vote.sys.ini</language>
+    </languages> 
+    
+    <files>
+        <filename plugin="vote">vote.php</filename>
+        <filename>index.html</filename>
+    </files>
+    
+    <help url="PLG_USERIDEAS_VOTE_HELP_URL"/>
+    
+</extension>

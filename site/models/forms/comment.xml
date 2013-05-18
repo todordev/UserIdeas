@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="comment">
+
+        <field name="comment" type="textarea" class="span12"
+            label="COM_USERIDEAS_COMMENT" 
+            filter="trim"
+            rows="5" 
+            required="true"
+        />
+
+        <field name="id" type="hidden" filter="int" />
+        <field name="item_id" type="hidden" filter="int" />
+         
+    </fieldset>
+</form>
