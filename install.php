@@ -1,11 +1,11 @@
 <?php
 /**
  * @package      ITPrism Components
- * @subpackage   CrowdFunding
+ * @subpackage   UserIdeas
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * CrowdFunding is free software. This version may have been modified pursuant
+ * UserIdeas is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
 /**
  * Script file of the component
  */
-class pkg_crowdFundingInstallerScript {
+class pkg_userIdeasInstallerScript {
     
     /**
      * method to install the component
@@ -65,7 +65,7 @@ class pkg_crowdFundingInstallerScript {
             }
             
             // Register Component helpers
-            JLoader::register("CrowdFundingInstallHelper", COM_USERIDEAS_PATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR."helpers".DIRECTORY_SEPARATOR."installer.php");
+            JLoader::register("UserIdeasInstallHelper", COM_USERIDEAS_PATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR."helpers".DIRECTORY_SEPARATOR."installer.php");
         
             $this->bootstrap    = JPath::clean( JPATH_SITE.DIRECTORY_SEPARATOR."media".DIRECTORY_SEPARATOR."com_userideas".DIRECTORY_SEPARATOR."css".DIRECTORY_SEPARATOR. "admin".DIRECTORY_SEPARATOR."bootstrap.min.css" );
         
@@ -73,10 +73,10 @@ class pkg_crowdFundingInstallerScript {
             echo $style;
             
             // Start table with the information
-            CrowdFundingInstallHelper::startTable();
+            UserIdeasInstallHelper::startTable();
         
             // Requirements
-            CrowdFundingInstallHelper::addRowHeading(JText::_("COM_USERIDEAS_MINIMUM_REQUIREMENTS"));
+            UserIdeasInstallHelper::addRowHeading(JText::_("COM_USERIDEAS_MINIMUM_REQUIREMENTS"));
             
             // Display result about verification for GD library
             $title  = JText::_("COM_USERIDEAS_GD_LIBRARY");
@@ -86,7 +86,7 @@ class pkg_crowdFundingInstallerScript {
             } else {
                 $result = array("type" => "success"  , "text" => JText::_("JON"));
             }
-            CrowdFundingInstallHelper::addRow($title, $result, $info);
+            UserIdeasInstallHelper::addRow($title, $result, $info);
             
             // Display result about verification for cURL library
             $title  = JText::_("COM_USERIDEAS_CURL_LIBRARY");
@@ -97,7 +97,7 @@ class pkg_crowdFundingInstallerScript {
             } else {
                 $result = array("type" => "success"  , "text" => JText::_("JON"));
             }
-            CrowdFundingInstallHelper::addRow($title, $result, $info);
+            UserIdeasInstallHelper::addRow($title, $result, $info);
             
             // Display result about verification Magic Quotes
             $title  = JText::_("COM_USERIDEAS_MAGIC_QUOTES");
@@ -108,7 +108,7 @@ class pkg_crowdFundingInstallerScript {
             } else {
                 $result = array("type" => "success"  , "text" => JText::_("JOFF"));
             }
-            CrowdFundingInstallHelper::addRow($title, $result, $info);
+            UserIdeasInstallHelper::addRow($title, $result, $info);
             
             // Display result about verification of installed ITPrism Library
             jimport("itprism.version");
@@ -120,10 +120,26 @@ class pkg_crowdFundingInstallerScript {
             } else {
                 $result = array("type" => "success", "text" => JText::_("JYES"));
             }
-            CrowdFundingInstallHelper::addRow($title, $result, $info);
+            UserIdeasInstallHelper::addRow($title, $result, $info);
+            
+            // Installed extensions
+            
+            UserIdeasInstallHelper::addRowHeading(JText::_("COM_USERIDEAS_INSTALLED_EXTENSIONS"));
+            
+            // CrowdFunding Library
+            $result = array("type" => "success"  , "text" => JText::_("COM_USERIDEAS_INSTALLED"));
+            UserIdeasInstallHelper::addRow(JText::_("COM_USERIDEAS_USERIDEAS_LIBRARY"), $result, JText::_("COM_USERIDEAS_LIBRARY"));
+            
+            // System - UserIdeasVote
+            $result = array("type" => "success"  , "text" => JText::_("COM_USERIDEAS_INSTALLED"));
+            UserIdeasInstallHelper::addRow(JText::_("COM_USERIDEAS_SYSTEM_USERIDEASVOTE"), $result, JText::_("COM_USERIDEAS_PLUGIN"));
+            
+            // UserIdeas - Vote
+            $result = array("type" => "success"  , "text" => JText::_("COM_USERIDEAS_INSTALLED"));
+            UserIdeasInstallHelper::addRow(JText::_("COM_USERIDEAS_USERIDEAS_VOTE"), $result, JText::_("COM_USERIDEAS_PLUGIN"));
             
             // End table
-            CrowdFundingInstallHelper::endTable();
+            UserIdeasInstallHelper::endTable();
             
         }
         

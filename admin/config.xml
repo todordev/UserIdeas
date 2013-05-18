@@ -16,13 +16,6 @@
         </field>
         <field name="items_display_results_number" type="text" default="20" size="50" label="COM_USERIDEAS_ITEMS_RESULTS_NUMBER" description="COM_USERIDEAS_ITEMS_RESULTS_NUMBER_DESC" />
 	</fieldset>
-
-    <fieldset name="comments" label="COM_USERIDEAS_COMMENTS" description="COM_USERIDEAS_COMMENTS_PARAMS">
-        <field name="comments_adding_state" type="radio" default="0" label="COM_USERIDEAS_COMMENTS_ADDING_STATE" description="COM_USERIDEAS_COMMENTS_ADDING_STATE_DESC">
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-    </fieldset>
     
     <fieldset name="seo" label="COM_USERIDEAS_SEO" description="COM_USERIDEAS_SEO_PARAMS">
         <field name="seo_cat_to_title" type="list" default="0"  label="COM_USERIDEAS_SEO_CATEOGRY_TO_TITLE" description="COM_USERIDEAS_SEO_CATEOGRY_TO_TITLE_DESC" >
@@ -42,11 +35,11 @@
     </fieldset>
     
     <fieldset name="security" label="COM_USERIDEAS_SECURITY" description="COM_USERIDEAS_SECURITY_PARAMS">
-        <field name="security_send_mail_admin" type="radio" default="1" label="COM_USERIDEAS_SECURITY_SEND_MAIL_ADMIN" description="COM_USERIDEAS_SECURITY_SEND_MAIL_ADMIN_DESC">
+        <field name="security_send_mail_admin" type="radio" default="0" label="COM_USERIDEAS_SECURITY_SEND_MAIL_ADMIN" description="COM_USERIDEAS_SECURITY_SEND_MAIL_ADMIN_DESC">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field name="security_send_mail_user" type="radio" default="1" label="COM_USERIDEAS_SECURITY_SEND_MAIL_USER" description="COM_USERIDEAS_SECURITY_SEND_MAIL_USER_DESC">
+        <field name="security_send_mail_user" type="radio" default="0" label="COM_USERIDEAS_SECURITY_SEND_MAIL_USER" description="COM_USERIDEAS_SECURITY_SEND_MAIL_USER_DESC">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
