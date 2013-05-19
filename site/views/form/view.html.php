@@ -48,7 +48,7 @@ class UserIdeasViewForm extends JView {
         $userId           = JFactory::getUser()->id;
         if(!$userId) {
 		    $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_NOT_LOG_IN"), "notice");
-            $app->redirect( JRoute::_('index.php', false) );
+            $app->redirect(JRoute::_('index.php?option=com_users&view=login', false));
             return; 
             
         }
