@@ -53,7 +53,8 @@ abstract class UserIdeasHelperRoute {
 	     * The view "categories" won't contain category ID so it has to contain 0 for ID key. 
 	     */
 		$needles = array(
-		    'items' => array(0)
+			'details'   => array((int)$id),
+		    'items'     => array((int)$catid),
 		);
 
 		//Create the link
@@ -63,7 +64,7 @@ abstract class UserIdeasHelperRoute {
 			$category   = $categories->get($catid);
 
 			if($category) {
-				$needles['category']   = array_reverse($category->getPath());
+				$needles['items']   = array_reverse($category->getPath());
 				$link .= '&catid='.$catid;
 			}
 		}
@@ -226,7 +227,6 @@ abstract class UserIdeasHelperRoute {
 	 */
 	public static function prepareCategoriesSegments($catId, &$segments, $mId = null) {
 	    
-	    $menuCatid    = $mId;
 		$categories   = JCategories::getInstance('UserIdeas');
 		$category     = $categories->get($catId);
 
@@ -243,35 +243,9 @@ abstract class UserIdeasHelperRoute {
 
 				$array[] = $id;
 			}
+			
 			$segments = array_merge($segments, array_reverse($array));
 		}
 	}
 	
-    /**
-     * 
-     * Load an object that contains a data about project.
-     * We use this method in the router "UserIdeasParseRoute".
-     * 
-     * @param integer $id
-     */
-    public static function getProject($id) {
-        
-        $db     = JFactory::getDbo();
-        $query  = $db->getQuery(true);
-        
-        $query
-            ->select("catid")
-            ->from("#__crowdf_projects")
-            ->where("id = " . $db->quote($id));
-
-        $db->setQuery($query, 0, 1);
-        $result = $db->loadObject();
-        
-        if(!$result) {
-            $result = null;
-        }
-        
-        return $result;
-			
-    }
 }

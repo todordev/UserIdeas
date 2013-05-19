@@ -71,14 +71,16 @@ function UserIdeasBuildRoute(&$query){
     	    
 	       case "details":
 	            
-    	        $catId      = $query['catid'];
-    	        UserIdeasHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
+ 	            if(isset($query['catid'])) {
+//	                $catId      = $query['catid'];
+//    	            UserIdeasHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
+    	            unset($query['catid']);
+	            }
     	        
     	        $id         = $query['id'];
-				$segments[] = $id;
+			    $segments[] = $id;
 				
 				unset($query['id']);
-	            unset($query['catid']);
 	            
     	        break;
 	        
