@@ -18,15 +18,20 @@ defined('_JEXEC') or die;
     <div class="span12">
         <form action="<?php echo JRoute::_('index.php?option=com_userideas'); ?>" method="post" name="itemForm" id="uf-item-form" class="form-validate">
             
-            <?php echo $this->form->getLabel('title'); ?>
-            <?php echo $this->form->getInput('title'); ?>
-            
-            <?php echo $this->form->getLabel('description'); ?>
-            <?php echo $this->form->getInput('description'); ?>
+                <div class="control-group">
+                    <div class="control-label"><?php echo $this->form->getLabel('title'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('title'); ?></div>
+                </div>
+                <div class="control-group">
+                    <div class="control-label"><?php echo $this->form->getLabel('description'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('description'); ?></div>
+                </div>
+                <div class="control-group">
+                    <div class="control-label"><?php echo $this->form->getLabel('catid'); ?></div>
+					<div class="controls"><?php echo $this->form->getInput('catid'); ?></div>
+                </div>
             
             <?php echo $this->form->getInput('id'); ?>
-            <?php echo $this->form->getInput('catid'); ?>
-            
             <input type="hidden" name="task" value="form.save" />
             <?php echo JHtml::_('form.token'); ?>
             

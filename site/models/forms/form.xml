@@ -16,8 +16,15 @@
             required="true"
         />
 
-        <field name="id"    type="hidden" filter="int" />
-        <field name="catid" type="hidden" filter="int" />
+        <field name="catid" type="category" 
+            label="COM_USERIDEAS_CATEGORY" 
+            extension="com_userideas"
+            required="true"
+            filter="int" 
+            published="1"
+        />
+         
+        <field name="id" type="hidden" filter="int" />
          
     </fieldset>
 </form>

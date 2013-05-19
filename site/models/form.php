@@ -103,8 +103,6 @@ class UserIdeasModelForm extends JModelForm {
 		    if(empty($data)) {
 		        $catId       = $this->getState('category_id');
 		        
-		        $category    = UserIdeasHelper::getCategory($catId);
-		        
 		        $data        = new JObject();
 		        $data->catid = (int)$catId;
 		    }
