@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
 <div class="row-fluid">
      <div class="span8">&nbsp;</div>
 	<div class="span4">
-        <a href="#" target="_blank"><img src="../media/com_userideas/images/logo.png" alt="<?php echo JText::_("COM_USERIDEAS");?>" /></a>
+        <a href="http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions" target="_blank"><img src="../media/com_userideas/images/logo.png" alt="<?php echo JText::_("COM_USERIDEAS");?>" /></a>
         <a href="http://itprism.com" target="_blank" title="<?php echo JText::_("COM_USERIDEAS_ITPRISM_PRODUCT");?>"><img src="../media/com_userideas/images/product_of_itprism.png" alt="<?php echo JText::_("COM_USERIDEAS_PRODUCT");?>" /></a>
         <p><?php echo JText::_("COM_USERIDEAS_YOUR_VOTE"); ?></p>
         <p><?php echo JText::_("COM_USERIDEAS_SPONSORSHIP"); ?></p>

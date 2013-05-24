@@ -59,6 +59,12 @@ class UserIdeasHelper {
 			$vName == 'comments'
 		);
 		
+		JSubMenuHelper::addEntry(
+    		JText::_('COM_USERIDEAS_PLUGINS'),
+    		'index.php?option=com_plugins&view=plugins&filter_search='.rawurlencode("user ideas"),
+    		$vName == 'plugins'
+        );
+		
 	}
 	
 	/**

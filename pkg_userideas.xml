@@ -8,21 +8,22 @@
 	<copyright>Copyright (C) 2010 Todor Iliev ( ITPrism.com )</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html</license>
 	<version>1.0</version>
-	<creationDate>May, 2013</creationDate>
+	<creationDate>31 May, 2013</creationDate>
 	<url>http://itprism.com</url>
 	<packager>Todor Iliev</packager>
 	<packagerurl>http://itprism.com</packagerurl>
 	<description><![CDATA[
-	<p><a href="#" target="_blank">User Ideas</a> is an extension that provides functionality for creating and managing ideas pool, suggestions, issues, user feedbacks,...</p>
+	<p><a href="http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions" target="_blank">User Ideas</a> is an extension that provides functionality for creating and managing ideas pool, suggestions, issues, user feedbacks,...</p>
 	<p>Invest in the extension and help for its improvement. You can <a href="http://itprism.com/sponsorship" title="Sponsoring" target="_blank">sponsor the extension via SMS, PayPal or Bitcoin</a>.</p>
 	<p><a href="http://itprism.com/" target="_blank">Subscribe for the newsletter</a> to receive <strong>gifts</strong>, <strong>discount codes</strong>, information about <strong>updates</strong> and information about <strong>new ITPrism extensions</strong>.</p>
-	<p>Please, <a href="#" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
+	<p>Please, <a href="http://extensions.joomla.org/extensions/contacts-and-feedback/testimonials-a-suggestions/24422" target="_blank">vote for the extension</a> on Joomla! Extensions Directory</p>
 	]]></description>
 	<files folder="packages">
 		<file type="component" 	id="com_userideas" >com_userideas.zip</file>
 		<file type="plugin" 	id="userideasvote" group="system">plg_system_userideasvote.zip</file>
 		<file type="plugin" 	id="vote" group="userideas">plg_userideas_vote.zip</file>
 		<file type="library"    id="lib_userideas" >lib_userideas.zip</file>
+		<file type="library"    id="lib_itprism" >lib_itprism.zip</file>
 	</files>
 
 	<scriptfile>install.php</scriptfile>
