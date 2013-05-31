@@ -109,37 +109,37 @@
 
 	<!-- COPY PLUGINS -->
 	
-	<!-- SYSTEM\USERIDEASVOTE -->
+	<!-- SYSTEM/USERIDEASVOTE -->
 	
-	<!-- copy plugins files of system\userideasvote -->
+	<!-- copy plugins files of system/userideasvote -->
     <copy todir="${cfg.pluginsDestDir}/system/plg_system_userideasvote">
         <fileset dir="${cfg.pluginsSourceDir}/system/userideasvote">
             <include name="**/*" />
         </fileset>
     </copy>
 	
-	<!-- copy plugin language files of system\userideasvote -->
+	<!-- copy plugin language files of system/userideasvote -->
     <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_system_userideasvote.ini" todir="${cfg.pluginsDestDir}/system/plg_system_userideasvote/language/en-GB" />
     <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_system_userideasvote.sys.ini" todir="${cfg.pluginsDestDir}/system/plg_system_userideasvote/language/en-GB" />
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/system/plg_system_userideasvote/language" />
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/system/plg_system_userideasvote/language/en-GB/" />
 	
-	<!-- USERIDEAS\VOTE -->
+	<!-- USERIDEAS/VOTE -->
 	
-	<!-- copy plugins files of userideas\vote -->
+	<!-- copy plugins files of userideas/vote -->
     <copy todir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote">
         <fileset dir="${cfg.pluginsSourceDir}/userideas/vote">
             <include name="**/*" />
         </fileset>
     </copy>
     
-    <!-- copy plugin language files of system\userideasvote -->
+    <!-- copy plugin language files of system/userideasvote -->
     <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_userideas_vote.ini" todir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote/language/en-GB" />
     <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_userideas_vote.sys.ini" todir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote/language/en-GB" />
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote/language" />
     <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote/language/en-GB/" />
 
-	<!-- EDN COPY PLUGINS -->
+	<!-- END COPY PLUGINS -->
 	
 	<target name="build_component" depends="init" description="packages the finaly component file">
 		
