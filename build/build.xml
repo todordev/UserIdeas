@@ -145,7 +145,7 @@
 		
 		<!-- build component -->
 		<zip destfile="${cfg.pkgDir}/packages/${cfg.comName}.zip" basedir="${cfg.pkgDir}" 
-			includes="admin/**,media/**,site/**, ${cfg.name}.xml" />
+			includes="admin/**,media/**,site/**,${cfg.name}.xml" />
 		
 		<!-- build library -->
 		<zip destfile="${cfg.pkgDir}/packages/lib_${cfg.name}.zip" basedir="${cfg.librariesDestDir}/lib_${cfg.name}" />
@@ -153,6 +153,10 @@
 		<!-- build plugins -->
 		<zip destfile="${cfg.pkgDir}/packages/plg_system_userideasvote.zip" basedir="${cfg.pluginsDestDir}/system/plg_system_userideasvote" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_userideas_vote.zip" basedir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote" />
+		
+		<!-- build package -->
+		<zip destfile="${cfg.pkgDir}/${cfg.pkgName}_${cfg.version}-${cfg.joomlaVersion}.zip" basedir="${cfg.pkgDir}" 
+			includes="packages/**,pkg_userideas.xml,install.php,README.md" />
 		
 	</target>
 
