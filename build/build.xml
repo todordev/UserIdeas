@@ -62,9 +62,9 @@
 	<!-- copy administration files of the componet -->
 	<copy todir="${cfg.adminDestDir}">
 		<fileset dir="${cfg.adminSourceDir}/${cfg.comName}">
-			<exclude name="**/pkg_userideas.xml" />
+			<exclude name="**/${cfg.pkgName}.xml" />
+			<exclude name="**/${cfg.name}.xml" />
 			<exclude name="**/README.md" />
-			<exclude name="**/userideas.xml" />
 			<exclude name="**/install.php" />
 		</fileset>
 	</copy>
@@ -156,7 +156,7 @@
 		
 		<!-- build package -->
 		<zip destfile="${cfg.pkgDir}/${cfg.pkgName}_${cfg.version}-${cfg.joomlaVersion}.zip" basedir="${cfg.pkgDir}" 
-			includes="packages/**,pkg_userideas.xml,install.php,README.md" />
+			includes="packages/**,${cfg.pkgName}.xml,install.php,README.md" />
 		
 	</target>
 
