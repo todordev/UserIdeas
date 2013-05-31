@@ -144,8 +144,11 @@ class plgUserIdeasVote extends JPlugin {
         $history->store();
         
         // Prepare response data
-        $data["votes"] = $item->votes;
-                
+        $data["response_data"] = array(
+            "user_votes" => 1,
+            "votes"      => $item->votes
+        );
+        
     }
     
     

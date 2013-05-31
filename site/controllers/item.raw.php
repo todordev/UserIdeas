@@ -134,12 +134,16 @@ class UserIdeasControllerItem extends JController {
             return;
         }
         
+        $responseData = JArrayHelper::getValue($data, "response_data", 0);
+        $userVotes    = JArrayHelper::getValue($responseData, "user_votes", 0);
+        $votes        = JArrayHelper::getValue($responseData, "votes", 0);
+        
         $response = array(
         	"success" => true,
-            "title"   => JText::_( 'COM_USERIDEAS_SUCCESS' ),
-            "text"    => JText::_( 'COM_USERIDEAS_VOTED_SUCCESSFULY' ),
+            "title"   => JText::_('COM_USERIDEAS_SUCCESS'),
+            "text"    => JText::plural('COM_USERIDEAS_VOTED_SUCCESSFULY',  $userVotes),
             "data"    => array(
-                "votes" => $data["votes"]
+                "votes" => $votes
             )
         );
 

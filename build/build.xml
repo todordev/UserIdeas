@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="userideas" default="build" basedir=".">
+	<description>User Ideas Ant Build File</description>
+
+	<!-- load variables from config file -->
+	<property name="cfg.configFile" location="antconfig.txt" />
+	<loadproperties srcfile="${cfg.configFile}" />
+
+	<!-- auto values but should be checked -->
+	<property name="cfg.comName" value="com_${cfg.name}" />
+	<property name="cfg.pkgName" value="pkg_${cfg.name}" />
+	
+	<!-- destination directories -->
+	<property name="cfg.adminDestDir" location="${cfg.pkgDir}/admin" />
+	<property name="cfg.adminLanguageDestDir" location="${cfg.pkgDir}/admin/language" />
+	<property name="cfg.mediaDestDir" location="${cfg.pkgDir}/media" />
+	<property name="cfg.siteDestDir" location="${cfg.pkgDir}/site" />
+	<property name="cfg.siteLanguageFilesDir" location="${cfg.pkgDir}/site/language" />
+	<property name="cfg.librariesDestDir" location="${cfg.pkgDir}/libraries" />
+	
+	<property name="cfg.pluginsDestDir" location="${cfg.pkgDir}/plugins" />
+	<property name="cfg.modulesDestDir" location="${cfg.pkgDir}/modules" />
+
+	<!-- Admin, Site and Media source -->
+	<property name="cfg.adminSourceDir" location="${cfg.sourceDir}/administrator/components" />
+	<property name="cfg.siteSourceDir" location="${cfg.sourceDir}/components" />
+	<property name="cfg.mediaSourceDir" location="${cfg.sourceDir}/media" />
+	<property name="cfg.librariesSourceDir" location="${cfg.sourceDir}/libraries" />
+
+	<!-- language source -->
+	<property name="cfg.adminLanguageSourceDir" location="${cfg.sourceDir}/administrator/language/en-GB" />
+	<property name="cfg.siteLanguageSourceDir" location="${cfg.sourceDir}/language/en-GB" />
+
+	<!-- plugins source -->
+    <property name="cfg.pluginsSourceDir" location="${cfg.sourceDir}/plugins" />
+	
+	<!-- modules source -->
+    <property name="cfg.modulesSourceDir" location="${cfg.sourceDir}/modules" />
+	
+	<target name="build" depends="init, build_component, info" />
+
+	<target name="init" description="creates nessecary directory to build with">
+		<mkdir dir="${cfg.pkgDir}/admin" />
+		<mkdir dir="${cfg.pkgDir}/admin/language" />
+		<mkdir dir="${cfg.pkgDir}/media" />
+		<mkdir dir="${cfg.pkgDir}/site" />
+		<mkdir dir="${cfg.pkgDir}/site/language" />
+		<mkdir dir="${cfg.pkgDir}/libraries" />
+		<mkdir dir="${cfg.pkgDir}/packages" />
+		<mkdir dir="${cfg.pkgDir}/modules" />
+		<mkdir dir="${cfg.pkgDir}/plugins" />
+		
+		<!-- plugins -->
+		<mkdir dir="${cfg.pkgDir}/plugins/system/plg_system_userideasvote" />
+		<mkdir dir="${cfg.pkgDir}/plugins/system/plg_system_userideasvote/language" />
+		
+		<mkdir dir="${cfg.pkgDir}/plugins/userideas/plg_userideas_vote" />
+		<mkdir dir="${cfg.pkgDir}/plugins/userideas/plg_userideas_vote/language" />
+		
+	</target>
+
+	<!-- copy administration files of the componet -->
+	<copy todir="${cfg.adminDestDir}">
+		<fileset dir="${cfg.adminSourceDir}/${cfg.comName}">
+			<exclude name="**/pkg_userideas.xml" />
+			<exclude name="**/README.md" />
+			<exclude name="**/userideas.xml" />
+			<exclude name="**/install.php" />
+		</fileset>
+	</copy>
+
+	<!-- copy site files of the componet -->
+	<copy todir="${cfg.siteDestDir}">
+		<fileset dir="${cfg.siteSourceDir}/${cfg.comName}">
+			<include name="**/*" />
+		</fileset>
+	</copy>
+
+	<!-- copy media files of the componet -->
+	<copy todir="${cfg.mediaDestDir}">
+		<fileset dir="${cfg.mediaSourceDir}/${cfg.comName}">
+			<include name="**/*" />
+		</fileset>
+	</copy>
+
+	<!-- copy admin language files of the componet -->
+	<copy file="${cfg.adminLanguageSourceDir}/en-GB.${cfg.comName}.ini" todir="${cfg.adminLanguageDestDir}/en-GB/" />
+	<copy file="${cfg.adminLanguageSourceDir}/en-GB.${cfg.comName}.sys.ini" todir="${cfg.adminLanguageDestDir}/en-GB/" />
+	<copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.adminLanguageDestDir}/" />
+	<copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.adminLanguageDestDir}/en-GB/" />
+
+	<!-- copy site language files of the componet -->
+	<copy file="${cfg.siteLanguageSourceDir}/en-GB.${cfg.comName}.ini" todir="${cfg.siteLanguageFilesDir}/en-GB/" />
+	<copy file="${cfg.siteLanguageSourceDir}/index.html" todir="${cfg.siteLanguageFilesDir}/" />
+	<copy file="${cfg.siteLanguageSourceDir}/index.html" todir="${cfg.siteLanguageFilesDir}/en-GB/" />
+
+	<!-- copy main files of the componet -->
+    <copy file="${cfg.adminSourceDir}/${cfg.comName}/install.php" todir="${cfg.pkgDir}" />
+    <copy file="${cfg.adminSourceDir}/${cfg.comName}/README.md" todir="${cfg.pkgDir}" />
+    <copy file="${cfg.adminSourceDir}/${cfg.comName}/${cfg.pkgName}.xml" todir="${cfg.pkgDir}" />
+    <copy file="${cfg.adminSourceDir}/${cfg.comName}/${cfg.name}.xml" todir="${cfg.pkgDir}" />
+
+	<!-- copy library files of the componet -->
+    <copy todir="${cfg.librariesDestDir}/lib_${cfg.name}">
+        <fileset dir="${cfg.librariesSourceDir}/${cfg.name}">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+
+	<!-- COPY PLUGINS -->
+	
+	<!-- SYSTEM\USERIDEASVOTE -->
+	
+	<!-- copy plugins files of system\userideasvote -->
+    <copy todir="${cfg.pluginsDestDir}/system/plg_system_userideasvote">
+        <fileset dir="${cfg.pluginsSourceDir}/system/userideasvote">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+	
+	<!-- copy plugin language files of system\userideasvote -->
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_system_userideasvote.ini" todir="${cfg.pluginsDestDir}/system/plg_system_userideasvote/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_system_userideasvote.sys.ini" todir="${cfg.pluginsDestDir}/system/plg_system_userideasvote/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/system/plg_system_userideasvote/language" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/system/plg_system_userideasvote/language/en-GB/" />
+	
+	<!-- USERIDEAS\VOTE -->
+	
+	<!-- copy plugins files of userideas\vote -->
+    <copy todir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote">
+        <fileset dir="${cfg.pluginsSourceDir}/userideas/vote">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+    
+    <!-- copy plugin language files of system\userideasvote -->
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_userideas_vote.ini" todir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_userideas_vote.sys.ini" todir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote/language" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote/language/en-GB/" />
+
+	<!-- EDN COPY PLUGINS -->
+	
+	<target name="build_component" depends="init" description="packages the finaly component file">
+		
+		<!-- build component -->
+		<zip destfile="${cfg.pkgDir}/packages/${cfg.comName}.zip" basedir="${cfg.pkgDir}" 
+			includes="admin/**,media/**,site/**, ${cfg.name}.xml" />
+		
+		<!-- build library -->
+		<zip destfile="${cfg.pkgDir}/packages/lib_${cfg.name}.zip" basedir="${cfg.librariesDestDir}/lib_${cfg.name}" />
+		
+		<!-- build plugins -->
+		<zip destfile="${cfg.pkgDir}/packages/plg_system_userideasvote.zip" basedir="${cfg.pluginsDestDir}/system/plg_system_userideasvote" />
+		<zip destfile="${cfg.pkgDir}/packages/plg_userideas_vote.zip" basedir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote" />
+		
+	</target>
+
+	<target name="info" description="prints information">
+		<echo message="Project:                 ${cfg.name}" />
+		<tstamp>
+			<format property="buildtime" pattern="yyyy-MM-dd'T'HH:mm:ss" />
+		</tstamp>
+		<echo message="Buildtime:       ${buildtime}" />
+	</target>
+</project>

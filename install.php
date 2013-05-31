@@ -126,7 +126,7 @@ class pkg_userIdeasInstallerScript {
             
             UserIdeasInstallHelper::addRowHeading(JText::_("COM_USERIDEAS_INSTALLED_EXTENSIONS"));
             
-            // CrowdFunding Library
+            // UserIdeas Library
             $result = array("type" => "success"  , "text" => JText::_("COM_USERIDEAS_INSTALLED"));
             UserIdeasInstallHelper::addRow(JText::_("COM_USERIDEAS_USERIDEAS_LIBRARY"), $result, JText::_("COM_USERIDEAS_LIBRARY"));
             
