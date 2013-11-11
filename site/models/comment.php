@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  * UserIdeas is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -178,20 +178,18 @@ class UserIdeasModelComment extends JModelForm {
         // If there is no userId we are adding a new comment
         if(!$row->user_id) {
             
-            $params    = JComponentHelper::getParams($this->option);
-            $published = ( !$params->get("comments_adding_state", 0) ) ? 0 : 1;
-            
             $row->set("record_date",   null);
             $row->set("item_id",       $itemId);
             $row->set("user_id",       $userId);
             
             $params    = JComponentHelper::getParams($this->option);
-            $published = $params->get("security_comment_auto_publish", 0);
+            $published = ( !$params->get("security_comment_auto_publish", 0) ) ? 0 : 1;
+            
             $row->set("published", $published);
             
         }
         
-        $row->store();
+        $row->store(true);
         
         return $row->id;
         

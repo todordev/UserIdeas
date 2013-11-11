@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -16,11 +12,19 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class UserIdeasViewItems extends JView {
+class UserIdeasViewItems extends JViewLegacy {
     
     protected $items;
     protected $pagination;
     protected $state;
+    
+    protected $option;
+    
+    public function __construct($config) {
+        parent::__construct($config);
+        $this->option = JFactory::getApplication()->input->get("option");
+    }
+    
     
     public function display($tpl = null){
         
@@ -28,19 +32,80 @@ class UserIdeasViewItems extends JView {
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         
-        // Prepare filters
-        $this->listOrder  = $this->escape($this->state->get('list.ordering'));
-        $this->listDirn   = $this->escape($this->state->get('list.direction'));
-        $this->saveOrder  = (strcmp($this->listOrder, 'a.ordering') != 0 ) ? false : true;
+        // HTML Helpers
+        JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
         
         // Add submenu
         UserIdeasHelper::addSubmenu($this->getName());
         
+        // Prepare sorting data
+        $this->prepareSorting();
+        
         // Prepare actions
         $this->addToolbar();
+        $this->addSidebar();
         $this->setDocument();
         
         parent::display($tpl);
+    }
+    
+    /**
+     * Prepare sortable fields, sort values and filters.
+     */
+    protected function prepareSorting() {
+    
+        // Prepare filters
+        $this->listOrder  = $this->escape($this->state->get('list.ordering'));
+        $this->listDirn   = $this->escape($this->state->get('list.direction'));
+        $this->saveOrder  = (strcmp($this->listOrder, 'a.ordering') != 0 ) ? false : true;
+    
+        if ($this->saveOrder) {
+            $this->saveOrderingUrl = 'index.php?option='.$this->option.'&task='.$this->getName().'.saveOrderAjax&format=raw';
+            JHtml::_('sortablelist.sortable', $this->getName().'List', 'adminForm', strtolower($this->listDirn), $this->saveOrderingUrl);
+        }
+    
+        $this->sortFields = array(
+            'a.title'         => JText::_('COM_USERIDEAS_TITLE'),
+            'a.published'     => JText::_('JSTATUS'),
+            'a.record_date'   => JText::_('COM_USERIDEAS_CREATED'),
+            'a.votes'         => JText::_('COM_USERIDEAS_VOTES'),
+            'b.name'          => JText::_('COM_USERIDEAS_USER'),
+            'c.title'         => JText::_('COM_USERIDEAS_CATEGORY'),
+            'a.id'            => JText::_('JGRID_HEADING_ID')
+        );
+    
+    }
+    
+    /**
+     * Add a menu on the sidebar of page
+     */
+    protected function addSidebar() {
+    
+        JHtmlSidebar::setAction('index.php?option='.$this->option.'&view='.$this->getName());
+    
+        JHtmlSidebar::addFilter(
+            JText::_('JOPTION_SELECT_PUBLISHED'),
+            'filter_state',
+            JHtml::_('select.options', JHtml::_('jgrid.publishedOptions', array("archived" => false, "trash" => false)), 'value', 'text', $this->state->get('filter.state'), true)
+        );
+        
+        JHtmlSidebar::addFilter(
+            JText::_('JOPTION_SELECT_CATEGORY'),
+            'filter_category',
+            JHtml::_('select.options', JHtml::_('category.options', 'com_userideas'), 'value', 'text', $this->state->get('filter.category'), true)
+        );
+    
+        // Item statuses
+        jimport("userideas.statuses");
+        $statuse = UserIdeasStatuses::getInstance();
+        JHtmlSidebar::addFilter(
+            JText::_('COM_USERIDEAS_SELECT_ITEM_STATUS'),
+            'filter_status',
+            JHtml::_('select.options', $statuse->getStatusesOptions(), 'value', 'text', $this->state->get('filter.status'), true)
+        );
+        
+        $this->sidebar = JHtmlSidebar::render();
+    
     }
     
     /**
@@ -51,16 +116,16 @@ class UserIdeasViewItems extends JView {
     protected function addToolbar(){
         
         // Set toolbar items for the page
-        JToolBarHelper::title(JText::_('COM_USERIDEAS_ITEMS_MANAGER'), 'itp-items');
-        JToolBarHelper::addNew('item.add');
-        JToolBarHelper::editList('item.edit');
-        JToolBarHelper::divider();
-        JToolBarHelper::publishList("items.publish");
-        JToolBarHelper::unpublishList("items.unpublish");
-        JToolBarHelper::divider();
-        JToolBarHelper::deleteList(JText::_("COM_USERIDEAS_DELETE_ITEMS_QUESTION"), "items.delete");
-        JToolBarHelper::divider();
-        JToolBarHelper::custom('items.backToDashboard', "itp-dashboard-back", "", JText::_("COM_USERIDEAS_DASHBOARD"), false);
+        JToolbarHelper::title(JText::_('COM_USERIDEAS_ITEMS_MANAGER'), 'items');
+        JToolbarHelper::addNew('item.add');
+        JToolbarHelper::editList('item.edit');
+        JToolbarHelper::divider();
+        JToolbarHelper::publishList("items.publish");
+        JToolbarHelper::unpublishList("items.unpublish");
+        JToolbarHelper::divider();
+        JToolbarHelper::deleteList(JText::_("COM_USERIDEAS_DELETE_ITEMS_QUESTION"), "items.delete");
+        JToolbarHelper::divider();
+        JToolbarHelper::custom('items.backToDashboard', "dashboard", "", JText::_("COM_USERIDEAS_DASHBOARD"), false);
         
     }
     
@@ -70,7 +135,16 @@ class UserIdeasViewItems extends JView {
 	 * @return void
 	 */
 	protected function setDocument() {
+	    
 		$this->document->setTitle(JText::_('COM_USERIDEAS_ITEMS_MANAGER'));
+		
+		// Scripts
+		JHtml::_('bootstrap.tooltip');
+		JHtml::_('behavior.multiselect');
+
+		JHtml::_('formbehavior.chosen', 'select');
+		
+		JHtml::_('itprism.ui.joomla_list');
 	}
 
 }

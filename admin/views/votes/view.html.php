@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -16,7 +12,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class UserIdeasViewVotes extends JView {
+class UserIdeasViewVotes extends JViewLegacy {
     
     protected $state;
     protected $items;
@@ -35,19 +31,56 @@ class UserIdeasViewVotes extends JView {
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         
-        // Prepare filters
-        $this->listOrder  = $this->escape($this->state->get('list.ordering'));
-        $this->listDirn   = $this->escape($this->state->get('list.direction'));
-        $this->saveOrder  = (strcmp($this->listOrder, 'a.record_date') != 0 ) ? false : true;
+        // HTML Helpers
+        JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
         
         // Add submenu
         UserIdeasHelper::addSubmenu($this->getName());
         
+        // Prepare sorting data
+        $this->prepareSorting();
+        
         // Prepare actions
         $this->addToolbar();
+        $this->addSidebar();
         $this->setDocument();
         
         parent::display($tpl);
+    }
+    
+    /**
+     * Prepare sortable fields, sort values and filters.
+     */
+    protected function prepareSorting() {
+    
+        // Prepare filters
+        $this->listOrder  = $this->escape($this->state->get('list.ordering'));
+        $this->listDirn   = $this->escape($this->state->get('list.direction'));
+        $this->saveOrder  = (strcmp($this->listOrder, 'a.ordering') != 0 ) ? false : true;
+    
+        if ($this->saveOrder) {
+            $this->saveOrderingUrl = 'index.php?option='.$this->option.'&task='.$this->getName().'.saveOrderAjax&format=raw';
+            JHtml::_('sortablelist.sortable', $this->getName().'List', 'adminForm', strtolower($this->listDirn), $this->saveOrderingUrl);
+        }
+    
+        $this->sortFields = array(
+            'b.title'         => JText::_('COM_USERIDEAS_TITLE'),
+            'a.record_date'   => JText::_('COM_USERIDEAS_DATE'),
+            'c.name'          => JText::_('COM_USERIDEAS_USER'),
+            'a.id'            => JText::_('JGRID_HEADING_ID')
+        );
+    
+    }
+    
+    /**
+     * Add a menu on the sidebar of page
+     */
+    protected function addSidebar() {
+    
+//         JHtmlSidebar::setAction('index.php?option='.$this->option.'&view='.$this->getName());
+    
+        $this->sidebar = JHtmlSidebar::render();
+    
     }
     
     /**
@@ -57,10 +90,10 @@ class UserIdeasViewVotes extends JView {
     protected function addToolbar(){
         
         // Set toolbar items for the page
-        JToolBarHelper::title(JText::_('COM_USERIDEAS_VOTES_MANAGER'), 'itp-votes');
-        JToolBarHelper::deleteList(JText::_("COM_USERIDEAS_DELETE_ITEMS_QUESTION"), "votes.delete");
-        JToolBarHelper::divider();
-        JToolBarHelper::custom('votes.backToDashboard', "itp-dashboard-back", "", JText::_("COM_USERIDEAS_DASHBOARD"), false);
+        JToolbarHelper::title(JText::_('COM_USERIDEAS_VOTES_MANAGER'));
+        JToolbarHelper::deleteList(JText::_("COM_USERIDEAS_DELETE_ITEMS_QUESTION"), "votes.delete");
+        JToolbarHelper::divider();
+        JToolbarHelper::custom('votes.backToDashboard', "dashboard", "", JText::_("COM_USERIDEAS_DASHBOARD"), false);
         
     }
     
@@ -69,7 +102,18 @@ class UserIdeasViewVotes extends JView {
 	 * @return void
 	 */
 	protected function setDocument() {
+	    
 		$this->document->setTitle(JText::_('COM_USERIDEAS_VOTES_MANAGER'));
+		
+		// Scripts
+		JHtml::_('behavior.multiselect');
+		JHtml::_('bootstrap.tooltip');
+		
+		JHtml::_('formbehavior.chosen', 'select');
+		
+		JHtml::_('itprism.ui.joomla_list');
+		
 	}
+	
     
 }

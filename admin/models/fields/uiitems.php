@@ -1,15 +1,12 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
+
 defined('JPATH_BASE') or die;
 
 jimport('joomla.html.html');
@@ -20,8 +17,8 @@ JFormHelper::loadFieldClass('list');
 /**
  * Form Field class for the Joomla Framework.
  *
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @since        1.6
  */
 class JFormFieldUiItems extends JFormFieldList {
@@ -49,7 +46,7 @@ class JFormFieldUiItems extends JFormFieldList {
         
         $query
             ->select('a.id AS value, a.title AS text')
-            ->from($db->quoteName("#__uideas_items") . " AS a")
+            ->from($db->quoteName("#__uideas_items", "a"))
             ->order("a.title ASC")
             ->where("a.published = 1");
         

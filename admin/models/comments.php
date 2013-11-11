@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -83,6 +79,7 @@ class UserIdeasModelComments extends JModelList {
         
         // Compile the store id.
         $id.= ':' . $this->getState('filter.search');
+        $id.= ':' . $this->getState('filter.state');
 
         return parent::getStoreId($id);
     }
@@ -110,9 +107,9 @@ class UserIdeasModelComments extends JModelList {
                 'c.name AS user'
             )
         );
-        $query->from($db->quoteName('#__uideas_comments'). ' AS a');
-        $query->innerJoin($db->quoteName('#__uideas_items'). ' AS b ON a.item_id = b.id');
-        $query->innerJoin($db->quoteName('#__users'). ' AS c ON a.user_id = c.id');
+        $query->from($db->quoteName('#__uideas_comments', 'a'));
+        $query->innerJoin($db->quoteName('#__uideas_items', 'b'). ' ON a.item_id = b.id');
+        $query->innerJoin($db->quoteName('#__users', 'c'). ' ON a.user_id = c.id');
 
         // Filter by state
         $state = $this->getState('filter.state');

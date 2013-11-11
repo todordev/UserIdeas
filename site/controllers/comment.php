@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  * UserIdeas is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -47,10 +47,10 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend {
 		// Check for valid user id
         $userId = JFactory::getUser()->id;
         if(!$userId) {
-            $responseData = array(
-                "view" => "items"
-            );
-            $this->displayError(JText::_('COM_USERIDEAS_ERROR_NOT_LOG_IN'), $responseData);
+            $redirectOptions = array(
+    		    "force_direction" => "index.php?option=com_users&view=login"
+    		);
+            $this->displayNotice(JText::_('COM_USERIDEAS_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
         }
         
@@ -62,9 +62,9 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend {
         $itemId  = JArrayHelper::getValue($data, "item_id");
         
         // Prepare response data
-        $responseData = array(
+        $redirectOptions = array(
             "view" => "details",
-            "id"   => $itemId
+            "id"   => $itemId,
         );
         
         $model   = $this->getModel();
@@ -83,18 +83,21 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend {
         // Check for validation errors.
         if($validData === false){
             
-            $responseData = array(
+            $redirectOptions = array(
                 "view" => "details",
                 "id"   => $itemId
             );
             
-            $this->displayNotice($form->getErrors(), $responseData);
+            $this->displayNotice($form->getErrors(), $redirectOptions);
             return;
         }
         
         try {
-            
+
             $model->save($validData);
+
+            jimport("userideas.item");
+            $item = UserIdeasItem::getInstance($itemId);
             
         } catch (Exception $e){
             
@@ -103,8 +106,11 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend {
             
         }
         
+        $redirectOptions = array(
+            "force_direction" => UserIdeasHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug())
+        );
         // Redirect to next page
-        $this->displayMessage(JText::_("COM_USERIDEAS_COMMENT_SENT_SUCCESSFULLY"), $responseData);
+        $this->displayMessage(JText::_("COM_USERIDEAS_COMMENT_SENT_SUCCESSFULLY"), $redirectOptions);
 			
     }
     

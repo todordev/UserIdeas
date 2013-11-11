@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -17,7 +13,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.categories');
 jimport('joomla.application.component.view');
 
-class UserIdeasViewDetails extends JView {
+class UserIdeasViewDetails extends JViewLegacy {
     
     protected $state      = null;
     protected $params     = null;
@@ -43,18 +39,18 @@ class UserIdeasViewDetails extends JView {
         $this->state      = $this->get('State');
         $this->item       = $this->get('Item');
         $this->params     = $this->state->get("params");
-        
+
         $this->category   = UserIdeasHelper::getCategory($this->item->catid);
         
         $this->userId     = JFactory::getUser()->id;
         
         // Get the model of the comments
         // that I will use to load all comments for this item.
-        $model            = JModel::getInstance("Comments", "UserIdeasModel");
+        $model            = JModelLegacy::getInstance("Comments", "UserIdeasModel");
         $this->comments   = $model->getItems();
         
         // Get the model of the comment
-        $modelForm        = JModel::getInstance("Comment", "UserIdeasModel");
+        $modelForm        = JModelLegacy::getInstance("Comment", "UserIdeasModel");
         
         // Validate the owner of the comment,
         // If someone wants to edit it.
@@ -76,14 +72,46 @@ class UserIdeasViewDetails extends JView {
         // Get comment form
         $this->form       = $modelForm->getForm();
         
-        $this->version    = new UserIdeasVersion();
+        // Get users IDs
+        $usersIds = array();
+        foreach($this->comments as $comment) {
+            $usersIds[] = $comment->user_id;
+        }
+        $usersIds[] = $this->item->user_id;
+        $usersIds   = array_unique($usersIds);
         
-        $this->socialPlatform   = $this->params->get("integration_social_platform");
+        // Prepare integration. Load avatars and profiles.
+        $this->prepareIntegration($usersIds, $this->params);
         
-        JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
+        // Prepare the link to the details page.
+        $this->item->link       = UserIdeasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug);
+        $this->item->text       = $this->item->description;
+        
+        // HTML Helpers
+		JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
+		JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
         
         $this->prepareDebugMode();
         $this->prepareDocument();
+        
+        // Events
+        JPluginHelper::importPlugin('content');
+        $dispatcher	       = JEventDispatcher::getInstance();
+        $this->item->event = new stdClass();
+        $offset            = 0;
+        
+        $dispatcher->trigger('onContentPrepare', array ('com_userideas.details', &$this->item, &$this->params, $offset));
+        
+        $results           = $dispatcher->trigger('onContentBeforeDisplay', array('com_userideas.details', &$this->item, &$this->params, $offset));
+        $this->item->event->beforeDisplayContent = trim(implode("\n", $results));
+        
+        $results           = $dispatcher->trigger('onContentAfterDisplay', array('com_userideas.details', &$this->item, &$this->params, $offset));
+        $this->item->event->onContentAfterDisplay = trim(implode("\n", $results));
+        
+        $this->item->description = $this->item->text;
+        unset($this->item->text);
+        
+        $this->version   = new UserIdeasVersion();
         
         parent::display($tpl);
     }
@@ -142,12 +170,14 @@ class UserIdeasViewDetails extends JView {
         $pathway->addItem(JText::_("COM_USERIDEAS_PATHWAY_FORM_TITLE"));
         
         // Styles
-        $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/site/bootstrap.min.css');
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
         // Scripts
         JHtml::_('behavior.keepalive');
-		        
+        
+        JHtml::_('jquery.framework');
+        JHtml::_('itprism.ui.pnotify');
+        
     }
 
     private function prepearePageTitle() {
@@ -210,6 +240,36 @@ class UserIdeasViewDetails extends JView {
 			$this->params->def('page_heading', $this->item->title);
 		}
 		
+    }
+    
+    /**
+     * Prepare social profiles.
+     *
+     * @param array     $usersIds
+     * @param JRegistry $params
+     *
+     * @todo Move it to a trait when traits become mass.
+     */
+    protected function prepareIntegration($usersIds, $params) {
+
+        // Get a social platform for integration
+        $socialPlatform         = $params->get("integration_social_platform");
+        $this->socialProfiles   = null;
+        
+        $this->avatarsSize      = $params->get("integration_avatars_size", 50);
+        $this->defaultAvatar    = $params->get("integration_avatars_default", "/media/com_crowdfunding/images/no-profile.png");
+        
+        // If there is now users, do not continue.
+        if(!$usersIds) {
+            return;
+        }
+        
+        // Load the class
+        if(!empty($socialPlatform)) {
+            jimport("itprism.integrate.profiles");
+            $this->socialProfiles   =  ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
+        }
+    
     }
     
 }

@@ -1,40 +1,43 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
 defined('_JEXEC') or die;
 ?>
-<div class="row-fluid">
 
+<?php 
+if($this->item->event->beforeDisplayContent) {
+	echo $this->item->event->beforeDisplayContent;
+}?>
+<div class="row-fluid">
 	<div class="span12">
-	
-		<div class="media uf-item">
-        	<div class="uf-vote pull-left">
-        		<div class="uf-vote-counter" id="uf-vote-counter-<?php echo $this->item->id; ?>"><?php echo $this->item->votes; ?></div>
-        		<a class="btn btn-small uf-btn-vote" href="javascript: void(0);" data-id="<?php echo $this->item->id; ?>"><?php echo JText::_("COM_USERIDEAS_VOTE"); ?></a>
+		<div class="media ui-item">
+        	<div class="ui-vote pull-left">
+        		<div class="ui-vote-counter" id="js-ui-vote-counter-<?php echo $this->item->id; ?>"><?php echo $this->item->votes; ?></div>
+        		<a class="btn btn-small ui-btn-vote js-ui-btn-vote" href="javascript: void(0);" data-id="<?php echo $this->item->id; ?>"><?php echo JText::_("COM_USERIDEAS_VOTE"); ?></a>
         	</div>
             <div class="media-body">
             	<h4 class="media-heading">
         	        <?php echo $this->escape($this->item->title);?>
         	    </h4>
-             	<p><?php echo $this->escape($this->item->description);?></p>
+             	<p><?php echo $this->item->description;?></p>
             </div>
             <div class="clearfix"></div>
             <div class="well well-small">
             	<div class="pull-left">
                 <?php 
-                $date = JHtml::_('date', $this->item->record_date, JText::_('DATE_FORMAT_LC3'));
-                echo JText::sprintf("COM_USERIDEAS_PUBLISHED_BY_ON", $this->item->name, $date);
+                
+                $profile = JHtml::_("userideas.profile", $this->socialProfiles, $this->item->user_id);
+                
+                echo JHtml::_("userideas.publishedBy", $this->item->name, $this->item->record_date, $profile);
+                echo JHtml::_("userideas.category", $this->item->category, $this->item->catslug);
+                echo JHtml::_("userideas.status", $this->item->status_name, $this->item->status_id);
                 ?>
                 </div>
                 <div class="pull-right">
@@ -47,54 +50,33 @@ defined('_JEXEC') or die;
                 </div>
             </div>
         </div>
-        
 	</div>
-    
 </div>
+
+<?php 
+if(!empty($this->item->event->onContentAfterDisplay)) {
+    echo $this->item->event->onContentAfterDisplay; 
+}?>
 
 <div class="row-fluid" id="comments">
 	<div class="span12">
-        <form action="<?php echo JRoute::_('index.php?option=com_userideas'); ?>" method="post" name="commentForm" id="ui-comment-form" class="form-validate">
-            
-            <?php echo $this->form->getLabel('comment'); ?>
-            <?php echo $this->form->getInput('comment'); ?>
-            
-            <?php echo $this->form->getInput('id'); ?>
-            <?php echo $this->form->getInput('item_id'); ?>
-            
-            <input type="hidden" name="task" value="comment.save" />
-            <?php echo JHtml::_('form.token'); ?>
-            
-            <div class="clearfix"></div>
-            <button type="submit" class="button button-large margin-tb-15px" <?php echo $this->disabledButton;?>>
-            	<i class="icon-ok icon-white"></i>
-                <?php echo JText::_("COM_USERIDEAS_SEND")?>
-            </button>
-        </form>
-        
-        <div class="clearfix"></div>
+	
         <h4><?php echo JText::_("COM_USERIDEAS_COMMENTS");?></h4>
         <hr />
         <?php foreach($this->comments as $comment) {?>
         <div class="media ui-comment">
         	<?php
         	    
-        	    // Check for integration
-        	    if(!$this->socialPlatform) {
-        	        $profile = "javascript: void(0);";
-        	        $avatar  = "media/com_userideas/images/no-profile.png";
-        	    } else {
-        	        $user    = JFactory::getUser($comment->user_id);
-            	    $profile = JHtml::_("userideas.profile", $this->socialPlatform, $user, "javascript: void(0);"); 
-                	$avatar  = JHtml::_("userideas.avatar", $this->socialPlatform, $user, "media/com_userideas/images/no-profile.png");
-        	    }
+        	    // Get the profile and avatar.
+        	    $profile = JHtml::_("userideas.profile", $this->socialProfiles, $comment->user_id, "javascript: void(0);");
+        	    $avatar  = JHtml::_("userideas.avatar", $this->socialProfiles, $comment->user_id, "media/com_userideas/images/no-profile.png", $options=array("avatar_size" => $this->avatarsSize));
         	    
             	if(!empty($avatar)) {?>
-            	<a class="pull-left" href="<?php echo $profile; ?>">
+            	<a class="pull-left" href="<?php echo $profile; ?>" rel="nofollow">
             	    <img class="media-object" src="<?php echo $avatar;?>" />
         		</a>
     		<?php } ?>
-            <div class="media-body">
+            <div class="media-body pull-left">
                 <div class="media">
                 	<?php echo $this->escape($comment->comment);?>
                 </div>
@@ -104,8 +86,8 @@ defined('_JEXEC') or die;
             <div class="well well-small">
             	<div class="pull-left">
                 <?php 
-                $date = JHtml::_('date', $comment->record_date, JText::_('DATE_FORMAT_LC3'));
-                echo JText::sprintf("COM_USERIDEAS_PUBLISHED_BY_ON", $comment->author, $date);
+                $profile = JHtml::_("userideas.profile", $this->socialProfiles, $comment->user_id);
+                echo JHtml::_("userideas.publishedBy", $comment->author, $comment->record_date, $profile);
                 ?>
                 </div>
                 <div class="pull-right">
@@ -120,6 +102,31 @@ defined('_JEXEC') or die;
             
         </div>
         <?php }?>
+        
+        <div class="clearfix"></div>
+        
+        <?php if(!$this->userId) {?>
+        <a href="<?php echo JRoute::_("index.php?option=com_users&view=login&return=".urlencode(base64_encode($this->item->link)));?>" class="btn margin-top-10" ><?php echo JText::_("COM_USERIDEAS_LOGIN_AND_COMMENT")?></a>
+        <?php } else {?>
+        <form action="<?php echo JRoute::_('index.php?option=com_userideas'); ?>" method="post" name="commentForm" id="ui-comment-form" class="form-validate">
+            
+            <?php echo $this->form->getLabel('comment'); ?>
+            <?php echo $this->form->getInput('comment'); ?>
+            
+            <?php echo $this->form->getInput('id'); ?>
+            <?php echo $this->form->getInput('item_id'); ?>
+            
+            <input type="hidden" name="task" value="comment.save" />
+            <?php echo JHtml::_('form.token'); ?>
+            
+            <div class="clearfix"></div>
+            <button type="submit" class="btn btn-primary" <?php echo $this->disabledButton;?>>
+            	<i class="icon-ok icon-white"></i>
+                <?php echo JText::_("COM_USERIDEAS_SUBMIT")?>
+            </button>
+        </form>
+        <?php } ?>
+        
     </div>
 </div>
-<?php echo $this->version->backlink;?>
+<?php echo $this->version->backlink; ?>

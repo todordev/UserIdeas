@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // No direct access
@@ -19,8 +15,8 @@ jimport('itprism.controller.form.backend');
 /**
  * UserIdeas item controller class.
  *
- * @package		ITPrism Components
- * @subpackage	UserIdeas
+ * @package		UserIdeas
+ * @subpackage	Component
  * @since		1.6
  */
 
@@ -33,14 +29,10 @@ class UserIdeasControllerItem extends ITPrismControllerFormBackend {
         
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
         
-        $app = JFactory::getApplication();
-        /** @var $app JAdministrator **/
-        
-        $msg     = "";
-        $data    = $app->input->post->get('jform', array(), 'array');
+        $data    = $this->input->post->get('jform', array(), 'array');
         $itemId  = JArrayHelper::getValue($data, "id");
         
-        $responseData = array(
+        $redirectOptions = array(
             "task"  => $this->getTask(),
             "id"	=> $itemId
         );
@@ -60,14 +52,14 @@ class UserIdeasControllerItem extends ITPrismControllerFormBackend {
         
         // Check for errors
         if($validData === false){
-            $this->displayNotice($form->getErrors(), $responseData);
+            $this->displayNotice($form->getErrors(), $redirectOptions);
             return ;
         }
             
         try {
             
             $itemId             = $model->save($validData);
-            $responseData["id"] = $itemId;
+            $redirectOptions["id"] = $itemId;
             
         }catch(Exception $e){
             
@@ -76,7 +68,7 @@ class UserIdeasControllerItem extends ITPrismControllerFormBackend {
         
         }
         
-        $this->displayMessage(JText::_('COM_USERIDEAS_ITEM_SAVED'), $responseData);
+        $this->displayMessage(JText::_('COM_USERIDEAS_ITEM_SAVED'), $redirectOptions);
     }
     
 }

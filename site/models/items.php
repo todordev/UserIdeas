@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  * UserIdeas is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -32,8 +32,9 @@ class UserIdeasModelItems extends JModelList {
         
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'id', 'a.id',
-            	'record_date', 'a.record_date'
+                'filter_status', 'a.status_id',
+                'filter_category', 'a.catid',
+                'filter_search', 'a.title',
             );
         }
 
@@ -55,17 +56,27 @@ class UserIdeasModelItems extends JModelList {
         
         $app       = JFactory::getApplication();
         /** @var $app JSite **/
-
-        $value = $app->getUserStateFromRequest($this->option.".items.catid", "id", 0, "int");
-        $this->setState($this->getName().'.id', $value);
         
         // Load the component parameters.
         $params = $app->getParams($this->option);
         $this->setState('params', $params);
 
+        // Get category id
+        $value = $app->input->get("filter_search");
+        $this->setState('filter.search', $value);
+        
+        // Get category id
+        $value = $app->input->getInt("filter_category");
+        $this->setState('filter.category_id', $value);
+        
+        // Get status id
+        $value = $app->input->getInt("filter_status");
+        $this->setState('filter.status_id', $value);
+        
         // Ordering
-        $value = $params->get("items_ordering", 0);
-        $this->prepareOrderingState($value);
+        $order    = $params->get("items_ordering", 0);
+        $orderDir = $params->get("items_ordering_direction", "ASC");
+        $this->prepareOrderingState($order, $orderDir);
         
         // Pagination
         $value = $params->get("items_display_results_number", 0);
@@ -93,7 +104,9 @@ class UserIdeasModelItems extends JModelList {
     protected function getStoreId($id = '') {
         
         // Compile the store id.
-        $id .= ':' . $this->getState($this->getName().'.id');
+        $id .= ':' . $this->getState('filter.category_id');
+        $id .= ':' . $this->getState('filter.status_id');
+        $id .= ':' . $this->getState('filter.search');
 
         return parent::getStoreId($id);
     }
@@ -115,17 +128,39 @@ class UserIdeasModelItems extends JModelList {
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, ' .
+                'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, ' .
                 $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug, " .
-                'b.name'
+                'b.name, ' .
+                'c.title AS category, ' .
+                $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug, " .
+                'd.name AS status_name'
             )
         );
-        $query->from($db->quoteName('#__uideas_items') .' AS a');
-        $query->innerJoin($db->quoteName('#__users') .' AS b ON a.user_id = b.id');
+        $query->from($db->quoteName('#__uideas_items', "a"));
+        $query->innerJoin($db->quoteName('#__users', "b") .' ON a.user_id = b.id');
+        $query->leftJoin($db->quoteName('#__categories', "c") .' ON a.catid = c.id');
+        $query->leftJoin($db->quoteName('#__uideas_statuses', "d") .' ON a.status_id = d.id');
 
-        // Category filter
-        $categoryId = $this->getState($this->getName().".id");
-        $query->where('a.catid = '. (int)$categoryId);
+        // Filter by category
+        $categoryId = $this->getState("filter.category_id");
+        if(!empty($categoryId)) {
+            $query->where('a.catid = '. (int)$categoryId);
+        }
+        
+        // Filter by status
+        $statusId = $this->getState("filter.status_id");
+        if(!empty($statusId)) {
+            $query->where('a.status_id = '. (int)$statusId);
+        }
+        
+        // Filter by search in title
+        $search = $this->getState('filter.search');
+        if (!empty($search)) {
+            $escaped = $db->escape($search, true);
+            $quoted  = $db->quote("%" . $escaped . "%", false);
+            $query->where('a.title LIKE '.$quoted);
+        }
+        
         $query->where('a.published = 1');
         
         // Add the list ordering clause.
@@ -137,14 +172,14 @@ class UserIdeasModelItems extends JModelList {
     
 	/**
      * 
-     * Prepare a string used for ordering results
-     * @param integer $filterOrdering
+     * Prepare a string used for ordering results.
+     * 
+     * @param integer $order
+     * @param integer $orderDir
      */
-    protected function prepareOrderingState($filterOrdering) {
+    protected function prepareOrderingState($order, $orderDir) {
         
-        $listOrder = 'ASC';
-        
-        switch($filterOrdering) {
+        switch($order) {
             case 1:
                 $orderCol  = "a.title";
                 break;
@@ -163,10 +198,10 @@ class UserIdeasModelItems extends JModelList {
         $this->setState('list.ordering', $orderCol);
         
         // Set the type of ordering
-        if(!in_array(strtoupper($listOrder), array('ASC', 'DESC'))){
+        if(!in_array(strtoupper($orderDir), array('ASC', 'DESC'))){
             $listOrder = 'ASC';
         }
-        $this->setState('list.direction', $listOrder);
+        $this->setState('list.direction', $orderDir);
         
     }
     
@@ -187,7 +222,7 @@ class UserIdeasModelItems extends JModelList {
 
         $query
             ->select("a.item_id, COUNT(*) AS number")
-            ->from($db->quoteName('#__uideas_comments') .' AS a')
+            ->from($db->quoteName('#__uideas_comments', 'a'))
             ->group("a.item_id");
 
         $db->setQuery($query);

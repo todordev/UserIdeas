@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -16,7 +12,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class UserIdeasViewItem extends JView {
+class UserIdeasViewItem extends JViewLegacy {
     
     protected $state;
     protected $item;
@@ -58,20 +54,16 @@ class UserIdeasViewItem extends JView {
         $this->documentTitle = $isNew ? JText::_('COM_USERIDEAS_ADD_ITEM')
 		                              : JText::_('COM_USERIDEAS_EDIT_ITEM');
 		                             
-        if(!$isNew) {
-            JToolBarHelper::title($this->documentTitle, 'itp-edit-item');
-        } else {
-            JToolBarHelper::title($this->documentTitle, 'itp-add-item');
-        }
+        JToolbarHelper::title($this->documentTitle);
 		                             
-        JToolBarHelper::apply('item.apply');
-        JToolBarHelper::save2new('item.save2new');
-        JToolBarHelper::save('item.save');
+        JToolbarHelper::apply('item.apply');
+        JToolbarHelper::save2new('item.save2new');
+        JToolbarHelper::save('item.save');
     
         if(!$isNew){
-            JToolBarHelper::cancel('item.cancel', 'JTOOLBAR_CANCEL');
+            JToolbarHelper::cancel('item.cancel', 'JTOOLBAR_CANCEL');
         }else{
-            JToolBarHelper::cancel('item.cancel', 'JTOOLBAR_CLOSE');
+            JToolbarHelper::cancel('item.cancel', 'JTOOLBAR_CLOSE');
         }
         
     }
@@ -87,6 +79,8 @@ class UserIdeasViewItem extends JView {
 		// Add behaviors
         JHtml::_('behavior.tooltip');
         JHtml::_('behavior.formvalidation');
+        
+        JHtml::_('formbehavior.chosen', 'select');
         
 		// Add scripts
 		$this->document->addScript(JURI::root() . 'media/'.$this->option.'/js/admin/'.JString::strtolower($this->getName()).'.js');

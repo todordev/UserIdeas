@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -60,8 +56,17 @@ class UserIdeasModelItems extends JModelList {
         $value = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
         $this->setState('filter.search', $value);
 
+        // Get filter state
         $value = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state', '', 'string');
         $this->setState('filter.state', $value);
+        
+        // Get filter category
+        $value = $this->getUserStateFromRequest($this->context.'.filter.category', 'filter_category', '', 'string');
+        $this->setState('filter.category', $value);
+        
+        // Get filter status
+        $value = $this->getUserStateFromRequest($this->context.'.filter.status', 'filter_status', '', 'string');
+        $this->setState('filter.status', $value);
 
         // Load the component parameters.
         $params = JComponentHelper::getParams($this->option);
@@ -86,6 +91,8 @@ class UserIdeasModelItems extends JModelList {
         
         // Compile the store id.
         $id.= ':' . $this->getState('filter.search');
+        $id.= ':' . $this->getState('filter.category');
+        $id.= ':' . $this->getState('filter.status');
         $id.= ':' . $this->getState('filter.state');
 
         return parent::getStoreId($id);
@@ -102,6 +109,7 @@ class UserIdeasModelItems extends JModelList {
         // Create a new query object.
         $db     = $this->getDbo();
         /** @var $db JDatabaseMySQLi **/
+        
         $query  = $db->getQuery(true);
 
         // Select the required fields from the table.
@@ -110,13 +118,27 @@ class UserIdeasModelItems extends JModelList {
                 'list.select',
                 'a.id, a.title, a.votes, a.record_date, a.catid, a.ordering, a.published, '.
             	'b.name AS user, '.
-            	'c.title AS category '
+            	'c.title AS category, ' .
+            	'd.name AS status '
             )
         );
-        $query->from($db->quoteName('#__uideas_items').' AS a');
-        $query->innerJoin($db->quoteName('#__users').' AS b ON a.user_id = b.id');
-        $query->innerJoin($db->quoteName('#__categories').' AS c ON a.catid = c.id');
+        $query->from($db->quoteName('#__uideas_items', 'a'));
+        $query->innerJoin($db->quoteName('#__users', 'b').' ON a.user_id = b.id');
+        $query->leftJoin($db->quoteName('#__categories', 'c').' ON a.catid = c.id');
+        $query->leftJoin($db->quoteName('#__uideas_statuses', 'd').' ON a.status_id = d.id');
 
+        // Filter by category
+        $categoryId = $this->getState('filter.category');
+        if (!empty($categoryId)) {
+            $query->where('a.catid = '.(int)$categoryId);
+        }
+        
+        // Filter by status
+        $statusId = $this->getState("filter.status");
+        if (!empty($statusId)) {
+            $query->where('a.status_id = '.(int)$statusId);
+        }
+        
         // Filter by state
         $state = $this->getState('filter.state');
         if (is_numeric($state)) {
@@ -124,7 +146,7 @@ class UserIdeasModelItems extends JModelList {
         } else if ($state === '') {
             $query->where('(a.published IN (0, 1))');
         }
-
+        
         // Filter by search in title
         $search = $this->getState('filter.search');
         if (!empty($search)) {
@@ -139,8 +161,6 @@ class UserIdeasModelItems extends JModelList {
             }
         }
 
-        $query->where('c.extension = '.$db->quote("com_userideas"));
-        
         // Add the list ordering clause.
         $orderString = $this->getOrderString();
         $query->order($db->escape($orderString));

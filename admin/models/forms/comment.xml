@@ -2,17 +2,15 @@
 <form>
     <fieldset name="comment">
 
-        <field name="comment" type="textarea" class="textarea"
+        <field name="comment" type="textarea" class="span12"
             label="COM_USERIDEAS_COMMENT" 
-            filter="trim"
-            rows="5" 
+            rows="10" 
             required="true"
         />
 
-        <field name="published" type="list" 
+        <field name="published" type="radio" class="btn-group" 
             label="JSTATUS" 
             description="JFIELD_PUBLISHED_DESC" 
-            class="inputbox" 
             filter="intval" 
             size="1" 
             default="1"

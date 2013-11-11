@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -17,6 +13,14 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.modeladmin');
 
 class UserIdeasModelItem extends JModelAdmin {
+    
+    /**
+     * The type alias for this content type (for example, 'com_content.article').
+     *
+     * @var      string
+     * @since    3.2
+     */
+    public $typeAlias = 'com_userideas.item';
     
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -79,6 +83,7 @@ class UserIdeasModelItem extends JModelAdmin {
         $title        = JArrayHelper::getValue($data, "title");
         $alias        = JArrayHelper::getValue($data, "alias");
         $description  = JArrayHelper::getValue($data, "description");
+        $statusId     = JArrayHelper::getValue($data, "status_id");
         $catid        = JArrayHelper::getValue($data, "catid");
         $userId       = JArrayHelper::getValue($data, "user_id");
         $published    = JArrayHelper::getValue($data, "published");
@@ -94,6 +99,7 @@ class UserIdeasModelItem extends JModelAdmin {
         $row->set("title",        $title);
         $row->set("alias",        $alias);
         $row->set("description",  $description);
+        $row->set("status_id",    $statusId);
         $row->set("catid",        $catid);
         $row->set("user_id",      $userId);
         $row->set("published",    $published);
@@ -144,4 +150,17 @@ class UserIdeasModelItem extends JModelAdmin {
         
 	}
 	
+	/**
+	 * A protected method to get a set of ordering conditions.
+	 *
+	 * @param	object	A record object.
+	 *
+	 * @return	array	An array of conditions to add to add to ordering queries.
+	 * @since	1.6
+	 */
+	protected function getReorderConditions($table) {
+	    $condition   = array();
+	    $condition[] = 'catid = '.(int) $table->catid;
+	    return $condition;
+	}
 }

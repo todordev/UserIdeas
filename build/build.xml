@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="userideas" default="build" basedir=".">
-	<description>User Ideas Ant Build File</description>
+	<description>User Ideas PRO Ant Build File</description>
 
 	<!-- load variables from config file -->
 	<property name="cfg.configFile" location="antconfig.txt" />
@@ -51,9 +51,11 @@
 		<mkdir dir="${cfg.pkgDir}/plugins" />
 		
 		<!-- plugins -->
+	    <mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_userideasadminmail" />
+        <mkdir dir="${cfg.pkgDir}/plugins/content/plg_content_userideasadminmail/language" />
+	    
 		<mkdir dir="${cfg.pkgDir}/plugins/system/plg_system_userideasvote" />
 		<mkdir dir="${cfg.pkgDir}/plugins/system/plg_system_userideasvote/language" />
-		
 		<mkdir dir="${cfg.pkgDir}/plugins/userideas/plg_userideas_vote" />
 		<mkdir dir="${cfg.pkgDir}/plugins/userideas/plg_userideas_vote/language" />
 		
@@ -68,6 +70,9 @@
 			<exclude name="**/install.php" />
 		</fileset>
 	</copy>
+    
+    <!-- copy install helper of the componet -->
+    <copy file="${cfg.adminSourceDir}/${cfg.comName}/helpers/install.php" todir="${cfg.adminDestDir}/helpers/" />
 
 	<!-- copy site files of the componet -->
 	<copy todir="${cfg.siteDestDir}">
@@ -108,6 +113,22 @@
     </copy>
 
 	<!-- COPY PLUGINS -->
+    
+    <!-- CONTENT/USERIDEASADMINMAIL -->
+    
+    <!-- copy plugins files of content/userideasadminmail -->
+    <copy todir="${cfg.pluginsDestDir}/content/plg_content_userideasadminmail">
+        <fileset dir="${cfg.pluginsSourceDir}/content/userideasadminmail">
+            <include name="**/*" />
+        </fileset>
+    </copy>
+    
+    <!-- copy plugin language files of content/userideasadminmail -->
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_content_userideasadminmail.ini" todir="${cfg.pluginsDestDir}/content/plg_content_userideasadminmail/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/en-GB.plg_content_userideasadminmail.sys.ini" todir="${cfg.pluginsDestDir}/content/plg_content_userideasadminmail/language/en-GB" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_userideasadminmail/language" />
+    <copy file="${cfg.adminLanguageSourceDir}/index.html" todir="${cfg.pluginsDestDir}/content/plg_content_userideasadminmail/language/en-GB/" />
+
 	
 	<!-- SYSTEM/USERIDEASVOTE -->
 	
@@ -152,6 +173,7 @@
 		
 		<!-- build plugins -->
 		<zip destfile="${cfg.pkgDir}/packages/plg_system_userideasvote.zip" basedir="${cfg.pluginsDestDir}/system/plg_system_userideasvote" />
+		<zip destfile="${cfg.pkgDir}/packages/plg_content_userideasadminmail.zip" basedir="${cfg.pluginsDestDir}/content/plg_content_userideasadminmail" />
 		<zip destfile="${cfg.pkgDir}/packages/plg_userideas_vote.zip" basedir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote" />
 		
 		<!-- build package -->

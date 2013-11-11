@@ -1,36 +1,96 @@
 <?php
 /**
-* @package      ITPrism Components
-* @subpackage   UserIdeas
-* @author       Todor Iliev
-* @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
-* @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
-* UserIdeas is free software. This vpversion may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*/
+ * @package      UserIdeas
+ * @subpackage   Library
+ * @author       Todor Iliev
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
 
 defined('JPATH_PLATFORM') or die;
 
 JLoader::register("UserIdeasTableItem", JPATH_ADMINISTRATOR .DIRECTORY_SEPARATOR."components".DIRECTORY_SEPARATOR."com_userideas".DIRECTORY_SEPARATOR."tables".DIRECTORY_SEPARATOR."item.php");
+JLoader::register("UserIdeasInterfaceTable", JPATH_LIBRARIES .DIRECTORY_SEPARATOR."userideas".DIRECTORY_SEPARATOR."interface".DIRECTORY_SEPARATOR."table.php");
 
-class UserIdeasItem extends UserIdeasTableItem {
+class UserIdeasItem implements UserIdeasInterfaceTable {
     
-    public function __construct( $db ) {
-        parent::__construct( $db );
+    protected $table;
+    
+    protected static $instances = array();
+    
+    public function __construct($id) {
+        
+        $this->table = new UserIdeasTableItem(JFactory::getDbo());
+        
+        if(!empty($id)) {
+            $this->load($id);
+        }
+    }
+    
+    /**
+     *
+     * Create an instance of the object and load data.
+     *
+     * <code>
+     *
+     * $itemId  = 1;
+     * $item    = UserIdeasItem::getInstance($itemId);
+     *
+     * </code>
+     *
+     * @param number $id
+     *
+     * @return null|UserIdeasItem
+     */
+    public static function getInstance($id)  {
+    
+        if (empty(self::$instances[$id])){
+            $item = new UserIdeasItem($id);
+            self::$instances[$id] = $item;
+        }
+    
+        return self::$instances[$id];
     }
 
+    public function load($keys, $reset = true) {
+        $this->table->load($keys, $reset);
+    }
+    
+    public function bind($src, $ignore = array()) {
+        $this->table->bind($src, $ignore);
+    }
+    
+    public function store($updateNulls = false) {
+        $this->table->store($updateNulls);
+    }
+    
 	/**
      * Increase number of votes.
-     * @param float $value
+     * @param integer $value
      */
     public function vote($value = 1) {
         
-        $this->votes += (int)$value;
+        $this->table->votes += (int)$value;
         $this->store();
         
     }
+    
+    /**
+     * Decrease number of votes.
+     * 
+     * @param integer $value
+     */
+    public function decreaseVote($value) {
+    
+        $this->table->votes -= (int)$value;
+        if($this->table->votes < 0) {
+            $this->table->votes = 0;
+        }
+        
+        $this->store();
+    
+    }
+    
     
     /**
      * Check the owner of the item.
@@ -40,7 +100,7 @@ class UserIdeasItem extends UserIdeasTableItem {
      */
     public function isValid($itemId = null, $userId = null) {
         
-        if( ($this->id != $itemId) OR ($this->user_id != $userId) ) {
+        if( ($this->table->id != $itemId) OR ($this->table->user_id != $userId) ) {
             return false;
         }  
         
@@ -48,4 +108,23 @@ class UserIdeasItem extends UserIdeasTableItem {
         
     }
     
+    public function getId() {
+        return $this->table->id;
+    }
+    
+    public function getVotes() {
+        return (int)$this->table->votes;
+    }
+    
+    public function getSlug() {
+       return $this->table->getSlug(); 
+    }
+    
+    public function getCatSlug() {
+       return $this->table->getCatSlug(); 
+    }
+    
+    public function getCategoryName() {
+       return $this->table->getCategoryName(); 
+    }
 }

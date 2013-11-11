@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  * UserIdeas is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -71,6 +71,7 @@ class UserIdeasModelForm extends JModelForm {
      * @since	1.6
      */
     public function getForm($data = array(), $loadData = true) {
+        
         // Get the form.
         $form = $this->loadForm($this->option.'.form', 'form', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) {
@@ -106,6 +107,7 @@ class UserIdeasModelForm extends JModelForm {
 		        $data        = new JObject();
 		        $data->catid = (int)$catId;
 		    }
+		    
 		}
 
 		return $data;
@@ -177,6 +179,12 @@ class UserIdeasModelForm extends JModelForm {
         $row = $this->getTable();
         $row->load($keys);
         
+        // If there is an id, the item is not new
+        $isNew     = true;
+        if(!empty($row->id)) {
+            $isNew = false;
+        }
+        
         $row->set("title",         $title);
         $row->set("description",   $description);
         $row->set("catid",         $categoryId);
@@ -186,7 +194,17 @@ class UserIdeasModelForm extends JModelForm {
             $recordDate  = new JDate();
             $row->set("record_date",   $recordDate->toSql());
             $row->set("user_id",       $userId);
+
+            // Set status
+            jimport("userideas.statuses");
+            $statuses     = UserIdeasStatuses::getInstance();
+            $defultStatus = $statuses->getDefault();
             
+            if(!empty($defultStatus->id)) {
+                $row->set("status_id", (int)$defultStatus->id);
+            }
+            
+            // Auto publishing
             $params    = JComponentHelper::getParams($this->option);
             $published = $params->get("security_item_auto_publish", 0);
             $row->set("published", $published);
@@ -195,6 +213,20 @@ class UserIdeasModelForm extends JModelForm {
         $this->prepareTable($row);
         
         $row->store();
+        
+        // Trigger the event
+        
+        $context = $this->option.'.'.$this->getName();
+        
+        // Include the content plugins.
+        $dispatcher = JDispatcher::getInstance();
+        JPluginHelper::importPlugin('content');
+         
+        // Trigger the onContentAfterSave event.
+        $results    = $dispatcher->trigger("onContentAfterSave", array($context, &$row, $isNew));
+        if (in_array(false, $results, true)) {
+            throw new Exception(JText::_("COM_USERIDEAS_ERROR_DURING_ITEM_POSTING_PROCESS"), ITPrismErrors::CODE_WARNING);
+        }
         
         return $row->id;
         
@@ -214,8 +246,8 @@ class UserIdeasModelForm extends JModelForm {
 				$db     = JFactory::getDbo();
 				$query  = $db->getQuery(true);
 				$query
-				    ->select("MAX(ordering)")
-				    ->from("#__uideas_items");
+				    ->select("MAX(a.ordering)")
+				    ->from($db->quoteName("#__uideas_items", "a"));
 				
 			    $db->setQuery($query, 0, 1);
 				$max   = $db->loadResult();

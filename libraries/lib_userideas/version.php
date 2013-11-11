@@ -1,24 +1,20 @@
 <?php
 /**
-* @package      ITPrism Components
-* @subpackage   UserIdeas
-* @author       Todor Iliev
-* @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
-* @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
-* UserIdeas is free software. This vpversion may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*/
+ * @package      UserIdeas
+ * @subpackage   Library
+ * @author       Todor Iliev
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
 
-defined('JPATH_BASE') or die;
+defined('JPATH_PLATFORM') or die;
 
 /**
- * Version information
+ * Version information.
  *
- * @package 	 ITPrism Components
- * @subpackage   UserIdeas
-  */
+ * @package 	 UserIdeas
+ * @subpackage   Library
+ */
 class UserIdeasVersion {
 	
     /**
@@ -40,7 +36,7 @@ class UserIdeasVersion {
      * 
      * @var integer
      */
-    public $devLevel  = '1';
+    public $devLevel  = '3';
     
     /**
      * Release Type
@@ -61,7 +57,7 @@ class UserIdeasVersion {
      * 
      * @var string
      */
-    public $releaseDate= '31-May-2013';
+    public $releaseDate= '09-November-2013';
     
     /**
      * License
@@ -75,21 +71,21 @@ class UserIdeasVersion {
      * 
      * @var string
      */
-    public $copyright  = '&copy; 2010 ITPrism. All rights reserved.';
+    public $copyright  = '&copy; 2013 ITPrism. All rights reserved.';
     
     /**
      * URL
      * 
      * @var string
      */
-    public $url        = '<a href="#" target="_blank">Joomla! User Ideas</a>';
+    public $url        = '<a href="http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions" target="_blank">User Ideas</a>';
 
     /**
      * Backlink
      * 
      * @var string
      */
-    public $backlink   = '<div style="width:100%; text-align: left; font-size: xx-small; margin-top: 10px;"><a href="#" target="_blank">Joomla! User Ideas</a></div>';
+    public $backlink   = '<div style="width:100%; text-align: left; font-size: xx-small; margin-top: 10px;"><a href="http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions" target="_blank">Joomla! User Ideas</a></div>';
     
     /**
      * Developer

@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 defined('_JEXEC') or die;
@@ -72,17 +68,20 @@ function UserIdeasBuildRoute(&$query){
 	       case "details":
 	            
  	            if(isset($query['catid'])) {
-//	                $catId      = $query['catid'];
-//    	            UserIdeasHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
+	                $catId      = $query['catid'];
+   	                UserIdeasHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
     	            unset($query['catid']);
 	            }
     	        
-    	        $id         = $query['id'];
-			    $segments[] = $id;
-				
+			    $segments[] = $query['id'];
 				unset($query['id']);
 	            
-    	        break;
+	        break;
+    	        
+	        case "category":
+	            $segments[] = $query['id'];
+	            unset($query['id']);
+            break;
 	        
     	}
         
@@ -129,12 +128,41 @@ function UserIdeasParseRoute($segments){
         return $vars;
     } 
     
-    // Details 
+    // COUNT == 1
+    
+    // Category
 	if($count == 1) { 
-	    $vars['view']   = 'details';
-		$vars['id']     = (int)$segments[0];
-		return $vars;
+	    
+	    list($id, $alias) = explode(':', $segments[0], 2);
+	    
+	    // first we check if it is a category
+	    $category = JCategories::getInstance('UserIdeas')->get($id);
+
+	    if ($category AND ( strcmp($category->alias, $alias) == 0) ) { // Category
+	        
+	        $vars['view'] = 'category';
+	        $vars['id']   = $id;
+	        
+	        return $vars;
+	        
+	    } else {
+	        
+	        $idea = UserIdeasHelperRoute::getItem($id);
+			if ($idea) {
+				if ($idea->alias == $alias) {
+					$vars['view']  = 'details';
+					$vars['catid'] = (int)$idea->catid;
+					$vars['id']    = (int)$id;
+
+					return $vars;
+				}
+			}
+			
+		}
+	    
 	}
+	
+	// COUNT => 2
 	
     // If there was more than one segment, then we can determine where the URL points to
 	// because the first segment will have the target item id prepended to it.  If the
@@ -147,7 +175,7 @@ function UserIdeasParseRoute($segments){
 		$vars['catid']  = $catId;
 		$vars['id']     = $itemId;
 	} else {
-		$vars['view']   = 'items';
+		$vars['view']   = 'category';
 		$vars['id']     = $catId;
 	}
 

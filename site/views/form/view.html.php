@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -17,7 +13,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.categories');
 jimport('joomla.application.component.view');
 
-class UserIdeasViewForm extends JView {
+class UserIdeasViewForm extends JViewLegacy {
     
     protected $state      = null;
     protected $form       = null;
@@ -50,7 +46,6 @@ class UserIdeasViewForm extends JView {
 		    $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_NOT_LOG_IN"), "notice");
             $app->redirect(JRoute::_('index.php?option=com_users&view=login', false));
             return; 
-            
         }
         
         $itemId = $this->state->get("form.id");
@@ -59,11 +54,9 @@ class UserIdeasViewForm extends JView {
             $db   = JFactory::getDbo();
             
             jimport("userideas.item");
-            $item = new UserIdeasItem($db);
-            $item->load($itemId);
+            $item = new UserIdeasItem($itemId);
             
             if(!$item->isValid($itemId, $userId)) {
-                
     		    $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_INVALID_ITEM"), "notice");
                 $app->redirect( JRoute::_('index.php', false) );
                 return; 
@@ -71,10 +64,10 @@ class UserIdeasViewForm extends JView {
             
         }
         
-        $this->version    = new UserIdeasVersion();
-        
         $this->prepareDebugMode();
         $this->prepareDocument();
+        
+        $this->version   = new UserIdeasVersion();
         
         parent::display($tpl);
     }
@@ -149,12 +142,16 @@ class UserIdeasViewForm extends JView {
         $pathway->addItem(JText::_("COM_USERIDEAS_PATHWAY_FORM_TITLE"));
         
         // Styles
-        $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/site/bootstrap.min.css');
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
         
         // Scripts
+        JHtml::_('bootstrap.framework');
+        JHtml::_('bootstrap.tooltip');
+        JHtml::_('formbehavior.chosen', 'select');
+        
         JHtml::_('behavior.keepalive');
-		        
+        JHtml::_('behavior.formvalidation');
+        
     }
 
 }

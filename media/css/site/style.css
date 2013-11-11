@@ -1,25 +1,28 @@
 @CHARSET "UTF-8";
 
-.uf-item {
+.ui-item {
 	border: thin solid #c1c1c1;
 	padding: 3px;
 	background-color: #f9f9f9;
+	margin-top: 10px;
 }
 
-.uf-vote {
+.ui-vote {
 	width: auto;
 	/*height: 80px;
 	 border: thin solid #c1c1c1 ; */
+	 margin: 0px 10px 10px 0;
+	 
 }
 
-.uf-btn-vote {
+.ui-btn-vote {
 	text-transform: uppercase;
 	margin: 5px 3px 5px 3px;
 	font-weight: bold;
 	
 }
 
-.uf-vote-counter {
+.ui-vote-counter {
 	text-align: center;
 	vertical-align: middle;
 	font-size: xx-large;
@@ -33,4 +36,25 @@
 	background-color: #fbfced;
 	border-radius: 3px;
 	padding: 5px;
+	margin-top: 10px;
+}
+
+.ui-comment .media-body {
+	padding-left: 10px;
+}
+
+.ui-comment .well {
+	margin:5px 0 !important;
+}
+
+.margin-top-10 {
+	margin-top: 10px;
+}
+
+.ui-status-label {
+	margin-left: 10px;
+}
+
+.ui-category-label {
+	margin: 0 10px;
 }

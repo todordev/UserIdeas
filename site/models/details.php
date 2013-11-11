@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  * UserIdeas is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -71,21 +71,24 @@ class UserIdeasModelDetails extends JModelItem {
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		$query
-		    ->select(
-		    	"a.id, a.title, a.description, a.votes, " .
-		        "a.record_date, a.published, a.user_id, a.catid, " .
-		        $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug, " .
-		        "b.name" 
-		    )
-		    ->from($db->quoteName("#__uideas_items") . " AS a")
-		    ->innerJoin($db->quoteName("#__users") . " AS b")
-		    ->where("a.id = " .(int)$id);
+		$query->select(
+            'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, ' . 
+            $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug, " . 
+            'b.name, ' . 'c.title AS category, ' . 
+            $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug, " . 
+            'd.name AS status_name'
+        );
+        
+        $query->from($db->quoteName('#__uideas_items', "a"));
+        $query->innerJoin($db->quoteName('#__users', "b") .' ON a.user_id = b.id');
+        $query->leftJoin($db->quoteName('#__categories', "c") .' ON a.catid = c.id');
+        $query->leftJoin($db->quoteName('#__uideas_statuses', "d") .' ON a.status_id = d.id');
+		$query->where("a.id = " .(int)$id);
 		    
 		$db->setQuery($query);
 		
 		$this->item = $db->loadObject();    
-//	    var_dump($this->item);exit;
+//	    
 		return $this->item;
 	}
 }

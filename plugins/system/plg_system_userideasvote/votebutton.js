@@ -1,10 +1,10 @@
 jQuery(document).ready(function() {
 
-	jQuery(".uf-btn-vote").on("click", function(event){
+	jQuery(".js-ui-btn-vote").on("click", function(event){
 		event.preventDefault();
 				
 		var id  = jQuery(this).data("id");
-		var url = "index.php?option=com_userideas&task=item.vote&format=raw";
+		var url = "/index.php?option=com_userideas&task=item.vote&format=raw";
 		
 		var fields = {
 			id: id
@@ -13,21 +13,20 @@ jQuery(document).ready(function() {
 		jQuery.ajax({
 			type: "POST",
 			url:  url,
-			data: fields
+			data: fields,
+			dataType: "text json"
 		}).done(function( response ) {
 			
-			var response = jQuery.parseJSON(response);
-			
 			if(response.success) {
-				UserIdeasHelper.displayMessageSuccess(response.title, response.text);
-				jQuery("#uf-vote-counter-"+id).html(response.data.votes);
+				
+				ITPrismUIHelper.displayMessageSuccess(response.title, response.text);
+				jQuery("#js-ui-vote-counter-"+id).html(response.data.votes);
 				
 			} else {
-				UserIdeasHelper.displayMessageFailure(response.title, response.text);
+				ITPrismUIHelper.displayMessageFailure(response.title, response.text);
 			}
 			
 		});
-		
 		
 	});
 });

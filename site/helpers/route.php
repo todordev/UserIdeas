@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  * UserIdeas is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -54,7 +54,8 @@ abstract class UserIdeasHelperRoute {
 	     */
 		$needles = array(
 			'details'   => array((int)$id),
-		    'items'     => array((int)$catid),
+		    'category'  => array((int)$catid),
+		    'items'     => array(0),
 		);
 
 		//Create the link
@@ -64,7 +65,8 @@ abstract class UserIdeasHelperRoute {
 			$category   = $categories->get($catid);
 
 			if($category) {
-				$needles['items']   = array_reverse($category->getPath());
+				$needles['category']   = array_reverse($category->getPath());
+				$needles['items']      = array_reverse($category->getPath());
 				$link .= '&catid='.$catid;
 			}
 		}
@@ -103,8 +105,8 @@ abstract class UserIdeasHelperRoute {
 	}
 
 	/**
+	 * Routing a link for category or categories view.
 	 * 
-	 * Routing a link for category or categories view
 	 * @param integer $catid
 	 */
 	public static function getCategoryRoute($catid) {
@@ -113,7 +115,7 @@ abstract class UserIdeasHelperRoute {
 			$id       = $catid->id;
 			$category = $catid;
 		} else {
-			$id = (int) $catid;
+			$id       = (int)$catid;
 			$category = JCategories::getInstance('UserIdeas')->get($id);
 		}
 
@@ -131,14 +133,14 @@ abstract class UserIdeasHelperRoute {
 			} else { // Continue to search and deep inside
 			    
 				//Create the link
-				$link = 'index.php?option=com_userideas&view=category&id='.$id;
+				$link = 'index.php?option=com_userideas&view=category&id='.$catid;
 
 				if ($category) {
 					$catids  = array_reverse($category->getPath());
 					
 					$needles = array(
-						'category'   => $catids,
-						'categories' => $catids
+						'category'    => $catids,
+						'categories'  => $catids
 					);
 					
 					// Looking for menu item (Itemid)
@@ -150,8 +152,36 @@ abstract class UserIdeasHelperRoute {
 				}
 			}
 		}
-
+		
 		return $link;
+	}
+	
+	/**
+	 * Routing a link for items view.
+	 *
+	 * @param integer $catid
+	 */
+	public static function getItemsRoute($statusId = 0) {
+	
+	    $needles = array(
+            'items' => array(0),
+	    );
+	
+	    // Get menu item ( Itemid )
+	    if ($item = self::_findItem($needles)) {
+	        $link = 'index.php?Itemid='.$item;
+	    } else { // Continue to search and deep inside
+	
+	        //Create the link
+	        $link = 'index.php?option=com_userideas&view=items';
+	         
+	    }
+	     
+	    if(!empty($statusId)) {
+	       $link .= "&filter_status=".(int)$statusId;
+	    }
+	
+	    return $link;
 	}
 	
 	protected static function _findItem($needles = null) {
@@ -248,4 +278,31 @@ abstract class UserIdeasHelperRoute {
 		}
 	}
 	
+	/**
+	 *
+	 * Load an object that contains a data about item.
+	 * We use this method in the router "UserIdeasParseRoute".
+	 *
+	 * @param integer $id
+	 */
+	public static function getItem($id) {
+	
+	    $db     = JFactory::getDbo();
+	    $query  = $db->getQuery(true);
+	
+	    $query
+    	    ->select("a.alias, a.catid")
+    	    ->from($query->quoteName("#__uideas_items", "a"))
+    	    ->where("a.id = " . (int)$id);
+	
+	    $db->setQuery($query);
+	    $result = $db->loadObject();
+	
+	    if(!$result) {
+	        $result = null;
+	    }
+	
+	    return $result;
+	    	
+	}
 }

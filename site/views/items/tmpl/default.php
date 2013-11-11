@@ -1,47 +1,37 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
 defined('_JEXEC') or die;?>
-<div class="uf-items<?php echo $this->pageclass_sfx;?>">
+<div class="ui-items<?php echo $this->pageclass_sfx;?>">
     <?php if ($this->params->get('show_page_heading', 1)) { ?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
 
-	<?php 
-	if($this->params->get("items_display_description", 0)) {
-		echo $this->category->description;
-	}
-	?>
-	    
 	<?php if($this->params->get("items_display_button", 1)) {?>
-    <a href="<?php echo JRoute::_( UserIdeasHelperRoute::getFormRoute(0));?>" class="btn">
-    	<i class="icon-plus-sign"></i>
+    <a href="<?php echo JRoute::_(UserIdeasHelperRoute::getFormRoute(0));?>" class="btn">
+    	<i class="icon-plus"></i>
         <?php echo JText::_("COM_USERIDEAS_POST_ITEM");?>
     </a>
     <?php }?>
     
 	<?php foreach($this->items as $item) { 
-	        if(isset($this->comments[$item->id])) {
-                $commentsNumber = (int)$this->comments[$item->id];
-            } else {
-                $commentsNumber = 0;
-            } 
-	    ?>
-    <div class="media uf-item">
-    	<div class="uf-vote pull-left">
-    		<div class="uf-vote-counter" id="uf-vote-counter-<?php echo $item->id; ?>"><?php echo $item->votes; ?></div>
-    		<a class="btn btn-small uf-btn-vote" href="javascript: void(0);" data-id="<?php echo $item->id; ?>"><?php echo JText::_("COM_USERIDEAS_VOTE"); ?></a>
+        if(isset($this->comments[$item->id])) {
+            $commentsNumber = (int)$this->comments[$item->id];
+        } else {
+            $commentsNumber = 0;
+        } 
+    ?>
+    <div class="media ui-item">
+    	<div class="ui-vote pull-left">
+    		<div class="ui-vote-counter" id="js-ui-vote-counter-<?php echo $item->id; ?>"><?php echo $item->votes; ?></div>
+    		<a class="btn btn-small ui-btn-vote js-ui-btn-vote" href="javascript: void(0);" data-id="<?php echo $item->id; ?>"><?php echo JText::_("COM_USERIDEAS_VOTE"); ?></a>
     	</div>
         <div class="media-body">
         	<h4 class="media-heading">
@@ -49,14 +39,18 @@ defined('_JEXEC') or die;?>
         	        <?php echo $this->escape($item->title);?>
         	    </a>
     	    </h4>
-         	<p><?php echo $this->escape($item->description);?></p>
+         	<p><?php echo $item->description;?></p>
         </div>
         <div class="clearfix"></div>
         <div class="well well-small">
         	<div class="pull-left">
             <?php 
-            $date = JHtml::_('date', $item->record_date, JText::_('DATE_FORMAT_LC3'));
-            echo JText::sprintf("COM_USERIDEAS_PUBLISHED_BY_ON", $item->name, $date);
+            
+            $profile = JHtml::_("userideas.profile", $this->socialProfiles, $item->user_id);
+            
+            echo JHtml::_("userideas.publishedBy", $item->name, $item->record_date, $profile);
+            echo JHtml::_("userideas.category", $item->category, $item->catslug);
+            echo JHtml::_("userideas.status", $item->status_name, $item->status_id);
             ?>
             </div>
             <div class="pull-right">
@@ -89,4 +83,4 @@ defined('_JEXEC') or die;?>
     </div>
 
 </div>
-<?php echo $this->version->backlink;?>
+<?php echo $this->version->backlink; ?>

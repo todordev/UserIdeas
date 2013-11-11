@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Plugins
- * @subpackage   UserIdeasVote
+ * @package      UserIdeas
+ * @subpackage   Plugins
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeasVote is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -21,8 +17,8 @@ jimport('joomla.plugin.plugin');
 * This plugin initializes the job of the button
 * which is used for voting.
 *
-* @package 		ITPrism Plugins
-* @subpackage	UserIdeasVote
+* @package 		UserIdeas
+* @subpackage	Plugins
 */
 class plgSystemUserIdeasVote extends JPlugin {
 	
@@ -52,16 +48,15 @@ class plgSystemUserIdeasVote extends JPlugin {
         }
 
         // Check for view. The extensions will work only on view "items"
-        $allowedViews = array("items", "details");
+        $allowedViews = array("items", "details", "category");
         $view         = $app->input->getCmd("view");
         if(!in_array($view, $allowedViews)) {
             return;
         }
         
-        JHtml::_('userideas.pnotify');
-        JHtml::_('userideas.helper');
+        JHtml::_('itprism.ui.joomla_helper');
         
-        JHtml::_('script', 'plugins/system/userideasvote/votebutton.js', false, false, false, false, false);
+        $document->addScript('plugins/system/userideasvote/votebutton.js');
         
 	}
 	

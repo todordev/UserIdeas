@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  * UserIdeas is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -19,12 +19,10 @@ jimport('itprism.controller.form.frontend');
 /**
  * UserIdeas form controller
  *
- * @package     ITPrism Components
- * @subpackage  UserIdeas
+ * @package     UserIdeas
+ * @subpackage  Component
   */
 class UserIdeasControllerForm extends ITPrismControllerFormFrontend {
-    
-    protected $defaultLink = "index.php?option=com_userideas";
     
 	/**
      * Method to get a model object, loading it if required.
@@ -46,11 +44,8 @@ class UserIdeasControllerForm extends ITPrismControllerFormFrontend {
         // Check for request forgeries.
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
  
-        $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
 		// Get the data from the form POST
-		$data    = $app->input->post->get('jform', array(), 'array');
+		$data    = $this->input->post->get('jform', array(), 'array');
         $itemId  = JArrayHelper::getValue($data, "id", 0, "int");
         $catId   = JArrayHelper::getValue($data, "catid", 0, "int");
         
@@ -62,11 +57,9 @@ class UserIdeasControllerForm extends ITPrismControllerFormFrontend {
 		// Check for valid user
         $userId = JFactory::getUser()->id;
         if(!$userId) {
-            
             $redirectOptions = array(
-    		    "force_direction" => "login_form"
+    		    "force_direction" => "index.php?option=com_users&view=login"
     		);
-    		
             $this->displayNotice(JText::_('COM_USERIDEAS_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
         }
@@ -74,21 +67,16 @@ class UserIdeasControllerForm extends ITPrismControllerFormFrontend {
         // Check for valid owner of the item
         if(!empty($itemId)) {
             
-            $db   = JFactory::getDbo();
-            
             jimport("userideas.item");
-            $item = new UserIdeasItem($db);
-            $item->load($itemId);
+            $item = new UserIdeasItem($itemId);
             
             if(!$item->isValid($itemId, $userId)) {
-                
                 $redirectOptions = array(
         		    "view" => "items"
         		);
         		
                 $this->displayNotice(JText::_('COM_USERIDEAS_ERROR_INVALID_ITEM'), $redirectOptions);
                 return;
-            
             }
             
         }

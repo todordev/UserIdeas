@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -16,7 +12,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class UserIdeasViewComment extends JView {
+class UserIdeasViewComment extends JViewLegacy {
     
     protected $state;
     protected $item;
@@ -56,12 +52,12 @@ class UserIdeasViewComment extends JView {
         
         $this->documentTitle = JText::_('COM_USERIDEAS_EDIT_ITEM');
 		                             
-        JToolBarHelper::title($this->documentTitle, 'itp-edit-comment');
+        JToolbarHelper::title($this->documentTitle);
 		                             
-        JToolBarHelper::apply('comment.apply');
-        JToolBarHelper::save('comment.save');
+        JToolbarHelper::apply('comment.apply');
+        JToolbarHelper::save('comment.save');
     
-        JToolBarHelper::cancel('comment.cancel', 'JTOOLBAR_CANCEL');
+        JToolbarHelper::cancel('comment.cancel', 'JTOOLBAR_CANCEL');
         
     }
     

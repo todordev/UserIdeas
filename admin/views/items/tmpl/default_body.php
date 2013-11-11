@@ -1,50 +1,46 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
-defined('_JEXEC') or die;
-?>
+defined('_JEXEC') or die;?>
 <?php foreach ($this->items as $i => $item) {
     $ordering  = ($this->listOrder == 'a.ordering');
-    ?>
-	<tr class="row<?php echo $i % 2; ?>">
-		<td class="center">
+	     
+    $disableClassName = '';
+    $disabledLabel	  = '';
+    if (!$this->saveOrder) {
+        $disabledLabel    = JText::_('JORDERINGDISABLED');
+        $disableClassName = 'inactive tip-top';
+    }
+?>
+	<tr class="row<?php echo $i % 2; ?>" sortable-group-id="<?php echo $item->catid?>">
+	   <td class="order nowrap center hidden-phone">
+    		<span class="sortable-handler hasTooltip <?php echo $disableClassName?>" title="<?php echo $disabledLabel?>">
+    			<i class="icon-menu"></i>
+    		</span>
+    		<input type="text" style="display:none" name="order[]" size="5" value="<?php echo $item->ordering;?>" class="width-20 text-area-order " />
+    	</td>
+		<td class="center hidden-phone">
             <?php echo JHtml::_('grid.id', $i, $item->id); ?>
         </td>
-		<td>
-			<a href="<?php echo JRoute::_("index.php?option=com_userideas&view=item&layout=edit&id=".$item->id); ?>" ><?php echo $item->title; ?></a>
+        <td class="center">
+		    <?php echo JHtml::_('jgrid.published', $item->published, $i, "items."); ?>
 		</td>
-		<td class="center"><?php echo $item->votes; ?></td>
-		<td class="center"><?php echo $item->record_date; ?></td>
-		<td class="center"><?php echo $item->user; ?></td>
-		<td class="center"><?php echo $item->category; ?></td>
-		<td class="order">
-		 <?php
-            if($this->saveOrder) {
-                if ($this->listDirn == 'asc') {?>
-                    <span><?php echo $this->pagination->orderUpIcon($i, ($item->catid == @$this->items[$i-1]->catid), 'items.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-                    <span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->catid == @$this->items[$i+1]->catid), 'items.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
-                <?php } elseif ($this->listDirn == 'desc') {?>
-                    <span><?php echo $this->pagination->orderUpIcon($i, ($item->catid == @$this->items[$i-1]->catid), 'items.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-                    <span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->catid == @$this->items[$i+1]->catid), 'items.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
-                <?php } 
-            }
-            $disabled = $this->saveOrder ?  '' : 'disabled="disabled"';?>
-            <input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="text-area-order" />
-        </td>
-        
-		<td class="center"><?php echo JHtml::_('jgrid.published', $item->published, $i, "items."); ?></td>
-        <td align="center"><?php echo $item->id;?></td>
+		<td>
+			<a href="<?php echo JRoute::_("index.php?option=com_userideas&view=item&layout=edit&id=".$item->id); ?>" ><?php echo $this->escape($item->title); ?></a>
+		</td>
+		<td class="center hidden-phone"><?php echo $item->votes; ?></td>
+		<td class="center hidden-phone"><?php echo $item->record_date; ?></td>
+		<td class="center hidden-phone"><?php echo $item->user; ?></td>
+		<td class="center hidden-phone"><?php echo (!empty($item->category)) ? $this->escape($item->category) : "--"; ?></td>
+		<td class="center hidden-phone"><?php echo $this->escape($item->status); ?></td>
+        <td class="center hidden-phone"><?php echo $item->id;?></td>
 	</tr>
 <?php } ?>
 	  

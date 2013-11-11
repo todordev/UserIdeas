@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -16,7 +12,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class UserIdeasViewDashboard extends JView {
+class UserIdeasViewDashboard extends JViewLegacy {
     
     protected $option;
     
@@ -34,7 +30,7 @@ class UserIdeasViewDashboard extends JView {
         if(!class_exists("ITPrismVersion")) {
             $this->itprismVersion = JText::_("COM_USERIDEAS_ITPRISM_LIBRARY_DOWNLOAD");
         } else {
-            $itprismVersion = new ITPrismVersion();
+            $itprismVersion       = new ITPrismVersion();
             $this->itprismVersion = $itprismVersion->getShortVersion();
         }
         
@@ -42,9 +38,17 @@ class UserIdeasViewDashboard extends JView {
         UserIdeasHelper::addSubmenu($this->getName());
         
         $this->addToolbar();
+        $this->addSidebar();
         $this->setDocument();
         
         parent::display($tpl);
+    }
+    
+    /**
+     * Add a menu on the sidebar of page
+     */
+    protected function addSidebar() {
+        $this->sidebar = JHtmlSidebar::render();
     }
     
     /**
@@ -53,10 +57,11 @@ class UserIdeasViewDashboard extends JView {
      * @since   1.6
      */
     protected function addToolbar(){
-        JToolBarHelper::title(JText::_("COM_USERIDEAS_DASHBOARD"), 'itp-dashboard');
         
-        JToolBarHelper::preferences('com_userideas');
-        JToolBarHelper::divider();
+        JToolbarHelper::title(JText::_("COM_USERIDEAS_DASHBOARD"));
+        
+        JToolbarHelper::preferences('com_userideas');
+        JToolbarHelper::divider();
         
         // Help button
         $bar = JToolBar::getInstance('toolbar');
@@ -71,9 +76,6 @@ class UserIdeasViewDashboard extends JView {
 	protected function setDocument() {
 	    
 		$this->document->setTitle(JText::_('COM_USERIDEAS_DASHBOARD'));
-		
-		// Header styles
-		$this->document->addStyleSheet('../media/'.$this->option.'/css/admin/bootstrap.min.css');
 		
 	}
 	

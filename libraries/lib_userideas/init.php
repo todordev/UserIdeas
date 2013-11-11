@@ -1,14 +1,10 @@
 <?php
 /**
  * @package      ITPrism Libraries
- * @subpackage   UserIdeas
+ * @subpackage   Library
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas Library is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -42,3 +38,9 @@ JLoader::register("UserIdeasVersion", USERIDEAS_PATH_LIBRARY . DIRECTORY_SEPARAT
 JLoader::register("UserIdeasHelper", USERIDEAS_PATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "userideas.php");
 JLoader::register("UserIdeasCategories", USERIDEAS_PATH_COMPONENT_SITE . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "category.php");
 JLoader::register("UserIdeasHelperRoute", USERIDEAS_PATH_COMPONENT_SITE . DIRECTORY_SEPARATOR . "helpers" . DIRECTORY_SEPARATOR . "route.php");
+
+// Load observers
+JLoader::register("UserIdeasObserverVote", USERIDEAS_PATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . "tables" . DIRECTORY_SEPARATOR . "observers".DIRECTORY_SEPARATOR. "vote.php");
+
+// Register Observers
+JObserverMapper::addObserverClassToClass('UserIdeasObserverVote', 'UserIdeasTableVote', array('typeAlias' => 'com_userideas.vote'));

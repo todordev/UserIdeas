@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
 	<fieldset name="items" label="COM_USERIDEAS_ITEMS" description="COM_USERIDEAS_ITEMS_PARAMS">
-		<field name="items_display_description" type="radio" default="0" label="COM_USERIDEAS_ITEMS_DISPLAY_DESCRIPTION" description="COM_USERIDEAS_ITEMS_DISPLAY_DESCRIPTION_DESC">
+		<field name="items_display_description" type="radio" default="0" label="COM_USERIDEAS_ITEMS_DISPLAY_DESCRIPTION" description="COM_USERIDEAS_ITEMS_DISPLAY_DESCRIPTION_DESC" class="btn-group">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field name="items_display_button" type="radio" default="1" label="COM_USERIDEAS_ITEMS_DISPLAY_BUTTON" description="COM_USERIDEAS_ITEMS_DISPLAY_BUTTON_DESC">
+        <field name="items_display_button" type="radio" default="1" label="COM_USERIDEAS_ITEMS_DISPLAY_BUTTON" description="COM_USERIDEAS_ITEMS_DISPLAY_BUTTON_DESC" class="btn-group">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
@@ -13,6 +13,10 @@
             <option value="0">COM_USERIDEAS_ORDER_BY_ORDERING</option>
             <option value="1">COM_USERIDEAS_ORDER_BY_TITLE</option>
             <option value="2">COM_USERIDEAS_ORDER_BY_DATE</option>
+        </field>
+        <field name="items_ordering_direction" type="list" default="ASC" label="COM_USERIDEAS_ORDERING_DIRECTION" description="COM_USERIDEAS_ORDERING_DIRECTION_DESC">
+            <option value="ASC">Ascending</option>
+            <option value="DESC">Descending</option>
         </field>
         <field name="items_display_results_number" type="text" default="20" size="50" label="COM_USERIDEAS_ITEMS_RESULTS_NUMBER" description="COM_USERIDEAS_ITEMS_RESULTS_NUMBER_DESC" />
 	</fieldset>
@@ -28,38 +32,33 @@
     <fieldset name="integration" label="COM_USERIDEAS_INTEGRATION" description="COM_USERIDEAS_INTEGRATION_PARAMS">
         <field name="integration_social_platform" type="list" default="" label="COM_USERIDEAS_INTEGRATION_SOCIAL_PLATFORM" description="COM_USERIDEAS_INTEGRATION_SOCIAL_PLATFORM_DESC">
             <option value="">COM_USERIDEAS_NONE</option>
-            <option value="com_socialcommunity">COM_USERIDEAS_SOCIAL_COMMUNITY</option>
-            <option value="com_kunena">COM_USERIDEAS_KUNENA</option>
+            <option value="socialcommunity">COM_USERIDEAS_SOCIAL_COMMUNITY</option>
+            <option value="kunena">COM_USERIDEAS_KUNENA</option>
+            <option value="jomsocial">COM_USERIDEAS_JOMSOCIAL</option>
             <option value="gravatar">COM_USERIDEAS_GRAVATAR</option>
         </field>
+        <field name="integration_avatars_size" type="text" default="50" label="COM_USERIDEAS_AVATARS_SIZE" description="COM_USERIDEAS_AVATARS_SIZE_DESC" />
+        <field name="integration_avatars_default" type="text" default="/media/com_userideas/images/no-profile.png" label="COM_USERIDEAS_AVATARS_DEFAULT" description="COM_USERIDEAS_AVATARS_DEFAULT_DESC" class="span6" />  
     </fieldset>
     
     <fieldset name="security" label="COM_USERIDEAS_SECURITY" description="COM_USERIDEAS_SECURITY_PARAMS">
-        <field name="security_send_mail_admin" type="radio" default="0" label="COM_USERIDEAS_SECURITY_SEND_MAIL_ADMIN" description="COM_USERIDEAS_SECURITY_SEND_MAIL_ADMIN_DESC">
+        <field name="security_item_auto_publish" type="radio" default="0" label="COM_USERIDEAS_SECURITY_ITEM_AUTO_PUBLISH" description="COM_USERIDEAS_SECURITY_ITEM_AUTO_PUBLISH_DESC" class="btn-group">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
-        <field name="security_send_mail_user" type="radio" default="0" label="COM_USERIDEAS_SECURITY_SEND_MAIL_USER" description="COM_USERIDEAS_SECURITY_SEND_MAIL_USER_DESC">
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-        <field name="security_item_auto_publish" type="radio" default="0" label="COM_USERIDEAS_SECURITY_ITEM_AUTO_PUBLISH" description="COM_USERIDEAS_SECURITY_ITEM_AUTO_PUBLISH_DESC">
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-        <field name="security_comment_auto_publish" type="radio" default="0" label="COM_USERIDEAS_SECURITY_COMMENT_AUTO_PUBLISH" description="COM_USERIDEAS_SECURITY_COMMENT_AUTO_PUBLISH_DESC">
+        <field name="security_comment_auto_publish" type="radio" default="0" label="COM_USERIDEAS_SECURITY_COMMENT_AUTO_PUBLISH" description="COM_USERIDEAS_SECURITY_COMMENT_AUTO_PUBLISH_DESC" class="btn-group">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
      </fieldset>
      
     <fieldset name="debug" label="COM_USERIDEAS_DEBUG" description="COM_USERIDEAS_DEBUG_PARAMS">
-        <field name="debug_item_adding_disabled" type="radio" default="0" label="COM_USERIDEAS_DEBUG_ITEM_ADDING_DISABLED" description="COM_USERIDEAS_DEBUG_ITEM_ADDING_DISABLED_DESC">
+        <field name="debug_item_adding_disabled" type="radio" default="0" label="COM_USERIDEAS_DEBUG_ITEM_ADDING_DISABLED" description="COM_USERIDEAS_DEBUG_ITEM_ADDING_DISABLED_DESC" class="btn-group">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
         
-        <field name="debug_disabled_functionality_msg" type="text" default="" size="60" label="COM_USERIDEAS_MESSAGE" description="COM_USERIDEAS_DEBUG_DISABLED_FUNCTIONALITY_MSG_DESC" />
+        <field name="debug_disabled_functionality_msg" type="textarea" class="span6" label="COM_USERIDEAS_MESSAGE" description="COM_USERIDEAS_DEBUG_DISABLED_FUNCTIONALITY_MSG_DESC" />
      </fieldset>
      
 </config>

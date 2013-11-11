@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -18,10 +14,10 @@ jimport('joomla.application.component.controller');
 
 /**
  * @package		UserIdeas
- * @subpackage	Item
+ * @subpackage	Component
  * @since		2.5
  */
-class UserIdeasControllerItem extends JController {
+class UserIdeasControllerItem extends JControllerLegacy {
    
 	/**
      * Method to get a model object, loading it if required.
@@ -73,7 +69,6 @@ class UserIdeasControllerItem extends JController {
     
             echo json_encode($response);
             JFactory::getApplication()->close();
-            
         }
         
         $data = array(
@@ -115,23 +110,20 @@ class UserIdeasControllerItem extends JController {
             
             // Execute event onAfterVote
             $dispatcher->trigger('onAfterVote', array('com_userideas.aftervote', &$data, $params));
-        		
-            $model = $this->getModel();
-            $item  = $model->getItem($data["id"]);
-            
-            // Send email to administrator
-            if($params->get("security_send_mail_admin")) {
-                $model->sendMailToAdministrator($item);
-            }
-                
-            // Send email to user
-            if($params->get("security_send_mail_user")) {
-                $model->sendMailToUser($item);
-            }
             
         } catch (Exception $e) {
+            
             JLog::add($e->getMessage());
-            return;
+            
+            $response = array(
+                "success" => false,
+                "title"   => JText::_('COM_USERIDEAS_FAIL'),
+                "text"    => JText::_('COM_USERIDEAS_ERROR_SYSTEM')
+            );
+            
+            echo json_encode($response);
+            JFactory::getApplication()->close();
+            
         }
         
         $responseData = JArrayHelper::getValue($data, "response_data", 0);

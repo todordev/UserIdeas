@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -29,37 +25,49 @@ class UserIdeasHelper {
 	 */
 	public static function addSubmenu($vName = 'dashboard') {
 	    
-	    JSubMenuHelper::addEntry(
+	    JHtmlSidebar::addEntry(
 			JText::_('COM_USERIDEAS_DASHBOARD'),
 			'index.php?option='.self::$extension.'&view=dashboard',
 			$vName == 'dashboard'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
 			JText::_('COM_USERIDEAS_CATEGORIES'),
 			'index.php?option=com_categories&extension='.self::$extension.'',
 			$vName == 'categories'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
 			JText::_('COM_USERIDEAS_ITEMS'),
 			'index.php?option='.self::$extension.'&view=items',
 			$vName == 'items'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
 			JText::_('COM_USERIDEAS_VOTES'),
 			'index.php?option='.self::$extension.'&view=votes',
 			$vName == 'votes'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
 			JText::_('COM_USERIDEAS_COMMENTS'),
 			'index.php?option='.self::$extension.'&view=comments',
 			$vName == 'comments'
 		);
 		
-		JSubMenuHelper::addEntry(
+		JHtmlSidebar::addEntry(
+			JText::_('COM_USERIDEAS_STATUSES'),
+			'index.php?option='.self::$extension.'&view=statuses',
+			$vName == 'statuses'
+		);
+		
+		JHtmlSidebar::addEntry(
+    		JText::_('COM_USERIDEAS_EMAILS'),
+    		'index.php?option='.self::$extension.'&view=emails',
+    		$vName == 'emails'
+        );
+		
+		JHtmlSidebar::addEntry(
     		JText::_('COM_USERIDEAS_PLUGINS'),
     		'index.php?option=com_plugins&view=plugins&filter_search='.rawurlencode("user ideas"),
     		$vName == 'plugins'
@@ -68,12 +76,11 @@ class UserIdeasHelper {
 	}
 	
 	/**
-     * Get a category
+     * Get a category.
      * 
      * @params  integer  Category Id
-     * @return  array 	 Associative array
      * 
-     * @return mixed object or null
+     * @return  object|null
      */
     public static function getCategory($categoryId) {
         
@@ -85,7 +92,7 @@ class UserIdeasHelper {
             ->select(
                 "a.title, a.description," . 
                 $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug") 
-            ->from($db->quoteName("#__categories") . " AS a")
+            ->from($db->quoteName("#__categories", "a"))
             ->where("a.id = ". (int)$categoryId)
             ->where("a.extension = ". $db->quote("com_userideas"));
     	

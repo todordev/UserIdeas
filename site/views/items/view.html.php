@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -16,7 +12,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class UserIdeasViewItems extends JView {
+class UserIdeasViewItems extends JViewLegacy {
     
 	protected $state;
 	protected $items;
@@ -33,33 +29,31 @@ class UserIdeasViewItems extends JView {
     
     public function display($tpl = null) {
         
-        // Initialise variables
-        $this->items      = $this->get('Items');
 		$this->state	  = $this->get('State');
+		$this->items      = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
 		
 		$this->params	  = $this->state->get('params');
         
-		$categoryId       = $this->state->get($this->getName().".id");
-		$this->category   = UserIdeasHelper::getCategory($categoryId);
-		
 		$this->comments   = $this->get("Comments");
-		
-		$this->version    = new UserIdeasVersion();
 		
 		$this->userId     = JFactory::getUser()->id;
 		
-		if(empty($this->category)) {
-		    
-		    $app = JFactory::getApplication();
-		    /** @var $app JSite **/
-		    
-		    $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_INVALID_CATEGORY"), "notice");
-            $app->redirect( JRoute::_('index.php', false) );
-            return; 
+		// Get users IDs
+		$usersIds = array();
+		foreach($this->items as $item) {
+		    $usersIds[] = $item->user_id;
 		}
+		$usersIds   = array_unique($usersIds);
 		
+		// Prepare integration. Load avatars and profiles.
+		$this->prepareIntegration($usersIds, $this->params);
+		
+		// HTML Helpers
+		JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
 		JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
+		
+		$this->version   = new UserIdeasVersion();
 		
         $this->prepareDocument();
                 
@@ -97,11 +91,11 @@ class UserIdeasViewItems extends JView {
 		}
 		
         // Styles
-        $this->document->addStyleSheet(JURI::root() . 'media/'.$this->option.'/css/site/bootstrap.min.css');
         $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
 
         // Scripts
-        JHtml::_('behavior.tooltip');
+        JHtml::_('bootstrap.tooltip');
+        JHtml::_('itprism.ui.pnotify');
     }
     
     private function prepearePageHeading() {
@@ -142,5 +136,35 @@ class UserIdeasViewItems extends JView {
 		
         $this->document->setTitle($title);
 		
+    }
+    
+    /**
+     * Prepare social profiles
+     *
+     * @param array     $usersIds
+     * @param JRegistry $params
+     *
+     * @todo Move it to a trait when traits become mass.
+     */
+    protected function prepareIntegration($usersIds, $params) {
+    
+        // Get a social platform for integration
+        $socialPlatform         = $params->get("integration_social_platform");
+        $this->socialProfiles   = null;
+        
+        $this->avatarsSize           = $params->get("integration_avatars_size", 50);
+        $this->defaultAvatar         = $params->get("integration_avatars_default", "/media/com_crowdfunding/images/no-profile.png");
+        
+        // If there is now users, do not continue.
+        if(!$usersIds) {
+            return;
+        }
+        
+        // Load the class
+        if(!empty($socialPlatform)) {
+            jimport("itprism.integrate.profiles");
+            $this->socialProfiles   =  ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
+        }
+    
     }
 }

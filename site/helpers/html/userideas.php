@@ -1,14 +1,10 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -24,82 +20,30 @@ defined('_JEXEC') or die;
 abstract class JHtmlUserIdeas {
     
     /**
-	 * @var   array   array containing information for loaded files
-	 */
-	protected static $loaded = array();
-	
-    public static function pnotify() {
-        
-        // Only load once
-		if (!empty(self::$loaded[__METHOD__])) {
-			return;
-		}
-
-		JHtml::_('stylesheet', 'media/com_userideas/css/jquery.pnotify.default.css', array(), false, false, false, false);
-		JHtml::_('script', 'media/com_userideas/js/jquery.pnotify.min.js', false, false, false, false, false);
-		
-		self::$loaded[__METHOD__] = true;
-
-		return;
-		
-    }
-	
-    public static function helper() {
-        
-        // Only load once
-		if (!empty(self::$loaded[__METHOD__])) {
-			return;
-		}
-
-		JHtml::_('script', 'media/com_userideas/js/helper.js', false, false, false, false, false);
-		self::$loaded[__METHOD__] = true;
-
-		return;
-		
-    }
-    
-    /**
+     * Generate a link to an user image of a social platform.
      * 
-     * Generate a link to an user image of a social platform
-     * @param string $socialPlatform	The name of the social platform
-     * @param string $defaultAvatar		A link to default picture
+     * @param object $socialProfiles	Social profiles object.
+     * @param integer $user		        User ID
+     * @param string $default		    A link to default picture.
+     * @param array $options		    Options that will be used to integration. 
      * 
-     * @todo Add option for setting image size
+     * @return string
+     * 
+     * <code>
+     * 
+     * $options = array(
+     *      "avatar_size" => 50
+     * );
+     * $avatar  = JHtml::_("userideas.avatar", $socialProfiles, $userId, "media/com_userideas/images/no-profile.png", $options);
+     * 
+     * </code>
+     * 
      */    
-    public static function avatar($socialPlatform, JUser $user, $default = null) {
+    public static function avatar($socialProfiles, $userId, $default = null, $options = array()) {
         
-        $link = "";
-
-        switch($socialPlatform) {
-
-            case "com_socialcommunity":
-                
-                jimport("itprism.integrate.profile.socialcommunity");
-                $profile = new ITPrismIntegrateProfileSocialCommunity($user);
-                $link    = $profile->getAvatar();
-                break;
-                
-            case "com_kunena":
-                
-                jimport("itprism.integrate.profile.kunena");
-                $profile = new ITPrismIntegrateProfileKunena($user);
-                $link    = $profile->getAvatar();
-                
-                break;
-                
-            case "gravatar":
-                
-                jimport("itprism.integrate.profile.gravatar");
-                $profile = new ITPrismIntegrateProfileGravatar($user);
-                $profile->setSize(50);
-                $link    = $profile->getAvatar();
-                
-                break;
-            
-            default:
-                $link = "";
-                break;
-        }
+        $avatarSize = JArrayHelper::getValue($options, "avatar_size", 50);
+        
+        $link = (!$socialProfiles) ? null : $socialProfiles->getAvatar($userId, $avatarSize);
         
         // Set the linke to default picture
         if(!$link AND !empty($default)) {
@@ -111,47 +55,27 @@ abstract class JHtmlUserIdeas {
     }
     
 	/**
-     * 
      * Generate a link to an user image of a social platform
-     * @param string $socialPlatform	The name of the social platform
-     * @param string $defaultAvatar		A link to default picture
      * 
-     * @todo Add option for setting image size
-     */    
-    public static function profile($socialPlatform, JUser $user, $default = null) {
+     * @param object  $socialProfiles	Social profiles object.
+     * @param integer $user		        User ID
+     * @param string  $default		    A link to default profile.
+     * 
+     * @return string 
+     * 
+     * 
+     * <code>
+     * 
+     * $options = array(
+     *      "avatar_size" => 50
+     * );
+     * $avatar  = JHtml::_("userideas.profile", $socialProfiles, $userId, "javascript: void(0);");
+     * 
+     * </code>
+     */ 
+    public static function profile($socialProfiles, $userId, $default = null) {
         
-        $link = "";
-
-        switch($socialPlatform) {
-
-            case "com_socialcommunity":
-                
-                jimport("itprism.integrate.profile.socialcommunity");
-                $profile = new ITPrismIntegrateProfileSocialCommunity($user);
-                $link    = $profile->getLink();
-                
-                break;
-                
-            case "com_kunena":
-                
-                jimport("itprism.integrate.profile.kunena");
-                $profile = new ITPrismIntegrateProfileKunena($user);
-                $link    = $profile->getLink();
-                
-                break;
-                
-            case "gravatar":
-                
-                jimport("itprism.integrate.profile.gravatar");
-                $profile = new ITPrismIntegrateProfileGravatar($user);
-                $link    = $profile->getLink();
-                
-                break;
-            
-            default:
-                $link = "";
-                break;
-        }
+        $link     =  (!$socialProfiles) ? null : $socialProfiles->getLink($userId);
         
         // Set the linke to default picture
         if(!$link AND !empty($default)) {
@@ -160,6 +84,46 @@ abstract class JHtmlUserIdeas {
         
 		return $link;
 		
+    }
+    
+    public static function publishedBy($name, $date, $link = null) {
+    
+        if(!empty($link)) {
+            $profile = '<a href="'.$link.'" rel="nofollow">'.htmlspecialchars($name, ENT_QUOTES, "utf-8").'</a>';
+        } else {
+            $profile = $name;
+        }
+    
+        $date = JHTML::_('date', $date, JText::_('DATE_FORMAT_LC3'));
+        $html = JText::sprintf("COM_USERIDEAS_PUBLISHED_BY_ON", $profile, $date);
+         
+        return $html;
+    }
+    
+    public static function category($name, $catSlug = "") {
+    
+        if(!$name) { return ""; }
+        
+        if(!empty($catSlug)) {
+            $html = '<a href="'.UserIdeasHelperRoute::getCategoryRoute($catSlug).'" class="ui-category-label">'.htmlspecialchars($name, ENT_QUOTES, "utf-8").'</a>';
+        } else {
+            $html = '<span class="ui-category-label">'.htmlspecialchars($name, ENT_QUOTES, "utf-8").'</span>';
+        }
+    
+        return $html;
+    }
+    
+    public static function status($name, $statusId = 0) {
+    
+        if(!$name) { return ""; }
+        
+        if(!empty($statusId)) {
+            $html = '<a href="'.UserIdeasHelperRoute::getItemsRoute($statusId).'" class="ui-status-label"><span class="label">'.htmlspecialchars($name, ENT_QUOTES, "utf-8").'</span></a>';
+        } else {
+            $html = '<span class="label ui-status-label">'.htmlspecialchars($name, ENT_QUOTES, "utf-8").'</span>';
+        }
+    
+        return $html;
     }
     
 }

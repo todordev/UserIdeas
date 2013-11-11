@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      ITPrism Components
- * @subpackage   UserIdeas
+ * @package      UserIdeas
+ * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  * UserIdeas is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -53,7 +53,7 @@ class UserIdeasModelComments extends JModelList {
         $app       = JFactory::getApplication();
         /** @var $app JSite **/
 
-        $value = $app->input->get->get("id");
+        $value = $app->input->getInt("id");
         $this->setState($this->getName().'.id', $value);
         
         // Load the component parameters.
@@ -104,8 +104,8 @@ class UserIdeasModelComments extends JModelList {
                 'b.name AS author'
             )
         );
-        $query->from($db->quoteName('#__uideas_comments') .' AS a');
-        $query->innerJoin($db->quoteName('#__users') .' AS b ON a.user_id = b.id');
+        $query->from($db->quoteName('#__uideas_comments', "a"));
+        $query->innerJoin($db->quoteName('#__users', "b") .' ON a.user_id = b.id');
 
         // Filter by item
         $itemId = $this->getState($this->getName().'.id');

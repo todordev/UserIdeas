@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset>
+	<fieldset name="item">
 
-		<field name="title" type="text" class="inputbox" 
-			size="40"  
+		<field name="title" type="text" class="span6" 
 			label="COM_USERIDEAS_TITLE" 
 			description="COM_USERIDEAS_TITLE_DESC"
 			filter="trim" 
 			required="true" 
 		/>
 
-        <field name="alias" type="text" class="inputbox" 
+        <field name="alias" type="text" class="span6" 
             size="60" 
             label="JFIELD_ALIAS_LABEL"
             description="JFIELD_ALIAS_DESC" 
             filter="trim"
         />
         
-        <field name="description" type="textarea" class="inputbox" 
+        <field name="description" type="editor" buttons="false" class="span6" 
             label="COM_USERIDEAS_DESCRIPTION_TITLE"
             description="COM_USERIDEAS_DESCRIPTION_DESC"  
             filter="trim" 
             required="true" 
-            cols="30"
-            rows="10"
         />
             
-        <field name="catid" type="category" class="inputbox" 
+        <field name="catid" type="category" 
             label="JCATEGORY" 
             description="JFIELD_CATEGORY_DESC"
             extension="com_userideas"
+        />
+        
+        <field name="status_id" type="uistatuses"  
+            label="COM_USERIDEAS_ITEM_STATUS" 
+            description="COM_USERIDEAS_ITEM_STATUS_DESC"
         />
         
         <field
@@ -42,7 +44,6 @@
         <field name="published" type="list" 
             label="JSTATUS" 
             description="JFIELD_PUBLISHED_DESC" 
-            class="inputbox" 
             filter="intval" 
             size="1" 
             default="1"

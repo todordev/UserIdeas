@@ -1,14 +1,10 @@
 <?php
 /**
- * @package		 ITPrism Plugins
- * @subpackage	 UserIdeas Vote
+ * @package		 UserIdeas
+ * @subpackage	 Plugins
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2010 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas Vote is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -19,19 +15,20 @@ jimport('joomla.plugin.plugin');
 /**
  * UserIdeas Vote Plugin
  *
- * @package		ITPrism Plugins
- * @subpackage	UserIdeas
+ * @package		UserIdeas
+ * @subpackage	Plugins
  */
 class plgUserIdeasVote extends JPlugin {
     
     /**
      * 
-     * This method is triggered bofore user vote be stored
+     * This method is triggered bofore user vote be stored.
+     * 
      * @param string 	$context
      * @param array 	$data
      * @param JRegistry $params
      */
-    public function onBeforeVote($context, $data, $params) {
+    public function onBeforeVote($context, &$data, $params) {
         
         $app = JFactory::getApplication();
         /** @var $app JSite **/
@@ -53,15 +50,15 @@ class plgUserIdeasVote extends JPlugin {
             return;
         }
         
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        
         $itemId = JArrayHelper::getValue($data, "id", 0, "int");
         $userId = JArrayHelper::getValue($data, "user_id", 0, "int");
         
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        
         $query
             ->select("COUNT(*)")
-            ->from($db->quoteName("#__uideas_votes") . " AS a")
+            ->from($db->quoteName("#__uideas_votes", "a"))
             ->where("a.item_id = ". (int)$itemId)
             ->where("a.user_id = ". (int)$userId);
             
@@ -89,13 +86,13 @@ class plgUserIdeasVote extends JPlugin {
     }
     
     /**
-     * Store user vote
+     * Store user vote.
      * 
      * @param string 	$context
      * @param array 	$data	This is a data about user and his vote
      * @param JRegistry $params	The parameters of the component
      */
-    public function onVote($context, $data, $params) {
+    public function onVote($context, &$data, $params) {
         
         $app = JFactory::getApplication();
         /** @var $app JSite **/
@@ -118,17 +115,14 @@ class plgUserIdeasVote extends JPlugin {
             return;
         }
         
-        jimport("userideas.item");
-        $db = JFactory::getDbo();
-        
         $itemId = JArrayHelper::getValue($data, "id", 0, "int");
         $userId = JArrayHelper::getValue($data, "user_id", 0, "int");
         
         // Save vote
-        $item = new UserIdeasItem($db);
-        $item->load($itemId);
+        jimport("userideas.item");
         
-        if(!$item->id) {
+        $item = new UserIdeasItem($itemId);
+        if(!$item->getId()) {
             return null;
         }
         
@@ -136,17 +130,17 @@ class plgUserIdeasVote extends JPlugin {
         
         // Add record to history table
         jimport("userideas.vote");
-        $history = new UserIdeasVote($db);
+        $history = new UserIdeasVote();
         
-        $history->set("user_id", $userId);
-        $history->set("item_id", $itemId);
-        $history->set("votes", 1);
+        $history->setUserId($userId);
+        $history->setItemId($itemId);
+        $history->setVote(1);
         $history->store();
         
         // Prepare response data
         $data["response_data"] = array(
             "user_votes" => 1,
-            "votes"      => $item->votes
+            "votes"      => $item->getVotes()
         );
         
     }
