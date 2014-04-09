@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;?>
 <?php foreach ($this->items as $i => $item) {
     $ordering  = ($this->listOrder == 'a.ordering');
-	     
+
     $disableClassName = '';
     $disabledLabel	  = '';
     if (!$this->saveOrder) {
@@ -39,7 +39,7 @@ defined('_JEXEC') or die;?>
 		<td class="center hidden-phone"><?php echo $item->record_date; ?></td>
 		<td class="center hidden-phone"><?php echo $item->user; ?></td>
 		<td class="center hidden-phone"><?php echo (!empty($item->category)) ? $this->escape($item->category) : "--"; ?></td>
-		<td class="center hidden-phone"><?php echo $this->escape($item->status); ?></td>
+		<td class="hidden-phone"><?php echo JHtml::_("userideas.status", $item->status, false); ?></td>
         <td class="center hidden-phone"><?php echo $item->id;?></td>
 	</tr>
 <?php } ?>

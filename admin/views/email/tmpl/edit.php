@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -16,6 +16,10 @@ defined('_JEXEC') or die;
             
             <fieldset>
             
+                <div class="control-group">
+                    <div class="control-label"><?php echo $this->form->getLabel('title'); ?></div>
+    				<div class="controls"><?php echo $this->form->getInput('title'); ?></div>
+                </div>
                 <div class="control-group">
                     <div class="control-label"><?php echo $this->form->getLabel('subject'); ?></div>
     				<div class="controls"><?php echo $this->form->getInput('subject'); ?></div>

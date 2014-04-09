@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -28,9 +28,9 @@ class UserIdeasControllerStatus extends ITPrismControllerFormBackend {
     }
 		
     /**
-     * Save an item
+     * Save an item.
      */
-    public function save(){
+    public function save($key = null, $urlVar = null){
         
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
         
@@ -49,7 +49,7 @@ class UserIdeasControllerStatus extends ITPrismControllerFormBackend {
         /** @var $form JForm **/
         
         if(!$form){
-            throw new Exception($model->getError(), 500);
+            throw new Exception(JText::_("COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
             
         // Validate the form data
@@ -62,7 +62,7 @@ class UserIdeasControllerStatus extends ITPrismControllerFormBackend {
         }
             
         try {
-            
+
             $itemId = $model->save($validData);
             
             $redirectOptions["id"] = $itemId;

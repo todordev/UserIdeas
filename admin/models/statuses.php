@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -20,7 +20,7 @@ class UserIdeasModelStatuses extends JModelList {
 	 /**
      * Constructor.
      *
-     * @param   array   An optional associative array of configuration settings.
+     * @param   array   $config An optional associative array of configuration settings.
      * @see     JController
      * @since   1.6
      */

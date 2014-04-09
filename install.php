@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -98,7 +98,17 @@ class pkg_userIdeasInstallerScript {
             $result = array("type" => "success"  , "text" => JText::_("JOFF"));
         }
         UserIdeasInstallHelper::addRow($title, $result, $info);
-        
+
+        // Display result about PHP version.
+        $title  = JText::_("COM_USERIDEAS_PHP_VERSION");
+        $info   = "";
+        if (version_compare(PHP_VERSION, '5.3.0') < 0) {
+            $result = array("type" => "important", "text" => JText::_("COM_USERIDEAS_WARNING"));
+        } else {
+            $result = array("type" => "success", "text" => JText::_("JYES"));
+        }
+        UserIdeasInstallHelper::addRow($title, $result, $info);
+
         // Display result about verification of installed ITPrism Library
         jimport("itprism.version");
         $title  = JText::_("COM_USERIDEAS_ITPRISM_LIBRARY");

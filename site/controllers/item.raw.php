@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -40,8 +40,11 @@ class UserIdeasControllerItem extends JControllerLegacy {
     public function vote() {
         
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
-        
+        /** @var $app JApplicationSite **/
+
+        jimport("itprism.response.json");
+        $response  = new ITPrismResponseJson();
+
         $params    = $app->getParams("com_userideas");
         
         // Check for disabled payment functionality
@@ -61,13 +64,13 @@ class UserIdeasControllerItem extends JControllerLegacy {
         
         $userId = JFactory::getUser()->id;
         if(!$userId) {
-            $response = array(
-            	"success" => false,
-                "title"=> JText::_( 'COM_USERIDEAS_FAIL' ),
-                "text" => JText::_( 'COM_USERIDEAS_ERROR_NOT_LOG_IN' ),
-            );
-    
-            echo json_encode($response);
+
+            $response
+                ->setTitle(JText::_( 'COM_USERIDEAS_FAIL' ))
+                ->setText(JText::_( 'COM_USERIDEAS_ERROR_NOT_LOG_IN' ))
+                ->failure();
+
+            echo $response;
             JFactory::getApplication()->close();
         }
         
@@ -80,48 +83,46 @@ class UserIdeasControllerItem extends JControllerLegacy {
         try {
             
             // Events
-            $dispatcher	       = JDispatcher::getInstance();
+            $dispatcher	       = JEventDispatcher::getInstance();
             
             // Execute event onBeforeVote
             JPluginHelper::importPlugin('userideas');
             $results     = $dispatcher->trigger('onBeforeVote', array('com_userideas.beforevote', &$data, $params));
-            
+
             // Check for error.
             foreach($results as $result) {
                 $success = JArrayHelper::getValue($result, "success");
                 
                 if(false === $success) {
                     
-                    $message = JArrayHelper::getValue($result, "message", JText::_('COM_USERIDEAS_VOTED_UNSUCCESSFULY'));
-                    
-                    $response = array(
-                    	"success" => false,
-                        "title"   => JText::_('COM_USERIDEAS_FAIL'),
-                        "text"    => $message
-                    );
-            
-                    echo json_encode($response);
+                    $message = JArrayHelper::getValue($result, "message", JText::_('COM_USERIDEAS_VOTED_UNSUCCESSFULLY'));
+
+                    $response
+                        ->setTitle(JText::_('COM_USERIDEAS_SUCCESS'))
+                        ->setText($message)
+                        ->failure();
+
+                    echo $response;
                     JFactory::getApplication()->close();
                 }
             }
-            
+
             // Execute event onVote
             $dispatcher->trigger('onVote', array('com_userideas.vote', &$data, $params));
-            
+
             // Execute event onAfterVote
             $dispatcher->trigger('onAfterVote', array('com_userideas.aftervote', &$data, $params));
             
         } catch (Exception $e) {
             
             JLog::add($e->getMessage());
-            
-            $response = array(
-                "success" => false,
-                "title"   => JText::_('COM_USERIDEAS_FAIL'),
-                "text"    => JText::_('COM_USERIDEAS_ERROR_SYSTEM')
-            );
-            
-            echo json_encode($response);
+
+            $response
+                ->setTitle(JText::_('COM_USERIDEAS_FAIL'))
+                ->setText(JText::_('COM_USERIDEAS_ERROR_SYSTEM'))
+                ->failure();
+
+            echo $response;
             JFactory::getApplication()->close();
             
         }
@@ -130,16 +131,17 @@ class UserIdeasControllerItem extends JControllerLegacy {
         $userVotes    = JArrayHelper::getValue($responseData, "user_votes", 0);
         $votes        = JArrayHelper::getValue($responseData, "votes", 0);
         
-        $response = array(
-        	"success" => true,
-            "title"   => JText::_('COM_USERIDEAS_SUCCESS'),
-            "text"    => JText::plural('COM_USERIDEAS_VOTED_SUCCESSFULY',  $userVotes),
-            "data"    => array(
-                "votes" => $votes
-            )
+        $data = array(
+            "votes" => $votes
         );
 
-        echo json_encode($response);
+        $response
+            ->setTitle(JText::_('COM_USERIDEAS_SUCCESS'))
+            ->setText(JText::plural('COM_USERIDEAS_VOTED_SUCCESSFULLY',  $userVotes))
+            ->setData($data)
+            ->success();
+
+        echo $response;
         JFactory::getApplication()->close();
         
     }

@@ -3,7 +3,7 @@
  * @package		 UserIdeas
  * @subpackage	 Plugins
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -27,14 +27,16 @@ class plgUserIdeasVote extends JPlugin {
      * @param string 	$context
      * @param array 	$data
      * @param JRegistry $params
+     *
+     * @return null|array
      */
     public function onBeforeVote($context, &$data, $params) {
         
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
 
         if($app->isAdmin()) {
-            return;
+            return null;
         }
 
         $doc     = JFactory::getDocument();
@@ -43,11 +45,11 @@ class plgUserIdeasVote extends JPlugin {
         // Check document type
         $docType = $doc->getType();
         if(strcmp("raw", $docType) != 0){
-            return;
+            return null;
         }
        
         if(strcmp("com_userideas.beforevote", $context) != 0){
-            return;
+            return null;
         }
         
         $itemId = JArrayHelper::getValue($data, "id", 0, "int");
@@ -91,11 +93,13 @@ class plgUserIdeasVote extends JPlugin {
      * @param string 	$context
      * @param array 	$data	This is a data about user and his vote
      * @param JRegistry $params	The parameters of the component
+     *
+     * @return  null|array
      */
     public function onVote($context, &$data, $params) {
         
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
         
         if($app->isAdmin()) {
             return;
@@ -122,6 +126,9 @@ class plgUserIdeasVote extends JPlugin {
         jimport("userideas.item");
         
         $item = new UserIdeasItem($itemId);
+        $item->setDb(JFactory::getDbo());
+        $item->load();
+
         if(!$item->getId()) {
             return null;
         }
@@ -131,11 +138,13 @@ class plgUserIdeasVote extends JPlugin {
         // Add record to history table
         jimport("userideas.vote");
         $history = new UserIdeasVote();
-        
-        $history->setUserId($userId);
-        $history->setItemId($itemId);
-        $history->setVote(1);
-        $history->store();
+        $history->setDb(JFactory::getDbo());
+
+        $history
+            ->setUserId($userId)
+            ->setItemId($itemId)
+            ->setVotes(1)
+            ->store();
         
         // Prepare response data
         $data["response_data"] = array(

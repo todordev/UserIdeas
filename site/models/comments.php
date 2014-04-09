@@ -3,12 +3,8 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -24,7 +20,7 @@ class UserIdeasModelComments extends JModelList {
 	 /**
      * Constructor.
      *
-     * @param   array   An optional associative array of configuration settings.
+     * @param   array   $config An optional associative array of configuration settings.
      * @see     JController
      * @since   1.6
      */
@@ -51,7 +47,7 @@ class UserIdeasModelComments extends JModelList {
     protected function populateState($ordering = null, $direction = null) {
         
         $app       = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
 
         $value = $app->input->getInt("id");
         $this->setState($this->getName().'.id', $value);

@@ -1,0 +1,36 @@
+@CHARSET "UTF-8";
+
+/** Dashboard Statistics **/
+
+.dashboard-stats .span4, .dashboard-stats .span6, .dashboard-stats .span8{
+    border: thin solid #dcdcdc;
+    margin-bottom: 10px;
+}
+
+.dashboard-stats h3 {
+	background: url(../../images/icon_list.png) no-repeat left;
+	margin:0;
+	padding: 5px 0 5px 20px;
+}
+
+h3.latest-started {
+	background-color: #e7e7e7;
+}
+
+h3.latest-created {
+	background-color: #cde9ef;
+}
+
+h3.popular {
+	background-color: #ffe4c4;
+}
+
+h3.mostfunded {
+	background-color: #e6e6fa;
+}
+
+h3.basic-stats {
+	background: #add8e6 url(../../images/icon_stats.png) no-repeat left;
+	margin:0;
+	padding: 5px 0 5px 20px;
+}

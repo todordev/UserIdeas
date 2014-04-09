@@ -3,12 +3,8 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -133,7 +129,7 @@ class UserIdeasModelItems extends JModelList {
                 'b.name, ' .
                 'c.title AS category, ' .
                 $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug, " .
-                'd.name AS status_name'
+                'd.name AS status_name, d.params AS status_params, d.default AS status_default'
             )
         );
         $query->from($db->quoteName('#__uideas_items', "a"));

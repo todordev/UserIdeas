@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `#__uideas_comments` (
 
 CREATE TABLE IF NOT EXISTS `#__uideas_emails` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(128) NOT NULL,
   `subject` varchar(255) NOT NULL,
   `body` text NOT NULL,
   `sender_name` varchar(255) DEFAULT NULL,
@@ -25,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `#__uideas_items` (
   `alias` varchar(255) NOT NULL,
   `description` text,
   `votes` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `hits` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ordering` smallint(5) unsigned NOT NULL DEFAULT '0',
   `published` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -38,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `#__uideas_statuses` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `default` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `params` varchar(512) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 

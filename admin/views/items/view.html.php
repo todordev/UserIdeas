@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -13,13 +13,30 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.view');
 
 class UserIdeasViewItems extends JViewLegacy {
-    
+
+    /**
+     * @var JDocumentHtml
+     */
+    public $document;
+
+    /**
+     * @var JRegistry
+     */
+    protected $state;
+
     protected $items;
     protected $pagination;
-    protected $state;
-    
+
     protected $option;
-    
+
+    protected $listOrder;
+    protected $listDirn;
+    protected $saveOrder;
+    protected $saveOrderingUrl;
+    protected $sortFields;
+
+    protected $sidebar;
+
     public function __construct($config) {
         parent::__construct($config);
         $this->option = JFactory::getApplication()->input->get("option");
@@ -31,10 +48,9 @@ class UserIdeasViewItems extends JViewLegacy {
         $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
-        
-        // HTML Helpers
-        JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
-        
+
+        $this->items      = UserIdeasHelper::prepareStatuses($this->items);
+
         // Add submenu
         UserIdeasHelper::addSubmenu($this->getName());
         

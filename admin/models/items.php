@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -20,7 +20,7 @@ class UserIdeasModelItems extends JModelList {
 	 /**
      * Constructor.
      *
-     * @param   array   An optional associative array of configuration settings.
+     * @param   array   $config An optional associative array of configuration settings.
      * @see     JController
      * @since   1.6
      */
@@ -116,10 +116,10 @@ class UserIdeasModelItems extends JModelList {
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.title, a.votes, a.record_date, a.catid, a.ordering, a.published, '.
+                'a.id, a.title, a.votes, a.record_date, a.catid, a.ordering, a.published, a.status_id, '.
             	'b.name AS user, '.
             	'c.title AS category, ' .
-            	'd.name AS status '
+            	'd.name AS status_name, d.params AS status_params, d.default AS status_default '
             )
         );
         $query->from($db->quoteName('#__uideas_items', 'a'));

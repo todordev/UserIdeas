@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -25,9 +25,9 @@ class UserIdeasModelItem extends JModelAdmin {
     /**
      * Returns a reference to the a Table object, always creating it.
      *
-     * @param   type    The table type to instantiate
-     * @param   string  A prefix for the table class name. Optional.
-     * @param   array   Configuration array for model. Optional.
+     * @param   string  $type   The table type to instantiate
+     * @param   string  $prefix A prefix for the table class name. Optional.
+     * @param   array   $config Configuration array for model. Optional.
      * @return  JTable  A database object
      * @since   1.6
      */
@@ -74,8 +74,8 @@ class UserIdeasModelItem extends JModelAdmin {
     /**
      * Save data into the DB
      * 
-     * @param $data   The data about item
-     * @return     Item ID
+     * @param array $data   The data about item
+     * @return  int
      */
     public function save($data){
         
@@ -84,23 +84,25 @@ class UserIdeasModelItem extends JModelAdmin {
         $alias        = JArrayHelper::getValue($data, "alias");
         $description  = JArrayHelper::getValue($data, "description");
         $statusId     = JArrayHelper::getValue($data, "status_id");
-        $catid        = JArrayHelper::getValue($data, "catid");
+        $catId        = JArrayHelper::getValue($data, "catid");
         $userId       = JArrayHelper::getValue($data, "user_id");
         $published    = JArrayHelper::getValue($data, "published");
         
         if(!$userId) {
-            $userId = JFactory::getUser()->id;
+            $userId = JFactory::getUser()->get("id");
         }
         
         // Load a record from the database
         $row = $this->getTable();
+        /** @var $row UserIdeasTableItem */
+
         $row->load($id);
         
         $row->set("title",        $title);
         $row->set("alias",        $alias);
         $row->set("description",  $description);
         $row->set("status_id",    $statusId);
-        $row->set("catid",        $catid);
+        $row->set("catid",        $catId);
         $row->set("user_id",      $userId);
         $row->set("published",    $published);
         
@@ -108,21 +110,23 @@ class UserIdeasModelItem extends JModelAdmin {
         
         $row->store();
         
-        return $row->id;
+        return $row->get("id");
     
     }
     
 	/**
 	 * Prepare and sanitise the table prior to saving.
+     *
+     * @param UserIdeasTableItem $table
 	 * @since	1.6
 	 */
-	protected function prepareTable(&$table) {
+	protected function prepareTable($table) {
 	    
         // get maximum order number
-		if (empty($table->id)) {
+		if (!$table->get("id")) {
 
 			// Set ordering to the last item if not set
-			if (empty($table->ordering)) {
+			if (!$table->get("ordering")) {
 				$db     = JFactory::getDbo();
 				$query  = $db->getQuery(true);
 				$query
@@ -132,35 +136,35 @@ class UserIdeasModelItem extends JModelAdmin {
 			    $db->setQuery($query, 0, 1);
 				$max   = $db->loadResult();
 
-				$table->ordering = $max+1;
+				$table->set("ordering", $max + 1);
 			}
 		}
 		
-	    // Fix magic qutoes
+	    // Fix magic quotes.
 	    if( get_magic_quotes_gpc() ) {
-            $table->title       = stripcslashes($table->title);
-            $table->description = stripcslashes($table->description);
+            $table->set("title", stripcslashes($table->get("title")) );
+            $table->set("description", stripcslashes($table->get("description")) );
         }
         
 		// If does not exist alias, I will generate the new one from the title
-        if(!$table->alias) {
-            $table->alias = $table->title;
+        if(!$table->get("alias")) {
+            $table->set("alias", $table->get("title"));
         }
-        $table->alias = JApplication::stringURLSafe($table->alias);
+        $table->set("alias", JApplicationHelper::stringURLSafe($table->get("alias")) );
         
 	}
 	
 	/**
 	 * A protected method to get a set of ordering conditions.
 	 *
-	 * @param	object	A record object.
+	 * @param	UserIdeasTableItem	$table
 	 *
 	 * @return	array	An array of conditions to add to add to ordering queries.
 	 * @since	1.6
 	 */
 	protected function getReorderConditions($table) {
 	    $condition   = array();
-	    $condition[] = 'catid = '.(int) $table->catid;
+	    $condition[] = 'catid = ' .(int)$table->get("catid");
 	    return $condition;
 	}
 }

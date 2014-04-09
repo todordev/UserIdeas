@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -14,13 +14,31 @@ jimport('joomla.application.categories');
 jimport('joomla.application.component.view');
 
 class UserIdeasViewForm extends JViewLegacy {
-    
-    protected $state      = null;
-    protected $form       = null;
-    protected $params     = null;
-    protected $item       = null;
-    
-    protected $option     = null;
+
+    /**
+     * @var JDocumentHtml
+     */
+    public $document;
+
+    /**
+     * @var JRegistry
+     */
+    protected $state;
+
+    /**
+     * @var JRegistry
+     */
+    protected $params;
+
+    protected $form;
+    protected $item;
+
+    protected $disabledButton;
+    protected $debugMode;
+
+    protected $option;
+
+    protected $pageclass_sfx;
     
     public function __construct($config){
         parent::__construct($config);
@@ -34,27 +52,29 @@ class UserIdeasViewForm extends JViewLegacy {
     public function display($tpl = null){
         
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
         
         // Initialise variables
         $this->state      = $this->get('State');
         $this->form       = $this->get('Form');
         $this->params     = $this->state->get("params");
         
-        $userId           = JFactory::getUser()->id;
+        $userId           = JFactory::getUser()->get("id");
         if(!$userId) {
+            $returnUrl = JRoute::_("index.php?option=com_userideas&view=form");
+
 		    $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_NOT_LOG_IN"), "notice");
-            $app->redirect(JRoute::_('index.php?option=com_users&view=login', false));
+            $app->redirect(JRoute::_('index.php?option=com_users&view=login&return='.base64_encode($returnUrl), false));
             return; 
         }
         
         $itemId = $this->state->get("form.id");
         if(!empty($itemId)) {
             
-            $db   = JFactory::getDbo();
-            
             jimport("userideas.item");
             $item = new UserIdeasItem($itemId);
+            $item->setDb(JFactory::getDbo());
+            $item->load();
             
             if(!$item->isValid($itemId, $userId)) {
     		    $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_INVALID_ITEM"), "notice");
@@ -63,11 +83,11 @@ class UserIdeasViewForm extends JViewLegacy {
             }
             
         }
-        
+
+        $this->version    = new UserIdeasVersion();
+
         $this->prepareDebugMode();
         $this->prepareDocument();
-        
-        $this->version   = new UserIdeasVersion();
         
         parent::display($tpl);
     }
@@ -78,7 +98,7 @@ class UserIdeasViewForm extends JViewLegacy {
     protected function prepareDebugMode() {
         
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
 
         $this->disabledButton = "";
         
@@ -99,12 +119,12 @@ class UserIdeasViewForm extends JViewLegacy {
     
     
     /**
-     * Prepares the document
+     * Prepares the document.
      */
     protected function prepareDocument(){
 
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
         
          // Prepare page suffix
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
@@ -124,9 +144,9 @@ class UserIdeasViewForm extends JViewLegacy {
         // Prepare page title
         $title = $menu->title;
         if(!$title){
-            $title = $app->getCfg('sitename');
-        }elseif($app->getCfg('sitename_pagetitles', 0)){ // Set site name if it is necessary ( the option 'sitename' = 1 )
-            $title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
+            $title = $app->get('sitename');
+        }elseif($app->get('sitename_pagetitles', 0)){ // Set site name if it is necessary ( the option 'sitename' = 1 )
+            $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
         }
             
         $this->document->setTitle($title);

@@ -2,36 +2,34 @@
 <extension version="3.2" type="plugin" group="content" method="upgrade">
     <name>PLG_CONTENT_USERIDEASADMINMAIL</name>
     <author>Todor Iliev</author>
-    <copyright>Copyright (C) 2010 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
+    <copyright>Copyright (C) 2014 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.3</version>
-    <creationDate>09 November, 2013</creationDate>
+    <version>1.4</version>
+    <creationDate>09 April, 2014</creationDate>
     <description><![CDATA[
     <p><a href='http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions' target='_blank'>User Ideas - Admin Mail</a> is a plugin that sends notification mails to administrator.</p>
     <p><a href='http://itprism.com/help/108-userfeedback-documentation-faq' target='_blank'>Read documentation</a> that will help you to setup the extensions.</p>
     <p><a href='http://itprism.com/' target='_blank'>Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>
     <p>Please, <a href='http://extensions.joomla.org/extensions/e-commerce/donations/23876' target='_blank'>vote for the extension</a> on Joomla! Extensions Directory</p>
     ]]></description>
-    
-    <languages folder="language">
-        <language tag="en-GB">en-GB/en-GB.plg_content_userideasadminmail.ini</language>
-        <language tag="en-GB">en-GB/en-GB.plg_content_userideasadminmail.sys.ini</language>
-    </languages> 
-    
+
+    <help url="PLG_CONTENT_USERIDEASADMINMAIL_HELP_URL"/>
+
     <files>
         <filename plugin="userideasadminmail">userideasadminmail.php</filename>
         <filename>index.html</filename>
+
+        <folder>language</folder>
     </files>
-    
-    <help url="PLG_CONTENT_USERIDEASADMINMAIL_HELP_URL"/>
     
     <config>
 		<fields name="params">
 			<fieldset name="basic" addfieldpath="/administrator/components/com_userideas/models/fields">
-                <field name="send_when_post_email_id" type="uiemails" default="0" label="PLG_CONTENT_USERIDEASADMINMAIL_SEND_WHEN_POST" description="PLG_CONTENT_USERIDEASADMINMAIL_SEND_WHEN_POST_DESC" />
-                
+                <field name="send_when_post_email_id" type="uiemails" default="0" label="PLG_CONTENT_USERIDEASADMINMAIL_SEND_WHEN_POST_IDEA" description="PLG_CONTENT_USERIDEASADMINMAIL_SEND_WHEN_POST_IDEA_DESC" />
+                <field name="post_comment_email_id" type="uiemails" default="0" label="PLG_CONTENT_USERIDEASADMINMAIL_SEND_WHEN_POST_COMMENT" description="PLG_CONTENT_USERIDEASADMINMAIL_SEND_WHEN_POST_COMMENT_DESC" />
+
                 <field name="email_mode" type="list" default="html" label="PLG_CONTENT_USERIDEASADMINMAIL_EMAIL_MODE" description="PLG_CONTENT_USERIDEASADMINMAIL_EMAIL_MODE_DESC" >
                    <option value="plain">PLG_CONTENT_USERIDEASADMINMAIL_PLAIN</option>
                    <option value="html">PLG_CONTENT_USERIDEASADMINMAIL_HTML</option>

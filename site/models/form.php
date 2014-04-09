@@ -3,12 +3,8 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -23,9 +19,9 @@ class UserIdeasModelForm extends JModelForm {
     /**
      * Returns a reference to the a Table object, always creating it.
      *
-     * @param   type    The table type to instantiate
-     * @param   string  A prefix for the table class name. Optional.
-     * @param   array   Configuration array for model. Optional.
+     * @param   string  $type    The table type to instantiate
+     * @param   string  $prefix  A prefix for the table class name. Optional.
+     * @param   array   $config  Configuration array for model. Optional.
      * @return  JTable  A database object
      * @since   1.6
      */
@@ -43,7 +39,7 @@ class UserIdeasModelForm extends JModelForm {
         parent::populateState();
         
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
         
 		// Get the pk of the record from the request.
 		$value = $app->input->getInt("id", 0);
@@ -90,22 +86,21 @@ class UserIdeasModelForm extends JModelForm {
     protected function loadFormData() {
         
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
         
 		$data	    = $app->getUserState($this->option.'.edit.form.data', array());
 		if(!$data) {
 		    
-		    $itemId = $this->getState($this->getName().'.id');
+		    $itemId = (int)$this->getState($this->getName().'.id');
 		    if(!empty($itemId)) {
 		        $userId = JFactory::getUser()->id;
 		        $data   = $this->getItem($itemId, $userId);
 		    }
 		    
 		    if(empty($data)) {
-		        $catId       = $this->getState('category_id');
-		        
-		        $data        = new JObject();
-		        $data->catid = (int)$catId;
+		        $data        = array(
+                    "caitid" => $this->getState('category_id')
+                );
 		    }
 		    
 		}
@@ -119,6 +114,7 @@ class UserIdeasModelForm extends JModelForm {
 	 * @param   integer  $pk  	  The id of the primary key.
 	 * @param   integer  $userId  The user Id 
 	 *
+     * @return  object
 	 * @since   11.1
 	 */
 	public function getItem($pk, $userId) {
@@ -133,23 +129,16 @@ class UserIdeasModelForm extends JModelForm {
 		if ($pk > 0 AND $userId > 0) {
 		    
 		    $keys = array(
-		    	"id"     => $pk, 
-		    	"user_id"=> $userId
+		    	"id"      => $pk,
+		    	"user_id" => $userId
 		    );
 		    
 			// Attempt to load the row.
-			$return = $table->load($keys);
+			$table->load($keys);
 
-			// Check for a table object error.
-			if ($return === false && $table->getError()) {
-			    JLog::add($table->getError() . " [ UserIdeasUpdate->getItem() ]");
-				throw new Exception(JText::_("COM_USERIDEAS_ERROR_SYSTEM"), ITPrismErrors::CODE_ERROR);
-			}
-			
 			// Convert to the JObject before adding other data.
-    		$properties = $table->getProperties();
-    		$this->item = JArrayHelper::toObject($properties, 'JObject');
-    		
+            $this->item = $table->getProperties();
+
 		}
 
 		return $this->item;
@@ -158,7 +147,7 @@ class UserIdeasModelForm extends JModelForm {
     /**
      * Method to save the form data.
      *
-     * @param	array		The form data.
+     * @param	array		$data The form data.
      * @return	mixed		The record id on success, null on failure.
      * @since	1.6
      */
@@ -177,6 +166,8 @@ class UserIdeasModelForm extends JModelForm {
 	    
         // Load a record from the database
         $row = $this->getTable();
+        /** @var $row UserIdeasTableItem */
+
         $row->load($keys);
         
         // If there is an id, the item is not new
@@ -189,7 +180,7 @@ class UserIdeasModelForm extends JModelForm {
         $row->set("description",   $description);
         $row->set("catid",         $categoryId);
         
-        if(!$row->id) {
+        if($isNew) {
             
             $recordDate  = new JDate();
             $row->set("record_date",   $recordDate->toSql());
@@ -197,11 +188,11 @@ class UserIdeasModelForm extends JModelForm {
 
             // Set status
             jimport("userideas.statuses");
-            $statuses     = UserIdeasStatuses::getInstance();
-            $defultStatus = $statuses->getDefault();
+            $statuses      = UserIdeasStatuses::getInstance();
+            $defaultStatus = $statuses->getDefault();
             
-            if(!empty($defultStatus->id)) {
-                $row->set("status_id", (int)$defultStatus->id);
+            if(!empty($defaultStatus->id)) {
+                $row->set("status_id", (int)$defaultStatus->id);
             }
             
             // Auto publishing
@@ -213,23 +204,29 @@ class UserIdeasModelForm extends JModelForm {
         $this->prepareTable($row);
         
         $row->store();
+
+        $this->triggerAfterSaveEvent($row, $isNew);
+
+        return $row->get("id");
         
+    }
+
+    protected function triggerAfterSaveEvent($row, $isNew) {
+
         // Trigger the event
-        
+
         $context = $this->option.'.'.$this->getName();
-        
+
         // Include the content plugins.
-        $dispatcher = JDispatcher::getInstance();
+        $dispatcher = JEventDispatcher::getInstance();
         JPluginHelper::importPlugin('content');
-         
+
         // Trigger the onContentAfterSave event.
         $results    = $dispatcher->trigger("onContentAfterSave", array($context, &$row, $isNew));
         if (in_array(false, $results, true)) {
-            throw new Exception(JText::_("COM_USERIDEAS_ERROR_DURING_ITEM_POSTING_PROCESS"), ITPrismErrors::CODE_WARNING);
+            throw new Exception(JText::_("COM_USERIDEAS_ERROR_DURING_ITEM_POSTING_PROCESS"));
         }
-        
-        return $row->id;
-        
+
     }
     
 	/**
@@ -243,7 +240,7 @@ class UserIdeasModelForm extends JModelForm {
 
 			// Set ordering to the last item if not set
 			if (empty($table->ordering)) {
-				$db     = JFactory::getDbo();
+				$db     = $this->getDbo();
 				$query  = $db->getQuery(true);
 				$query
 				    ->select("MAX(a.ordering)")
@@ -252,11 +249,11 @@ class UserIdeasModelForm extends JModelForm {
 			    $db->setQuery($query, 0, 1);
 				$max   = $db->loadResult();
 
-				$table->ordering = $max+1;
+				$table->ordering = $max + 1;
 			}
 		}
 		
-	    // Fix magic qutoes
+	    // Fix magic quotes
 	    if( get_magic_quotes_gpc() ) {
             $table->alias       = stripcslashes($table->title);
             $table->description = stripcslashes($table->description);
@@ -266,7 +263,7 @@ class UserIdeasModelForm extends JModelForm {
         if(!$table->alias) {
             $table->alias = $table->title;
         }
-        $table->alias = JApplication::stringURLSafe($table->alias);
+        $table->alias = JApplicationHelper::stringURLSafe($table->alias);
         
 	}
 	

@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -32,15 +32,18 @@ class UserIdeasControllerItems extends JControllerAdmin {
     
     /**
      * Method to save the submitted ordering values for records via AJAX.
+     *
      * @return  void
      * @since   3.0
      */
     public function saveOrderAjax() {
-         
+
+        jimport("itprism.response.json");
+        $response = new ITPrismResponseJson();
+
         // Get the input
-        $app     = JFactory::getApplication();
-        $pks     = $app->input->post->get('cid', array(), 'array');
-        $order   = $app->input->post->get('order', array(), 'array');
+        $pks     = $this->input->post->get('cid', array(), 'array');
+        $order   = $this->input->post->get('order', array(), 'array');
     
         // Sanitize the input
         JArrayHelper::toInteger($pks);
@@ -57,15 +60,13 @@ class UserIdeasControllerItems extends JControllerAdmin {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
-    
-        $response = array(
-            "success" => true,
-            "title"=> JText::_( 'COM_USERIDEAS_SUCCESS' ),
-            "text" => JText::_( 'JLIB_APPLICATION_SUCCESS_ORDERING_SAVED' ),
-            "data" => array()
-        );
-    
-        echo json_encode($response);
+
+        $response
+            ->setTitle(JText::_('COM_USERIDEAS_SUCCESS'))
+            ->setText(JText::_('JLIB_APPLICATION_SUCCESS_ORDERING_SAVED'))
+            ->success();
+
+        echo $response;
         JFactory::getApplication()->close();
     
     }

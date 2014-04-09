@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -17,9 +17,9 @@ class UserIdeasModelEmail extends JModelAdmin {
     /**
      * Returns a reference to the a Table object, always creating it.
      *
-     * @param   type    The table type to instantiate
-     * @param   string  A prefix for the table class name. Optional.
-     * @param   array   Configuration array for model. Optional.
+     * @param   string  $type    The table type to instantiate
+     * @param   string  $prefix  A prefix for the table class name. Optional.
+     * @param   array   $config  Configuration array for model. Optional.
      * @return  JTable  A database object
      * @since   1.6
      */
@@ -62,13 +62,14 @@ class UserIdeasModelEmail extends JModelAdmin {
     }
     
     /**
-     * Save data into the DB
-     * @param $data   The data of item
-     * @return     	  Item ID
+     * Save data into the DB.
+     * @param array $data
+     * @return  int
      */
     public function save($data){
         
         $id          = JArrayHelper::getValue($data, "id");
+        $title       = JArrayHelper::getValue($data, "title");
         $subject     = JArrayHelper::getValue($data, "subject");
         $senderName  = JArrayHelper::getValue($data, "sender_name");
         $senderEmail = JArrayHelper::getValue($data, "sender_email");
@@ -76,8 +77,11 @@ class UserIdeasModelEmail extends JModelAdmin {
         
         // Load a record from the database
         $row = $this->getTable();
+        /** @var $row UserIdeasTableEmail */
+
         $row->load($id);
         
+        $row->set("title",          $title);
         $row->set("subject",        $subject);
         $row->set("sender_name",    $senderName);
         $row->set("sender_email",   $senderEmail);
@@ -87,32 +91,32 @@ class UserIdeasModelEmail extends JModelAdmin {
         
         $row->store(true);
         
-        return $row->id;
+        return $row->get("id");
     
     }
     
     /**
      * Prepare and sanitise the table prior to saving.
+     *
+     * @param UserIdeasTableEmail $table
      * @since	1.6
      */
-    protected function prepareTable(&$table) {
+    protected function prepareTable($table) {
          
-        // Fix magic qutoes
+        // Fix magic quotes.
         if(get_magic_quotes_gpc()) {
-            $table->subject = stripcslashes($table->subject);
-            $table->body    = stripcslashes($table->body);
+            $table->set("subject", stripcslashes($table->get("subject")) );
+            $table->set("body", stripcslashes($table->get("body")) );
         }
         
-        if(empty($table->sender_name)) {
-            $table->sender_name = null;
+        if(!$table->get("sender_name")) {
+            $table->set("sender_name", null);
         }
         
-        if(empty($table->sender_email)) {
-            $table->sender_email = null;
+        if(!$table->get("sender_email")) {
+            $table->set("sender_email", null);
         }
     
     }
-    
-    
-    
+
 }

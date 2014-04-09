@@ -3,12 +3,8 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -38,6 +34,8 @@ abstract class UserIdeasHelperRoute {
 	 * 
 	 * @param	int		$id		The id of the item.
 	 * @param	int		$catid	The id of the category.
+     *
+     * @return string
 	 */
 	public static function getDetailsRoute($id, $catid) {
 	    
@@ -84,6 +82,8 @@ abstract class UserIdeasHelperRoute {
 	/**
 	 * Prepare the link to the form page
 	 * @param	int		$id		The id of the item.
+     *
+     * @return string
 	 */
 	public static function getFormRoute($id) {
 	    
@@ -108,6 +108,8 @@ abstract class UserIdeasHelperRoute {
 	 * Routing a link for category or categories view.
 	 * 
 	 * @param integer $catid
+     *
+     * @return string
 	 */
 	public static function getCategoryRoute($catid) {
 	    
@@ -159,7 +161,9 @@ abstract class UserIdeasHelperRoute {
 	/**
 	 * Routing a link for items view.
 	 *
-	 * @param integer $catid
+	 * @param integer $statusId
+     *
+     * @return string
 	 */
 	public static function getItemsRoute($statusId = 0) {
 	
@@ -284,6 +288,8 @@ abstract class UserIdeasHelperRoute {
 	 * We use this method in the router "UserIdeasParseRoute".
 	 *
 	 * @param integer $id
+     *
+     * @return array
 	 */
 	public static function getItem($id) {
 	

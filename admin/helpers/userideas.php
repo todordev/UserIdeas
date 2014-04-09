@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -74,36 +74,34 @@ class UserIdeasHelper {
         );
 		
 	}
-	
-	/**
-     * Get a category.
-     * 
-     * @params  integer  Category Id
-     * 
-     * @return  object|null
-     */
-    public static function getCategory($categoryId) {
-        
-        $db     = JFactory::getDBO();
-        /** @var $db JDatabaseMySQLi **/
-        
-        $query  = $db->getQuery(true);
-        $query
-            ->select(
-                "a.title, a.description," . 
-                $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug") 
-            ->from($db->quoteName("#__categories", "a"))
-            ->where("a.id = ". (int)$categoryId)
-            ->where("a.extension = ". $db->quote("com_userideas"));
-    	
-        $db->setQuery($query);
-        $category = $db->loadObject();
-        
-        if(!$category) {
-            $category = null;
+
+    public static function prepareStatuses($items) {
+
+        jimport("userideas.status");
+
+        foreach($items as &$item) {
+
+            if(!empty($item->status_params)) {
+                $statusParams = json_decode($item->status_params, true);
+
+                if(!empty($statusParams)) {
+                    $item->status_params = $statusParams;
+                } else {
+                    $item->status_params = null;
+                }
+            }
+
+            $statusData = array(
+                "id"        => $item->status_id,
+                "name"      => $item->status_name,
+                "default"   => $item->status_default,
+                "params"    => $item->status_params
+            );
+
+            $item->status = new UserIdeasStatus();
+            $item->status->bind($statusData);
         }
-        
-        return $category;
+
+        return $items;
     }
-    
 }

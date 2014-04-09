@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -13,14 +13,23 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.view');
 
 class UserIdeasViewStatus extends JViewLegacy {
-    
+
+    /**
+     * @var JDocumentHtml
+     */
+    public $document;
+
+    /**
+     * @var JRegistry
+     */
     protected $state;
+
     protected $item;
     protected $form;
-    
-    protected $documentTitle;
+
     protected $option;
-    
+    protected $documentTitle;
+
     public function __construct($config) {
         parent::__construct($config);
         $this->option = JFactory::getApplication()->input->get("option");

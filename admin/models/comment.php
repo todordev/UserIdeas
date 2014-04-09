@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -17,9 +17,9 @@ class UserIdeasModelComment extends JModelAdmin {
     /**
      * Returns a reference to the a Table object, always creating it.
      *
-     * @param   type    The table type to instantiate
-     * @param   string  A prefix for the table class name. Optional.
-     * @param   array   Configuration array for model. Optional.
+     * @param   string  $type   The table type to instantiate
+     * @param   string  $prefix A prefix for the table class name. Optional.
+     * @param   array   $config Configuration array for model. Optional.
      * @return  JTable  A database object
      * @since   1.6
      */
@@ -53,18 +53,21 @@ class UserIdeasModelComment extends JModelAdmin {
      * @since   1.6
      */
     protected function loadFormData(){
+
         // Check the session for previously entered form data.
         $data = JFactory::getApplication()->getUserState($this->option.'.edit.comment.data', array());
         if(empty($data)){
             $data = $this->getItem();
         }
+
         return $data;
     }
     
     /**
-     * Save data into the DB
-     * @param $data   The data of item
-     * @return     	  Item ID
+     * Save data into the DB.
+     *
+     * @param array $data
+     * @return  int
      */
     public function save($data){
         
@@ -74,6 +77,8 @@ class UserIdeasModelComment extends JModelAdmin {
         
         // Load a record from the database
         $row = $this->getTable();
+        /** @var $row UserIdeasTableComment */
+
         $row->load($id);
         
         $row->set("comment",   $comment);
@@ -81,8 +86,8 @@ class UserIdeasModelComment extends JModelAdmin {
         
         $row->store();
         
-        return $row->id;
-    
+        return $row->get("id");
+
     }
     
 }

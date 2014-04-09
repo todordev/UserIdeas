@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -16,17 +16,17 @@ defined('_JEXEC') or die;
             <?php echo JHtml::_('grid.id', $i, $item->id); ?>
         </td>
         <td>
-		    <?php echo JHtml::_('date', $item->record_date, JText::_('DATE_FORMAT_LC2')); ?>
-	    </td>
-		<td class="center">
-		    <?php echo $item->votes;?>
-	    </td>
-	    <td class="center hidden-phone">
 			<?php echo $this->escape($item->name); ?>
 		</td>
-	    <td class="hidden-phone">
+        <td class="hidden-phone">
 		    <?php echo $this->escape($item->title); ?>
 		</td>
+        <td class="center">
+            <?php echo $item->votes;?>
+        </td>
+        <td class="center hidden-phone">
+            <?php echo JHtml::_('date', $item->record_date, JText::_('DATE_FORMAT_LC2')); ?>
+        </td>
         <td class="center hidden-phone">
             <?php echo $item->id;?>
         </td>

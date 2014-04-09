@@ -3,17 +3,14 @@
  * @package      UserIdeas
  * @subpackage   Library
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
 defined('JPATH_PLATFORM') or die;
 
 /**
- * Version information.
- *
- * @package 	 UserIdeas
- * @subpackage   Library
+ * This class provides version information about the component.
  */
 class UserIdeasVersion {
 	
@@ -36,7 +33,7 @@ class UserIdeasVersion {
      * 
      * @var integer
      */
-    public $devLevel  = '3';
+    public $devLevel  = '4';
     
     /**
      * Release Type
@@ -57,7 +54,7 @@ class UserIdeasVersion {
      * 
      * @var string
      */
-    public $releaseDate= '09-November-2013';
+    public $releaseDate= '09 April, 2014';
     
     /**
      * License
@@ -71,7 +68,7 @@ class UserIdeasVersion {
      * 
      * @var string
      */
-    public $copyright  = '&copy; 2013 ITPrism. All rights reserved.';
+    public $copyright  = '&copy; 2014 ITPrism. All rights reserved.';
     
     /**
      * URL

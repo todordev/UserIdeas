@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -95,7 +95,7 @@ class UserIdeasModelEmails extends JModelList {
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.subject, a.body, a.sender_name, a.sender_email'
+                'a.id, a.title, a.subject, a.body, a.sender_name, a.sender_email'
             )
         );
         $query->from($db->quoteName('#__uideas_emails', 'a'));
@@ -108,7 +108,7 @@ class UserIdeasModelEmails extends JModelList {
             } else {
                 $escaped = $db->escape($search, true);
                 $quoted  = $db->quote("%" . $escaped . "%", false);
-                $query->where('a.subject LIKE '.$quoted);
+                $query->where('a.title LIKE '.$quoted);
             }
         }
 

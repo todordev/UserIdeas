@@ -3,58 +3,60 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
 defined('_JEXEC') or die;
 class UserIdeasTableItem extends JTable {
-    
-    protected $category_name;
-    protected $slug;
+
+    public $id;
+    public $title;
+    public $alias;
+    public $description;
+    public $votes;
+    public $record_date;
+    public $ordering;
+    public $published;
+    public $status_id;
+    public $catid;
+    public $user_id;
+
     protected $catslug;
-    
-    public function __construct($db) {
+
+    public function __construct(JDatabaseDriver $db) {
         parent::__construct('#__uideas_items', 'id', $db);
     }
 
-    public function load($keys = null, $reset = true) {
-        
-        parent::load($keys, $reset);
-        
-        if(!empty($this->id)) {
+    public function getTitle() {
+        return $this->title;
+    }
+
+    public function getSlug() {
+        return $this->id .":" .$this->alias;
+    }
+
+    public function getCategorySlug() {
+
+        if(!$this->catslug) {
 
             $db    = $this->getDbo();
             $query = $db->getQuery(true);
-            
+
             $query
-                ->select(
-                    "b.title AS category_name, " . 
-                    $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug, " .
-                    $query->concatenate(array("b.id", "b.alias"), "-") . " AS catslug" 
-                )
-                ->from($db->quoteName("#__uideas_items", "a"))
-                ->leftJoin($db->quoteName("#__categories", "b") . " ON a.catid = b.id")
-                ->where("a.id = ". (int)$this->id);
-            
+                ->select($query->concatenate(array("a.id", "a.alias"), ":") . " AS catslug")
+                ->from($db->quoteName("#__categories", "a"))
+                ->where("a.id = " .(int)$this->catid);
+
             $db->setQuery($query);
-            $result = $db->loadAssoc();
-            
-            $this->bind($result);
+            $result = $db->loadResult();
+
+            if(!empty($result)) {
+                $this->catslug = $result;
+            }
+
         }
-        
-    }
-    
-    public function getSlug(){
-        return $this->slug;
-    }
-    
-    public function getCatSlug(){
         return $this->catslug;
     }
-    
-    public function getCategoryName(){
-        return $this->category_name;
-    }
-    
+
 }

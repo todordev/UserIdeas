@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -17,8 +17,11 @@ defined('_JEXEC') or die;
         </td>
         <td class="title">
 			<a href="<?php echo JRoute::_("index.php?option=com_userideas&view=email&layout=edit&id=".$item->id); ?>" >
-		        <?php echo $this->escape($item->subject); ?>
+		        <?php echo $this->escape($item->title); ?>
 	        </a>
+	    </td>
+        <td class="hidden-phone">
+            <?php echo $this->escape($item->subject); ?>
 	    </td>
 		<td class="center hidden-phone"><?php echo $this->escape($item->sender_name); ?></td>
 		<td class="center hidden-phone"><?php echo $this->escape($item->sender_email); ?></td>

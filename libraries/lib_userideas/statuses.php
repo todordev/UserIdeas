@@ -3,7 +3,7 @@
  * @package		 UserIdeas
  * @subpackage	 Library
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -11,60 +11,58 @@ defined('JPATH_PLATFORM') or die;
 
 /**
  * This class contains methods that are used for managing statuses.
- * 
- * @package		 UserIdeas
- * @subpackage	 Library
  */
 class UserIdeasStatuses implements Iterator, Countable, ArrayAccess {
 
-    protected $statuses = array();
-    
-    protected $db;
+    protected $options;
+
+    protected $items = array();
     
     protected $position = 0;
-    
+
+    /**
+     * @var JDatabaseDriver
+     */
+    protected $db;
+
     protected static $instance;
     
     /**
-     * Initialize the object and load user statuses.
+     * This method initializes the object.
      *
-     * <code>
-     *
-     * $options = array(
-     *      "limit" 		 => 10,
-     *      "sort_direction" => "DESC"
-     * );
-     *
-     * $statuses = new UserIdeasStatuses($options);
-     *
-     * </code>
-     *
-     * @param array Options that will be used for filtering results.
+     * @param JRegistry $options
      */
-    public function __construct($options = array()) {
-        
-        $this->db 		= JFactory::getDbo();
-        $this->load($options);
-        
+    public function __construct(JRegistry $options = null) {
+        $this->options  = $options;
     }
-    
+
     /**
+     * This method sets a database driver.
      *
-     * Create an instance of the object and load data.
+     * @param $db JDatabaseDriver
+     *
+     * @return self
+     */
+    public function setDb($db) {
+        $this->db = $db;
+        return $this;
+    }
+
+    /**
+     * Create an instance of the object.
      *
      * <code>
-     *
-     * // Create an object of the statuses.
      * $statuses     = UserIdeasStatuses::getInstance();
-     *
      * </code>
+     *
+     * @param JRegistry $options
      *
      * @return null|UserIdeasStatuses
      */
-    public static function getInstance()  {
+    public static function getInstance(JRegistry $options = null)  {
     
         if (empty(self::$instance)){
-            $item = new UserIdeasStatuses();
+            $item = new UserIdeasStatuses($options);
             self::$instance = $item;
         }
     
@@ -72,36 +70,34 @@ class UserIdeasStatuses implements Iterator, Countable, ArrayAccess {
     }
     
     /**
-     * Load all statuses.
+     * Load data of statuses from a database.
      * 
      * <code>
-     * 
+     * $db      = JFactory::getDbo();
      * $options = array(
      * 		"limit" 		 => 10,
      * 		"sort_direction" => "DESC"
      * );
      * 
-     * $statuses = new UserIdeasStatuses();
-     * $statuses->load($options);
-     * 
+     * $statuses = new UserIdeasStatuses($options);
+     * $statuses->setDb($db);
+     * $statuses->load();
      * </code>
      * 
-     * @param array   Options that will be used for filtering results.
      */
-    public function load($options = array()) {
+    public function load() {
         
-        $sortDir  = JArrayHelper::getValue($options, "sort_direction", "DESC");
+        $sortDir  = $this->options->get("sort_direction", "DESC");
         $sortDir  = (strcmp("DESC", $sortDir) == 0) ? "DESC" : "ASC";
         
-        $limit    = JArrayHelper::getValue($options, "limit", 0, "int");
+        $limit    = (int)$this->options->get("limit", 0);
         
         // Create a new query object.
         $query  = $this->db->getQuery(true);
         $query
             ->select("a.id, a.name, a.default")
-            ->from($this->db->quoteName("#__uideas_statuses", "a"));
-        
-        $query->order("a.name ". $sortDir);
+            ->from($this->db->quoteName("#__uideas_statuses", "a"))
+            ->order("a.name ". $sortDir);
         
         if(!empty($limit)) {
             $this->db->setQuery($query, 0, $limit);
@@ -112,7 +108,7 @@ class UserIdeasStatuses implements Iterator, Countable, ArrayAccess {
         $results = $this->db->loadObjectList();
         
         if(!empty($results)) {
-            $this->statuses = $results;
+            $this->items = $results;
         } 
         
     }
@@ -132,7 +128,7 @@ class UserIdeasStatuses implements Iterator, Countable, ArrayAccess {
      * @see Iterator::current()
      */
     public function current() {
-        return (!isset($this->statuses[$this->position])) ? null : $this->statuses[$this->position];
+        return (!isset($this->items[$this->position])) ? null : $this->items[$this->position];
     }
     
     /**
@@ -159,7 +155,7 @@ class UserIdeasStatuses implements Iterator, Countable, ArrayAccess {
      * @see Iterator::valid()
      */
     public function valid() {
-        return isset($this->statuses[$this->position]);
+        return isset($this->items[$this->position]);
     }
     
     /**
@@ -168,7 +164,7 @@ class UserIdeasStatuses implements Iterator, Countable, ArrayAccess {
      * @see Countable::count()
      */
     public function count() {
-        return (int)count($this->statuses);
+        return (int)count($this->items);
     }
 
     /**
@@ -178,9 +174,9 @@ class UserIdeasStatuses implements Iterator, Countable, ArrayAccess {
      */
     public function offsetSet($offset, $value) {
         if (is_null($offset)) {
-            $this->statuses[] = $value;
+            $this->items[] = $value;
         } else {
-            $this->statuses[$offset] = $value;
+            $this->items[$offset] = $value;
         }
     }
     
@@ -190,7 +186,7 @@ class UserIdeasStatuses implements Iterator, Countable, ArrayAccess {
      * @see ArrayAccess::offsetExists()
      */
     public function offsetExists($offset) {
-        return isset($this->statuses[$offset]);
+        return isset($this->items[$offset]);
     }
     
     /**
@@ -199,7 +195,7 @@ class UserIdeasStatuses implements Iterator, Countable, ArrayAccess {
      * @see ArrayAccess::offsetUnset()
      */
     public function offsetUnset($offset) {
-        unset($this->statuses[$offset]);
+        unset($this->items[$offset]);
     }
     
     /**
@@ -208,7 +204,7 @@ class UserIdeasStatuses implements Iterator, Countable, ArrayAccess {
      * @see ArrayAccess::offsetGet()
      */
     public function offsetGet($offset) {
-        return isset($this->statuses[$offset]) ? $this->statuses[$offset] : null;
+        return isset($this->items[$offset]) ? $this->items[$offset] : null;
     }
     
     /**
@@ -217,7 +213,7 @@ class UserIdeasStatuses implements Iterator, Countable, ArrayAccess {
      * @return null|object
      */
     public function getDefault() {
-        foreach($this->statuses as $status) {
+        foreach($this->items as $status) {
             if(!empty($status->default)) {
                 return $status;
             }
@@ -225,12 +221,17 @@ class UserIdeasStatuses implements Iterator, Countable, ArrayAccess {
         
         return null;
     }
-    
+
+    /**
+     * This method prepares and returns the statuses as an array, which can be used as options.
+     *
+     * @return array
+     */
     public function getStatusesOptions() {
         
         $options = array();
         
-        foreach($this->statuses as $status) {
+        foreach($this->items as $status) {
             $options[] = array("text" => $status->name, "value" => $status->id);
         }
         

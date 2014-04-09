@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -24,14 +24,14 @@ class UserIdeasControllerComment extends ITPrismControllerFormBackend {
     /**
      * Save an item
      */
-    public function save(){
-        
+    public function save($key = null, $urlVar = null){
+
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
         
         $data    = $this->input->post->get('jform', array(), 'array');
         $itemId  = JArrayHelper::getValue($data, "id");
         
-        $resposneData = array(
+        $responseOptions = array(
             "task" => $this->getTask(),
             "id"   => $itemId
         );
@@ -43,7 +43,7 @@ class UserIdeasControllerComment extends ITPrismControllerFormBackend {
         /** @var $form JForm **/
         
         if(!$form){
-            throw new Exception($model->getError(), 500);
+            throw new Exception(JText::_("COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
             
         // Validate the form data
@@ -51,18 +51,18 @@ class UserIdeasControllerComment extends ITPrismControllerFormBackend {
         
         // Check for errors
         if($validData === false){
-            $this->displayNotice($form->getErrors(), $resposneData);
+            $this->displayNotice($form->getErrors(), $responseOptions);
             return;
         }
             
-        try{
-            $itemId = $model->save($validData);
-        }catch(Exception $e){
+        try {
+            $model->save($validData);
+        } catch(Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
         
-        $this->displayMessage(JText::_('COM_USERIDEAS_COMMENT_SAVED'), $resposneData);
+        $this->displayMessage(JText::_('COM_USERIDEAS_COMMENT_SAVED'), $responseOptions);
     
     }
     

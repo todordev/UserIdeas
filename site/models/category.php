@@ -3,12 +3,8 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -24,7 +20,7 @@ class UserIdeasModelCategory extends JModelList {
 	 /**
      * Constructor.
      *
-     * @param   array   An optional associative array of configuration settings.
+     * @param   array   $config An optional associative array of configuration settings.
      * @see     JController
      * @since   1.6
      */
@@ -55,7 +51,7 @@ class UserIdeasModelCategory extends JModelList {
         parent::populateState('a.record_date', 'asc');
         
         $app       = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
 
         // Load the component parameters.
         $params = $app->getParams($this->option);
@@ -77,7 +73,7 @@ class UserIdeasModelCategory extends JModelList {
         // Pagination
         $value = $params->get("items_display_results_number", 0);
         if(!$value) {
-            $value = $app->input->getInt('limit', $app->getCfg('list_limit', 0));
+            $value = $app->input->getInt('limit', $app->get('list_limit', 0));
         }
         $this->setState('list.limit', $value);
         
@@ -128,7 +124,7 @@ class UserIdeasModelCategory extends JModelList {
                 'b.name, ' .
                 'c.title AS category, ' .
                 $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug, " .
-                'd.name AS status_name'
+                'd.name AS status_name, d.params AS status_params, d.default AS status_default'
             )
         );
         $query->from($db->quoteName('#__uideas_items', "a"));
@@ -154,7 +150,7 @@ class UserIdeasModelCategory extends JModelList {
 
         return $query;
     }
-    
+
 	/**
      * Prepare a string used for ordering results.
      * 
@@ -170,7 +166,7 @@ class UserIdeasModelCategory extends JModelList {
 
             case 2:
                 $orderCol  = "a.record_date";
-                $listOrder = "DESC";
+                $orderDir  = "DESC";
                 break;
 
             default:
@@ -183,7 +179,7 @@ class UserIdeasModelCategory extends JModelList {
         
         // Set the type of ordering
         if(!in_array(strtoupper($orderDir), array('ASC', 'DESC'))){
-            $listOrder = 'ASC';
+            $orderDir = 'ASC';
         }
         $this->setState('list.direction', $orderDir);
         

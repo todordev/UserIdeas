@@ -3,12 +3,8 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -39,13 +35,13 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend {
         return $model;
     }
     
-    public function save() {
+    public function save($key = null, $urlVar = null) {
         
         // Check for request forgeries.
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
  
 		// Check for valid user id
-        $userId = JFactory::getUser()->id;
+        $userId = JFactory::getUser()->get("id");
         if(!$userId) {
             $redirectOptions = array(
     		    "force_direction" => "index.php?option=com_users&view=login"
@@ -55,7 +51,7 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend {
         }
         
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
         
 		// Get the data from the form POST
 		$data    = $app->input->post->get('jform', array(), 'array');
@@ -74,7 +70,7 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend {
         /** @var $form JForm **/
         
         if(!$form){
-            throw new Exception($model->getError(), 500);
+            throw new Exception(JText::_("COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
             
         // Test if the data is valid.
@@ -82,12 +78,6 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend {
         
         // Check for validation errors.
         if($validData === false){
-            
-            $redirectOptions = array(
-                "view" => "details",
-                "id"   => $itemId
-            );
-            
             $this->displayNotice($form->getErrors(), $redirectOptions);
             return;
         }
@@ -97,18 +87,19 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend {
             $model->save($validData);
 
             jimport("userideas.item");
-            $item = UserIdeasItem::getInstance($itemId);
+            $item = new UserIdeasItem($itemId);
+            $item->setDb(JFactory::getDbo());
+            $item->load();
             
         } catch (Exception $e){
-            
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
-            
+            throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
         
         $redirectOptions = array(
-            "force_direction" => UserIdeasHelperRoute::getDetailsRoute($item->getSlug(), $item->getCatSlug())
+            "force_direction" => UserIdeasHelperRoute::getDetailsRoute($item->getSlug(), $item->getCategorySlug())
         );
+
         // Redirect to next page
         $this->displayMessage(JText::_("COM_USERIDEAS_COMMENT_SENT_SUCCESSFULLY"), $redirectOptions);
 			

@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -13,8 +13,22 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.view');
 
 class UserIdeasViewDashboard extends JViewLegacy {
-    
+
+    /**
+     * @var JDocumentHtml
+     */
+    public $document;
+
+    public $latest;
+    public $popular;
+    public $mostVoted;
+
     protected $option;
+
+    protected $version;
+    protected $itprismVersion;
+
+    protected $sidebar;
     
     public function __construct($config){
         parent::__construct($config);
@@ -33,7 +47,28 @@ class UserIdeasViewDashboard extends JViewLegacy {
             $itprismVersion       = new ITPrismVersion();
             $this->itprismVersion = $itprismVersion->getShortVersion();
         }
-        
+
+        jimport("userideas.statistics.basic");
+        $basic = new UserIdeasStatisticsBasic(JFactory::getDbo());
+        $this->totalItems    = $basic->getTotalItems();
+        $this->totalVotes    = $basic->getTotalVotes();
+        $this->totalComments = $basic->getTotalComments();
+
+        // Get popular items.
+        jimport("userideas.statistics.items.popular");
+        $this->popular = new UserIdeasStatisticsItemsPopular(JFactory::getDbo());
+        $this->popular->load(5);
+
+        // Get most voted items.
+        jimport("userideas.statistics.items.mostvoted");
+        $this->mostVoted = new UserIdeasStatisticsItemsMostVoted(JFactory::getDbo());
+        $this->mostVoted->load(5);
+
+        // Get latest items.
+        jimport("userideas.statistics.items.latest");
+        $this->latest = new UserIdeasStatisticsItemsLatest(JFactory::getDbo());
+        $this->latest->load(5);
+
         // Add submenu
         UserIdeasHelper::addSubmenu($this->getName());
         
@@ -76,7 +111,9 @@ class UserIdeasViewDashboard extends JViewLegacy {
 	protected function setDocument() {
 	    
 		$this->document->setTitle(JText::_('COM_USERIDEAS_DASHBOARD'));
-		
+
+        $this->document->addStyleSheet("../media/".$this->option.'/css/admin/style.css');
+
 	}
 	
 }

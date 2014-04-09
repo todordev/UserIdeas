@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -17,31 +17,33 @@ if(!class_exists("UserIdeasHelperRoute")) {
 /**
  * Method to build Route
  * @param array $query
+ *
+ * @return array
  */
 function UserIdeasBuildRoute(&$query){
-    
+
     $segments = array();
     
     // get a menu item based on Itemid or currently active
     $app  = JFactory::getApplication();
     $menu = $app->getMenu();
-    
+
     // we need a menu item.  Either the one specified in the query, or the current active one if none specified
     if(empty($query['Itemid'])){
         $menuItem = $menu->getActive();
     }else{
         $menuItem = $menu->getItem($query['Itemid']);
     }
-    
+
     $mOption	= (empty($menuItem->query['option'])) ? null : $menuItem->query['option'];
     $mView	    = (empty($menuItem->query['view']))   ? null : $menuItem->query['view'];
-	$mCatid	    = (empty($menuItem->query['catid']))  ? null : $menuItem->query['catid'];
+//	$mCatid	    = (empty($menuItem->query['catid']))  ? null : $menuItem->query['catid'];
 	$mId	    = (empty($menuItem->query['id']))     ? null : $menuItem->query['id'];
-	
+
 	// If is set view and Itemid missing, we have to put the view to the segments
 	if (isset($query['view'])) {
 		$view = $query['view'];
-		
+
 		if (empty($query['Itemid']) OR ($mOption !== "com_userideas")) {
 			$segments[] = $query['view'];
 		}
@@ -51,7 +53,8 @@ function UserIdeasBuildRoute(&$query){
 			unset($query['view']);
 		}
 	};
-    
+
+
     // are we dealing with a category that is attached to a menu item?
 	if (isset($view) AND ($mView == $view) AND (isset($query['id'])) AND ($mId == intval($query['id']))) {
 		unset($query['view']);
@@ -59,7 +62,7 @@ function UserIdeasBuildRoute(&$query){
 		unset($query['id']);
 		return $segments;
 	}
-	
+
     // Views
 	if(isset($view)) {
 	    
@@ -82,7 +85,7 @@ function UserIdeasBuildRoute(&$query){
 	            $segments[] = $query['id'];
 	            unset($query['id']);
             break;
-	        
+
     	}
         
 	}
@@ -99,14 +102,15 @@ function UserIdeasBuildRoute(&$query){
 			}
 		}
 	};
-	
-    
+
     return $segments;
 }
 
 /**
  * Method to parse Route
  * @param array $segments
+ *
+ * @return array
  */
 function UserIdeasParseRoute($segments){
     
@@ -119,15 +123,15 @@ function UserIdeasParseRoute($segments){
     
     // Count route segments
     $count      = count($segments);
-    
+
     // Standard routing for item.  If we don't pick up an Itemid then we get the view from the segments
 	// the first segment is the view and the last segment is the id of the details, category,...
     if(!isset($item)) {
         $vars['view']   = $segments[0];
         $vars['id']     = $segments[$count - 1];
         return $vars;
-    } 
-    
+    }
+
     // COUNT == 1
     
     // Category

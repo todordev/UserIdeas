@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -35,9 +35,9 @@ if($this->item->event->beforeDisplayContent) {
                 
                 $profile = JHtml::_("userideas.profile", $this->socialProfiles, $this->item->user_id);
                 
-                echo JHtml::_("userideas.publishedBy", $this->item->name, $this->item->record_date, $profile);
+                echo JHtml::_("userideas.publishedByOn", $this->item->name, $this->item->record_date, $profile);
                 echo JHtml::_("userideas.category", $this->item->category, $this->item->catslug);
-                echo JHtml::_("userideas.status", $this->item->status_name, $this->item->status_id);
+                echo JHtml::_("userideas.status", $this->item->status);
                 ?>
                 </div>
                 <div class="pull-right">
@@ -87,7 +87,7 @@ if(!empty($this->item->event->onContentAfterDisplay)) {
             	<div class="pull-left">
                 <?php 
                 $profile = JHtml::_("userideas.profile", $this->socialProfiles, $comment->user_id);
-                echo JHtml::_("userideas.publishedBy", $comment->author, $comment->record_date, $profile);
+                echo JHtml::_("userideas.publishedByOn", $comment->author, $comment->record_date, $profile);
                 ?>
                 </div>
                 <div class="pull-right">
@@ -129,4 +129,4 @@ if(!empty($this->item->event->onContentAfterDisplay)) {
         
     </div>
 </div>
-<?php echo $this->version->backlink; ?>
+<?php echo $this->version->backlink;?>

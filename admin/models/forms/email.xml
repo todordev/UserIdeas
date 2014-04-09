@@ -2,10 +2,16 @@
 <form>
     <fieldset name="email">
 
-        <field name="subject" type="text" class="span12" 
-            label="COM_USERIDEAS_SUBJECT" 
-            description="COM_USERIDEAS_SUBJECT_DESC" 
+        <field name="title" type="text" class="span12"
+            label="COM_USERIDEAS_TITLE"
+            description="COM_USERIDEAS_EMAIL_TITLE_DESC"
             filter="trim" 
+        />
+
+        <field name="subject" type="text" class="span12"
+            label="COM_USERIDEAS_SUBJECT"
+            description="COM_USERIDEAS_SUBJECT_DESC"
+            filter="trim"
         />
         
         <field name="sender_name" type="text" class="span6" 

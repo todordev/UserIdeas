@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -14,12 +14,38 @@ jimport('joomla.application.categories');
 jimport('joomla.application.component.view');
 
 class UserIdeasViewDetails extends JViewLegacy {
-    
-    protected $state      = null;
-    protected $params     = null;
-    protected $item       = null;
-    
-    protected $option     = null;
+
+    /**
+     * @var JDocumentHtml
+     */
+    public $document;
+
+    /**
+     * @var JRegistry
+     */
+    protected $state;
+
+    /**
+     * @var JRegistry
+     */
+    protected $params;
+
+    protected $form;
+    protected $item;
+
+    protected $category;
+    protected $comments;
+    protected $userId;
+    protected $socialProfiles;
+    protected $avatarsSize;
+    protected $defaultAvatar;
+
+    protected $disabledButton;
+    protected $debugMode;
+
+    protected $option;
+
+    protected $pageclass_sfx;
     
     public function __construct($config){
         parent::__construct($config);
@@ -33,64 +59,54 @@ class UserIdeasViewDetails extends JViewLegacy {
     public function display($tpl = null){
         
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
         
         // Initialise variables
         $this->state      = $this->get('State');
         $this->item       = $this->get('Item');
         $this->params     = $this->state->get("params");
 
-        $this->category   = UserIdeasHelper::getCategory($this->item->catid);
+        jimport("userideas.category");
+        $this->category   = new UserIdeasCategory($this->item->catid);
         
-        $this->userId     = JFactory::getUser()->id;
+        $this->userId     = JFactory::getUser()->get("id");
         
         // Get the model of the comments
         // that I will use to load all comments for this item.
-        $model            = JModelLegacy::getInstance("Comments", "UserIdeasModel");
-        $this->comments   = $model->getItems();
+        $modelComments    = JModelLegacy::getInstance("Comments", "UserIdeasModel");
+        $this->comments   = $modelComments->getItems();
         
         // Get the model of the comment
-        $modelForm        = JModelLegacy::getInstance("Comment", "UserIdeasModel");
+        $commentModelForm = JModelLegacy::getInstance("Comment", "UserIdeasModel");
         
         // Validate the owner of the comment,
         // If someone wants to edit it.
-        $commentId        = $modelForm->getState("comment_id");
-        if(!empty($commentId)) {
-            
-            try {
-                $item         = $modelForm->getItem($commentId, $this->userId);
-            } catch (Exception $e) {
-                
-                $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_INVALID_COMMENT"), "error");
-                $app->redirect( JRoute::_(UserIdeasHelperRoute::getDetailsRoute($item->slug, $item->catid), false) );
-                return; 
+        $commentId        = $commentModelForm->getState("comment_id");
 
+        if(!empty($commentId)) {
+
+            $comment      = $commentModelForm->getItem($commentId, $this->userId);
+
+            if(!$comment) {
+                $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_INVALID_COMMENT"), "error");
+                $app->redirect( JRoute::_(UserIdeasHelperRoute::getItemsRoute(), false) );
+                return;
             }
-            
+
         }
         
         // Get comment form
-        $this->form       = $modelForm->getForm();
-        
-        // Get users IDs
-        $usersIds = array();
-        foreach($this->comments as $comment) {
-            $usersIds[] = $comment->user_id;
-        }
-        $usersIds[] = $this->item->user_id;
-        $usersIds   = array_unique($usersIds);
+        $this->form             = $commentModelForm->getForm();
         
         // Prepare integration. Load avatars and profiles.
-        $this->prepareIntegration($usersIds, $this->params);
+        $this->prepareIntegration($this->params);
         
         // Prepare the link to the details page.
         $this->item->link       = UserIdeasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug);
         $this->item->text       = $this->item->description;
-        
-        // HTML Helpers
-		JHtml::addIncludePath(ITPRISM_PATH_LIBRARY.'/ui/helpers');
-		JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-        
+
+        $this->version    = new UserIdeasVersion();
+
         $this->prepareDebugMode();
         $this->prepareDocument();
         
@@ -110,9 +126,11 @@ class UserIdeasViewDetails extends JViewLegacy {
         
         $this->item->description = $this->item->text;
         unset($this->item->text);
-        
-        $this->version   = new UserIdeasVersion();
-        
+
+        // Count hits
+        $model = $this->getModel();
+        $model->hit($this->item->id);
+
         parent::display($tpl);
     }
     
@@ -122,12 +140,14 @@ class UserIdeasViewDetails extends JViewLegacy {
     protected function prepareDebugMode() {
         
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
 
         $this->disabledButton = "";
         
         // Check for maintenance (debug) state
         $params = $this->state->get("params");
+        /** @var $params JRegistry */
+
         $this->debugMode = $params->get("debug_item_adding_disabled", 0);
         if($this->debugMode) {
             $msg = JString::trim($params->get("debug_disabled_functionality_msg"));
@@ -148,16 +168,16 @@ class UserIdeasViewDetails extends JViewLegacy {
     protected function prepareDocument(){
 
         $app = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
         
          // Prepare page suffix
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
         
         // Prepare page heading
-        $this->prepearePageHeading();
+        $this->preparePageHeading();
         
         // Prepare page heading
-        $this->prepearePageTitle();
+        $this->preparePageTitle();
         
         // Meta Description
         $this->document->setDescription($this->params->get('menu-meta_description'));
@@ -180,12 +200,12 @@ class UserIdeasViewDetails extends JViewLegacy {
         
     }
 
-    private function prepearePageTitle() {
+    private function preparePageTitle() {
         
         $app        = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
         
-        // If it is assigned to menu item, params will conatins "page_title".
+        // If it is assigned to menu item, params will contains "page_title".
         // If it is not assigned, I will use the title of the item
         if($this->params->get("page_title")) {
             $title = $this->params->get("page_title");
@@ -212,21 +232,21 @@ class UserIdeasViewDetails extends JViewLegacy {
 		
         // Add title before or after Site Name
         if(!$title){
-            $title = $app->getCfg('sitename');
-        } elseif ($app->getCfg('sitename_pagetitles', 0) == 1) {
-			$title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
-		} elseif ($app->getCfg('sitename_pagetitles', 0) == 2) {
-			$title = JText::sprintf('JPAGETITLE', $title, $app->getCfg('sitename'));
+            $title = $app->get('sitename');
+        } elseif ($app->get('sitename_pagetitles', 0) == 1) {
+			$title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+		} elseif ($app->get('sitename_pagetitles', 0) == 2) {
+			$title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
 		}
 		
         $this->document->setTitle($title);
 		
     }
     
-    private function prepearePageHeading() {
+    private function preparePageHeading() {
         
         $app         = JFactory::getApplication();
-        /** @var $app JSite **/
+        /** @var $app JApplicationSite **/
         
         $menus       = $app->getMenu();
         
@@ -245,12 +265,19 @@ class UserIdeasViewDetails extends JViewLegacy {
     /**
      * Prepare social profiles.
      *
-     * @param array     $usersIds
      * @param JRegistry $params
      *
      * @todo Move it to a trait when traits become mass.
      */
-    protected function prepareIntegration($usersIds, $params) {
+    protected function prepareIntegration($params) {
+
+        // Get users IDs
+        $usersIds = array();
+        foreach($this->comments as $comment) {
+            $usersIds[] = $comment->user_id;
+        }
+        $usersIds[] = $this->item->user_id;
+        $usersIds   = array_unique($usersIds);
 
         // Get a social platform for integration
         $socialPlatform         = $params->get("integration_social_platform");

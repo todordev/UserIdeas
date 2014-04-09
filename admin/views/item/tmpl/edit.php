@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -25,10 +25,6 @@ defined('_JEXEC') or die;
     				<div class="controls"><?php echo $this->form->getInput('alias'); ?></div>
                 </div>
                 <div class="control-group">
-                    <div class="control-label"><?php echo $this->form->getLabel('description'); ?></div>
-    				<div class="controls"><?php echo $this->form->getInput('description'); ?></div>
-                </div>
-                <div class="control-group">
                     <div class="control-label"><?php echo $this->form->getLabel('catid'); ?></div>
     				<div class="controls"><?php echo $this->form->getInput('catid'); ?></div>
                 </div>
@@ -48,7 +44,10 @@ defined('_JEXEC') or die;
                     <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
     				<div class="controls"><?php echo $this->form->getInput('id'); ?></div>
                 </div>
-                    
+                <div class="control-group">
+                    <div class="control-label"><?php echo $this->form->getLabel('description'); ?></div>
+                    <div class="controls"><?php echo $this->form->getInput('description'); ?></div>
+                </div>
             </fieldset>
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>

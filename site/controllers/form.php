@@ -3,12 +3,8 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * UserIdeas is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
  */
 
 // no direct access
@@ -39,7 +35,7 @@ class UserIdeasControllerForm extends ITPrismControllerFormFrontend {
         return $model;
     }
     
-    public function save() {
+    public function save($key = null, $urlVar = null) {
         
         // Check for request forgeries.
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -47,8 +43,7 @@ class UserIdeasControllerForm extends ITPrismControllerFormFrontend {
 		// Get the data from the form POST
 		$data    = $this->input->post->get('jform', array(), 'array');
         $itemId  = JArrayHelper::getValue($data, "id", 0, "int");
-        $catId   = JArrayHelper::getValue($data, "catid", 0, "int");
-        
+
         $redirectOptions = array(
 		    "view"    => "form",
             "id"      => $itemId
@@ -63,24 +58,26 @@ class UserIdeasControllerForm extends ITPrismControllerFormFrontend {
             $this->displayNotice(JText::_('COM_USERIDEAS_ERROR_NOT_LOG_IN'), $redirectOptions);
             return;
         }
-        
+
         // Check for valid owner of the item
         if(!empty($itemId)) {
             
             jimport("userideas.item");
             $item = new UserIdeasItem($itemId);
+            $item->setDb(JFactory::getDbo());
+            $item->load();
             
             if(!$item->isValid($itemId, $userId)) {
                 $redirectOptions = array(
-        		    "view" => "items"
+        		    "force_direction" => UserIdeasHelperRoute::getItemsRoute()
         		);
-        		
+
                 $this->displayNotice(JText::_('COM_USERIDEAS_ERROR_INVALID_ITEM'), $redirectOptions);
                 return;
             }
             
         }
-        
+
         $model   = $this->getModel();
         /** @var $model UserIdeasModelForm **/
         
@@ -88,7 +85,7 @@ class UserIdeasControllerForm extends ITPrismControllerFormFrontend {
         /** @var $form JForm **/
         
         if(!$form){
-            throw new Exception($model->getError(), 500);
+            throw new Exception(JText::_("COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED"), 500);
         }
             
         // Test if the data is valid.
@@ -110,12 +107,12 @@ class UserIdeasControllerForm extends ITPrismControllerFormFrontend {
         } catch(Exception $e){
             
             JLog::add($e->getMessage());
-            throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'), ITPrismErrors::CODE_ERROR);
+            throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
             
         }
         
         // Redirect to next page
-        $this->displayMessage(JText::_('COM_USERIDEAS_ITEM_SAVED_SUCCESSFULY'), $redirectOptions);
+        $this->displayMessage(JText::_('COM_USERIDEAS_ITEM_SAVED_SUCCESSFULLY'), $redirectOptions);
 			
     }
     

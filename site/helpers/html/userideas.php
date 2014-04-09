@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -23,7 +23,7 @@ abstract class JHtmlUserIdeas {
      * Generate a link to an user image of a social platform.
      * 
      * @param object $socialProfiles	Social profiles object.
-     * @param integer $user		        User ID
+     * @param integer $userId		    User ID
      * @param string $default		    A link to default picture.
      * @param array $options		    Options that will be used to integration. 
      * 
@@ -42,10 +42,10 @@ abstract class JHtmlUserIdeas {
     public static function avatar($socialProfiles, $userId, $default = null, $options = array()) {
         
         $avatarSize = JArrayHelper::getValue($options, "avatar_size", 50);
-        
+
         $link = (!$socialProfiles) ? null : $socialProfiles->getAvatar($userId, $avatarSize);
-        
-        // Set the linke to default picture
+
+        // Set the link to default picture
         if(!$link AND !empty($default)) {
             $link = $default;
         }
@@ -58,7 +58,7 @@ abstract class JHtmlUserIdeas {
      * Generate a link to an user image of a social platform
      * 
      * @param object  $socialProfiles	Social profiles object.
-     * @param integer $user		        User ID
+     * @param integer $userId           User ID
      * @param string  $default		    A link to default profile.
      * 
      * @return string 
@@ -86,7 +86,7 @@ abstract class JHtmlUserIdeas {
 		
     }
     
-    public static function publishedBy($name, $date, $link = null) {
+    public static function publishedBy($name, $link = null) {
     
         if(!empty($link)) {
             $profile = '<a href="'.$link.'" rel="nofollow">'.htmlspecialchars($name, ENT_QUOTES, "utf-8").'</a>';
@@ -94,9 +94,30 @@ abstract class JHtmlUserIdeas {
             $profile = $name;
         }
     
+        $html = JText::sprintf("COM_USERIDEAS_PUBLISHED_BY", $profile);
+         
+        return $html;
+    }
+
+    public static function publishedByOn($name, $date, $link = null) {
+
+        if(!empty($link)) {
+            $profile = '<a href="'.$link.'" rel="nofollow">'.htmlspecialchars($name, ENT_QUOTES, "utf-8").'</a>';
+        } else {
+            $profile = $name;
+        }
+
         $date = JHTML::_('date', $date, JText::_('DATE_FORMAT_LC3'));
         $html = JText::sprintf("COM_USERIDEAS_PUBLISHED_BY_ON", $profile, $date);
-         
+
+        return $html;
+    }
+
+    public static function publishedOn($date) {
+
+        $date = JHTML::_('date', $date, JText::_('DATE_FORMAT_LC3'));
+        $html = JText::sprintf("COM_USERIDEAS_PUBLISHED_ON", $date);
+
         return $html;
     }
     
@@ -113,16 +134,18 @@ abstract class JHtmlUserIdeas {
         return $html;
     }
     
-    public static function status($name, $statusId = 0) {
+    public static function status(UserIdeasStatus $status, $displayLink = true) {
     
-        if(!$name) { return ""; }
-        
-        if(!empty($statusId)) {
-            $html = '<a href="'.UserIdeasHelperRoute::getItemsRoute($statusId).'" class="ui-status-label"><span class="label">'.htmlspecialchars($name, ENT_QUOTES, "utf-8").'</span></a>';
+        if(!$status->getId()) { return ""; }
+
+        $styles = $status->getParam("style_class", "");
+
+        if(!empty($displayLink)) {
+            $html = '<a href="'.UserIdeasHelperRoute::getItemsRoute($status->getId()).'" class="ui-status-label"><span class="label'.$styles.'">'.htmlspecialchars($status->getName(), ENT_QUOTES, "utf-8").'</span></a>';
         } else {
-            $html = '<span class="label ui-status-label">'.htmlspecialchars($name, ENT_QUOTES, "utf-8").'</span>';
+            $html = '<span class="label ui-status-label '.$styles.'">'.htmlspecialchars($status->getName(), ENT_QUOTES, "utf-8").'</span>';
         }
-    
+
         return $html;
     }
     

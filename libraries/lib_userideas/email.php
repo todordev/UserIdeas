@@ -3,21 +3,32 @@
  * @package      UserIdeas
  * @subpackage   Library
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 defined('JPATH_PLATFORM') or die;
 
-JLoader::register("UserIdeasTableEmail", JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . "components" . DIRECTORY_SEPARATOR . "com_userideas" . DIRECTORY_SEPARATOR . "tables" . DIRECTORY_SEPARATOR . "email.php");
-JLoader::register("UserIdeasInterfaceTable", JPATH_LIBRARIES . DIRECTORY_SEPARATOR . "userideas" . DIRECTORY_SEPARATOR . "interface" . DIRECTORY_SEPARATOR . "table.php");
-
-class UserIdeasEmail implements UserIdeasInterfaceTable {
+/**
+ * This class provides functionality for parsing email template.
+ */
+class UserIdeasEmail {
     
     const MAIL_MODE_HTML    = true;
     const MAIL_MODE_PLAIN   = false;
-    
-    protected $table;
-    protected static $instances = array();
+
+    protected $id    = 0;
+    protected $title = "";
+
+    protected $subject      = "";
+    protected $body         = "";
+    protected $sender_name  = "";
+    protected $sender_email = "";
+
+    /**
+     * @var JDatabaseDriver
+     */
+    protected $db;
+
     protected $replaceable = array(
         "{SITE_NAME}", 
         "{SITE_URL}", 
@@ -29,127 +40,235 @@ class UserIdeasEmail implements UserIdeasInterfaceTable {
         "{RECIPIENT_EMAIL}"
     );
 
-    public function __construct($id) {
-        $this->table = new UserIdeasTableEmail(JFactory::getDbo());
-        
-        if (!empty($id)) {
-            $this->load($id);
-        }
+    /**
+     * This method initializes the object.
+     *
+     * @param string $subject Mail subject.
+     * @param string $body Mail body.
+     */
+    public function __construct($subject = "", $body = "") {
+        $this->subject = $subject;
+        $this->body    = $body;
     }
 
     /**
+     * This method sets a database driver.
      *
-     * Create an instance of the object and load data.
-     *
-     * @param number $id
-     *
-     * @return null|UserIdeasItem
-     * 
-     * <code>
-     *
-     * $itemId  = 1;
-     * $item    = UserIdeasItem::getInstance($itemId);
-     *
-     * </code>
-     *
+     * @param JDatabaseDriver $db
+     * @return self
      */
-    public static function getInstance($id) {
-        if (empty(self::$instances[$id])) {
-            $item = new UserIdeasEmail($id);
-            self::$instances[$id] = $item;
-        }
-        
-        return self::$instances[$id];
-    }
-
-    public function load($keys, $reset = true) {
-        $this->table->load($keys, $reset);
-    }
-
-    public function bind($src, $ignore = array()) {
-        $this->table->bind($src, $ignore);
-    }
-
-    public function store($updateNulls = false) {
-        $this->table->store($updateNulls);
-    }
-
-    public function getId() {
-        return $this->table->id;
-    }
-
-    public function setSubject($subject) {
-        $this->table->subject   = strip_tags($subject);
+    public function setDb(JDatabaseDriver $db) {
+        $this->db = $db;
         return $this;
     }
-    
-    public function getSubject() {
-        return strip_tags($this->table->subject);
+
+    /**
+     * This method loads data about e-mail template from a database.
+     *
+     * <code>
+     * $db      = JFactory::getDbo();
+     * $emailId = 1;
+     *
+     * $email   = new UserIdeasEmail();
+     * $email->setDb($db);
+     * $email->load($emailId);
+     * </code>
+     */
+    public function load($id) {
+
+        $query = $this->db->getQuery(true);
+        $query
+            ->select("a.id, a.title, a.subject, a.body, a.sender_name, a.sender_email")
+            ->from($this->db->quoteName("#__uideas_emails", "a"))
+            ->where("a.id = " .(int)$id);
+
+        $this->db->setQuery($query);
+        $result = $this->db->loadAssoc();
+
+        if(!empty($result)) {
+            $this->bind($result);
+        }
+
     }
 
     /**
-     * Return e-mail body.
-     * 
-     * @param string Mail type - plain ( plain text ) or html.
-     * 
-     * @return string
-     * 
+     * This method sets data to object parameters.
+     *
      * <code>
-     * 
-     * $itemId  = 1;
-     * $item    = UserIdeasItem::getInstance($itemId);
-     * 
-     * $body    = $item->getBody("plain");
-     * 
+     * $data = array(
+     *      "subject"       => "My subject",
+     *      "body"          => "My body"
+     *      "sender_name"   => "John Dow"
+     *      "sender_email"  => "john@mydomain.com"
+     * );
+     *
+     * $email   = new UserIdeasEmail();
+     * $email->bind($data);
      * </code>
+     */
+    public function bind($data) {
+
+        $this->id    = JArrayHelper::getValue($data, "id", 0, "int");
+        $this->title = JArrayHelper::getValue($data, "title");
+
+        $this->setSubject(JArrayHelper::getValue($data,"subject"));
+        $this->setBody(JArrayHelper::getValue($data,"body"));
+        $this->setSenderName(JArrayHelper::getValue($data,"sender_name"));
+        $this->setSenderEmail(JArrayHelper::getValue($data,"sender_email"));
+
+        return $this;
+    }
+
+    /**
+     * It returns an id of an email template.
+     *
+     * @return integer
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * This method sets a subject of the e-mail template.
+     *
+     * @param $subject
+     * @return $this
+     */
+    public function setSubject($subject) {
+        $this->subject = strip_tags($subject);
+        return $this;
+    }
+
+    /**
+     * This method returns the subject of an email template.
+     *
+     * @return string
+     */
+    public function getSubject() {
+        return strip_tags($this->subject);
+    }
+
+    /**
+     * This method sets a body of an email template.
+     *
+     * @param $body
+     * @return $this
+     */
+    public function setBody($body) {
+        $this->body = $body;
+        return $this;
+    }
+
+    /**
+     * This method returns email body in one of following formats.
+     *
+     * plain - it does not contain HTML code.
+     * html  - it can contain HTML code.
+     *
+     * <code>
+     * $itemId  = 1;
+     * $db      = JFactory::getDbo();
+     *
+     * $email   = new UserIdeasEmail($itemId);
+     * $email->setDb($db);
+     * $email->load();
+     *
+     * $email->parse();
+     *
+     * $body    = $item->getBody("plain");
+     * </code>
+     *
+     * @param string $mode Mail type - plain ( plain text ) or html.
+     *
+     * @return string
      */
     public function getBody($mode = "html") {
-        
+
         $mode = JString::strtolower($mode);
         if(strcmp("plain", $mode) == 0) {
-            $body = str_replace("<br />", "\n", $this->table->body);
+            $body = str_replace("<br />", "\n", $this->body);
             $body = strip_tags($body);
-            
+
             return $body;
         } else {
-            return $this->table->body;
+            return $this->body;
         }
-        
+
     }
 
+    /**
+     * It sets a name of a sender.
+     *
+     * @param $name
+     * @return $this
+     */
     public function setSenderName($name) {
-        $this->table->sender_name = $name;
+        $this->sender_name = $name;
         return $this;
     }
 
+    /**
+     * It returns a sender name.
+     *
+     * @return string
+     */
     public function getSenderName() {
-        return $this->table->sender_name;
+        return $this->sender_name;
     }
 
+    /**
+     * It sets a sender e-mail address.
+     *
+     * @param $email
+     * @return $this
+     */
     public function setSenderEmail($email) {
-        $this->table->sender_email = $email;
+        $this->sender_email = $email;
         return $this;
     }
 
+    /**
+     * It returns a sender e-mail address.
+     *
+     * @return string
+     */
     public function getSenderEmail() {
-        return $this->table->sender_email;
+        return $this->sender_email;
     }
-    
+
+    /**
+     * This method parse the body of the e-mail.
+     *
+     * <code>
+     * $itemId  = 1;
+     * $db      = JFactory::getDbo();
+     *
+     * $email   = new UserIdeasEmail($itemId);
+     * $email->setDb($db);
+     * $email->load();
+     *
+     * $email->parse();
+     * </code>
+     *
+     * @param $data
+     * @return $this
+     */
     public function parse($data) {
-        
+
         foreach($data as $key => $value) {
-            
+
             // Prepare flag
             $search = "{".JString::strtoupper($key)."}";
-            
+
             // Parse subject
-            $this->table->subject = str_replace($search, $value, $this->table->subject);
-            
+            $this->subject = str_replace($search, $value, $this->subject);
+
             // Parse body
-            $this->table->body = str_replace($search, $value, $this->table->body);
-            
+            $this->body    = str_replace($search, $value, $this->body);
+
         }
-        
+
+        return $this;
     }
     
 }

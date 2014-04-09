@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -20,7 +20,7 @@ jimport( 'joomla.application.component.controller' );
   */
 class UserIdeasController extends JControllerLegacy {
     
-	public function display( ) {
+	public function display($cachable = false, $urlparams = array()) {
 
         $viewName      = $this->input->getCmd('view', 'dashboard');
         $this->input->set("view", $viewName);

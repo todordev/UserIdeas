@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2013 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -48,9 +48,9 @@ defined('_JEXEC') or die;?>
             
             $profile = JHtml::_("userideas.profile", $this->socialProfiles, $item->user_id);
             
-            echo JHtml::_("userideas.publishedBy", $item->name, $item->record_date, $profile);
+            echo JHtml::_("userideas.publishedByOn", $item->name, $item->record_date, $profile);
             echo JHtml::_("userideas.category", $item->category, $item->catslug);
-            echo JHtml::_("userideas.status", $item->status_name, $item->status_id);
+            echo JHtml::_("userideas.status", $item->status);
             ?>
             </div>
             <div class="pull-right">
@@ -83,4 +83,4 @@ defined('_JEXEC') or die;?>
     </div>
 
 </div>
-<?php echo $this->version->backlink; ?>
+<?php echo $this->version->backlink;?>
