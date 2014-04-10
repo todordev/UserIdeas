@@ -47,13 +47,20 @@ class plgSystemUserIdeasVote extends JPlugin {
             return;
         }
 
+        // Check for right extension.
+        $option = $app->input->get("option");
+        if(strcmp("com_userideas", $option) != 0) {
+            return null;
+        }
+
         // Check for view. The extensions will work only on view "items"
         $allowedViews = array("items", "details", "category");
         $view         = $app->input->getCmd("view");
         if(!in_array($view, $allowedViews)) {
             return;
         }
-        
+
+        jimport("itprism.init");
         JHtml::_('itprism.ui.joomla_helper');
         
         $document->addScript('plugins/system/userideasvote/votebutton.js');
