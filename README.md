@@ -13,4 +13,4 @@ You can find documentation on following pages.
 [API documentation] (http://cdn.itprism.com/api/userideas/index.html)
 
 ##Download
-You can [download UserIdeas package] (http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital) and all payment plugins from the website of ITPrism.
+You can [download UserIdeas package] (http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions) and all payment plugins from the website of ITPrism.
