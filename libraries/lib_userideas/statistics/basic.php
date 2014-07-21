@@ -1,11 +1,11 @@
 <?php
 /**
-* @package      UserIdeas
-* @subpackage   Library
-* @author       Todor Iliev
-* @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
-* @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
-*/
+ * @package      UserIdeas
+ * @subpackage   Statistics\Basic
+ * @author       Todor Iliev
+ * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
 
 defined('JPATH_PLATFORM') or die;
 
@@ -13,23 +13,25 @@ defined('JPATH_PLATFORM') or die;
 /**
  * This class generates basic statistics.
  *
- * @package		 Statistics
+ * @package         UserIdeas
+ * @subpackage      Statistics\Basic
  */
-class UserIdeasStatisticsBasic {
-    
+class UserIdeasStatisticsBasic
+{
     /**
      * Database driver
      *
-     * @var JDatabaseMySQLi
+     * @var JDatabaseDriver
      */
     protected $db;
-    
+
     /**
      * Initialize the object.
      *
-     * @param JDatabaseDriver   $db
+     * @param JDatabaseDriver $db
      */
-    public function __construct(JDatabaseDriver $db) {
+    public function __construct(JDatabaseDriver $db)
+    {
         $this->db = $db;
     }
 
@@ -38,23 +40,22 @@ class UserIdeasStatisticsBasic {
      *
      * @return int
      */
-    public function getTotalItems() {
-        
+    public function getTotalItems()
+    {
         $query = $this->db->getQuery(true);
-        
+
         $query
             ->select("COUNT(*)")
             ->from($this->db->quoteName("#__uideas_items", "a"));
-        
+
         $this->db->setQuery($query);
         $result = $this->db->loadResult();
-        
-        if(!$result) {
+
+        if (!$result) {
             $result = 0;
         }
-        
+
         return $result;
-        
     }
 
     /**
@@ -62,23 +63,22 @@ class UserIdeasStatisticsBasic {
      *
      * @return int
      */
-    public function getTotalVotes() {
-    
+    public function getTotalVotes()
+    {
         $query = $this->db->getQuery(true);
-    
+
         $query
             ->select("SUM(a.votes)")
             ->from($this->db->quoteName("#__uideas_items", "a"));
-    
+
         $this->db->setQuery($query);
         $result = $this->db->loadResult();
-    
-        if(!$result) {
+
+        if (!$result) {
             $result = 0;
         }
-    
+
         return $result;
-    
     }
 
     /**
@@ -86,24 +86,21 @@ class UserIdeasStatisticsBasic {
      *
      * @return int
      */
-    public function getTotalComments() {
-    
+    public function getTotalComments()
+    {
         $query = $this->db->getQuery(true);
-    
+
         $query
             ->select("COUNT(*)")
             ->from($this->db->quoteName("#__uideas_comments", "a"));
-    
+
         $this->db->setQuery($query);
         $result = $this->db->loadResult();
-    
-        if(!$result) {
+
+        if (!$result) {
             $result = 0;
         }
-    
+
         return $result;
-    
     }
-
-
 }

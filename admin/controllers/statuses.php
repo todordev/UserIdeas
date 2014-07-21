@@ -17,15 +17,17 @@ jimport('itprism.controller.admin');
  *
  * @package     UserIdeas
  * @subpackage  Components
-  */
-class UserIdeasControllerStatuses extends ITPrismControllerAdmin {
-
+ */
+class UserIdeasControllerStatuses extends ITPrismControllerAdmin
+{
     /**
      * Proxy for getModel.
      * @since   1.6
      */
-    public function getModel($name = 'Status', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true)) {
+    public function getModel($name = 'Status', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
+    {
         $model = parent::getModel($name, $prefix, $config);
+
         return $model;
     }
 
@@ -34,40 +36,42 @@ class UserIdeasControllerStatuses extends ITPrismControllerAdmin {
      *
      * @since   1.6
      */
-    public function setDefault() {
-        
+    public function setDefault()
+    {
+
         // Check for request forgeries
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-        
+
         $pks = $this->input->post->get('cid', array(), 'array');
         JArrayHelper::toInteger($pks);
-        
+
         $redirectOptions = array(
             "view" => $this->view_list,
         );
-        
+
         // Check for errors
-        if(!$pks){
+        if (!$pks) {
             $this->displayNotice(JText::_("COM_USERIDEAS_ERROR_NO_ITEM_SELECTED"), $redirectOptions);
+
             return;
         }
-        
+
         try {
-        
+
             // Pop off the first element.
-            $id     = array_shift($pks);
-            
-            $model  = $this->getModel();
-            
+            $id = array_shift($pks);
+
+            $model = $this->getModel();
+
             $model->setDefault($id);
-        
-        }catch(Exception $e){
+
+        } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
-        
+
         $this->displayMessage(JText::_('COM_USERIDEAS_STATUS_SET_DEFAULT'), $redirectOptions);
-       
+
     }
 
     /**
@@ -75,39 +79,40 @@ class UserIdeasControllerStatuses extends ITPrismControllerAdmin {
      *
      * @since   1.6
      */
-    public function unsetDefault() {
-        
+    public function unsetDefault()
+    {
+
         // Check for request forgeries
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
-        
+
         $pks = $this->input->post->get('cid', array(), 'array');
         JArrayHelper::toInteger($pks);
-        
+
         $redirectOptions = array(
             "view" => $this->view_list,
         );
-        
+
         // Check for errors
-        if(!$pks){
+        if (!$pks) {
             $this->displayNotice(JText::_("COM_USERIDEAS_ERROR_NO_ITEM_SELECTED"), $redirectOptions);
+
             return;
         }
-        
+
         try {
-        
+
             // Pop off the first element.
-            $id     = array_shift($pks);
-            
-            $model  = $this->getModel();
-            
+            $id = array_shift($pks);
+
+            $model = $this->getModel();
+
             $model->unsetDefault($id);
-        
-        }catch(Exception $e){
+
+        } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
-        
+
         $this->displayMessage(JText::_('COM_USERIDEAS_STATUS_SET_NOT_DEFAULT'), $redirectOptions);
-        
     }
 }

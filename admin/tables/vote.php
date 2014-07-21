@@ -8,10 +8,11 @@
  */
 
 defined('_JEXEC') or die;
-class UserIdeasTableVote extends JTable {
-    
-	public function __construct(JDatabaseDriver $db) {
+
+class UserIdeasTableVote extends JTable
+{
+    public function __construct(JDatabaseDriver $db)
+    {
         parent::__construct('#__uideas_votes', 'id', $db);
     }
-    
 }

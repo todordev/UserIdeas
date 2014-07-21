@@ -16,7 +16,10 @@ defined('_JEXEC') or die;?>
     <th class="nowrap">
 		<?php echo JHtml::_('grid.sort',  'COM_USERIDEAS_NAME', 'a.name', $this->listDirn, $this->listOrder); ?>
     </th>
-	<th width="1%" style="min-width: 55px" class="nowrap center">
+    <th width="10%" class="nowrap">
+        <?php echo JText::_("COM_USERIDEAS_STYLE_CLASS"); ?>
+    </th>
+	<th width="3%" style="min-width: 55px" class="nowrap center">
 		<?php echo JText::_("COM_USERIDEAS_DEFAULT"); ?>
 	</th>
     <th width="3%" class="center nowrap hidden-phone">

@@ -10,12 +10,12 @@
 defined('_JEXEC') or die;
 jimport('joomla.application.categories');
 
-class UserIdeasCategories extends JCategories {
-    
-	public function __construct($options = array()) {
-		$options['table']     = '#__uideas_items';
-		$options['extension'] = 'com_userideas';
-		parent::__construct($options);
-	}
-	
+class UserIdeasCategories extends JCategories
+{
+    public function __construct($options = array())
+    {
+        $options['table']     = '#__uideas_items';
+        $options['extension'] = 'com_userideas';
+        parent::__construct($options);
+    }
 }

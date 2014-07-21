@@ -4,7 +4,7 @@ jQuery(document).ready(function() {
 		event.preventDefault();
 				
 		var id  = jQuery(this).data("id");
-		var url = "/index.php?option=com_userideas&task=item.vote&format=raw";
+		var url = "index.php?option=com_userideas&task=item.vote&format=raw";
 		
 		var fields = {
 			id: id

@@ -3,43 +3,43 @@
     <fieldset name="email">
 
         <field name="title" type="text" class="span12"
-            label="COM_USERIDEAS_TITLE"
-            description="COM_USERIDEAS_EMAIL_TITLE_DESC"
-            filter="trim" 
-        />
+               label="COM_USERIDEAS_TITLE"
+               description="COM_USERIDEAS_EMAIL_TITLE_DESC"
+               filter="trim"
+                />
 
         <field name="subject" type="text" class="span12"
-            label="COM_USERIDEAS_SUBJECT"
-            description="COM_USERIDEAS_SUBJECT_DESC"
-            filter="trim"
-        />
-        
-        <field name="sender_name" type="text" class="span6" 
-            label="COM_USERIDEAS_SENDER_NAME" 
-            description="COM_USERIDEAS_SENDER_NAME_DESC" 
-            filter="trim" 
-        />
-        
-        <field name="sender_email" type="text" class="span6" 
-            label="COM_USERIDEAS_SENDER_EMAIL" 
-            description="COM_USERIDEAS_SENDER_EMAIL_DESC" 
-            filter="trim" 
-        />
-        
-        <field name="body" type="editor" class="span12"
-            label="COM_USERIDEAS_BODY" 
-            description="COM_USERIDEAS_BODY_DESC"
-            filter="safehtml" 
-            rows="10" 
-            required="true"
-        />
+               label="COM_USERIDEAS_SUBJECT"
+               description="COM_USERIDEAS_SUBJECT_DESC"
+               filter="trim"
+                />
 
-        <field name="id" type="text" class="readonly" 
-            label="JGLOBAL_FIELD_ID_LABEL" 
-            description="JGLOBAL_FIELD_ID_DESC"
-            default="0" 
-            readonly="true" 
-        />
-            
+        <field name="sender_name" type="text" class="span6"
+               label="COM_USERIDEAS_SENDER_NAME"
+               description="COM_USERIDEAS_SENDER_NAME_DESC"
+               filter="trim"
+                />
+
+        <field name="sender_email" type="text" class="span6"
+               label="COM_USERIDEAS_SENDER_EMAIL"
+               description="COM_USERIDEAS_SENDER_EMAIL_DESC"
+               filter="trim"
+                />
+
+        <field name="body" type="editor" class="span12"
+               label="COM_USERIDEAS_BODY"
+               description="COM_USERIDEAS_BODY_DESC"
+               filter="safehtml"
+               rows="10"
+               required="true"
+                />
+
+        <field name="id" type="text" class="readonly"
+               label="JGLOBAL_FIELD_ID_LABEL"
+               description="JGLOBAL_FIELD_ID_DESC"
+               default="0"
+               readonly="true"
+                />
+
     </fieldset>
 </form>

@@ -10,33 +10,32 @@
 // no direct access
 defined('_JEXEC') or die;
 
-if(!defined("USERIDEAS_PATH_COMPONENT_ADMINISTRATOR")) {
-    define("USERIDEAS_PATH_COMPONENT_ADMINISTRATOR", JPATH_ADMINISTRATOR .DIRECTORY_SEPARATOR. "components" .DIRECTORY_SEPARATOR. "com_userideas");
+if (!defined("USERIDEAS_PATH_COMPONENT_ADMINISTRATOR")) {
+    define("USERIDEAS_PATH_COMPONENT_ADMINISTRATOR", JPATH_ADMINISTRATOR ."/components/com_userideas");
 }
 
-if(!defined("USERIDEAS_PATH_COMPONENT_SITE")) {
-    define("USERIDEAS_PATH_COMPONENT_SITE", JPATH_SITE .DIRECTORY_SEPARATOR. "components" .DIRECTORY_SEPARATOR. "com_userideas");
+if (!defined("USERIDEAS_PATH_COMPONENT_SITE")) {
+    define("USERIDEAS_PATH_COMPONENT_SITE", JPATH_SITE ."/components/com_userideas");
 }
 
-if(!defined("USERIDEAS_PATH_LIBRARY")) {
-    define("USERIDEAS_PATH_LIBRARY", JPATH_LIBRARIES .DIRECTORY_SEPARATOR. "userideas");
+if (!defined("USERIDEAS_PATH_LIBRARY")) {
+    define("USERIDEAS_PATH_LIBRARY", JPATH_LIBRARIES ."/userideas");
 }
 
 jimport('joomla.utilities.arrayhelper');
 
 // Register Component libraries
-JLoader::register("UserIdeasVersion", USERIDEAS_PATH_LIBRARY .DIRECTORY_SEPARATOR. "version.php");
+JLoader::register("UserIdeasConstants", USERIDEAS_PATH_LIBRARY ."/constants.php");
+JLoader::register("UserIdeasVersion", USERIDEAS_PATH_LIBRARY ."/version.php");
 
 // Register helpers
-JLoader::register("UserIdeasHelper", USERIDEAS_PATH_COMPONENT_ADMINISTRATOR .DIRECTORY_SEPARATOR. "helpers" .DIRECTORY_SEPARATOR. "userideas.php");
-JLoader::register("UserIdeasCategories", USERIDEAS_PATH_COMPONENT_SITE .DIRECTORY_SEPARATOR. "helpers" .DIRECTORY_SEPARATOR. "category.php");
-JLoader::register("UserIdeasHelperRoute", USERIDEAS_PATH_COMPONENT_SITE .DIRECTORY_SEPARATOR. "helpers" .DIRECTORY_SEPARATOR. "route.php");
-
-// Load observers
-JLoader::register("UserIdeasObserverVote", USERIDEAS_PATH_COMPONENT_ADMINISTRATOR .DIRECTORY_SEPARATOR. "tables" .DIRECTORY_SEPARATOR. "observers" .DIRECTORY_SEPARATOR. "vote.php");
+JLoader::register("UserIdeasHelper", USERIDEAS_PATH_COMPONENT_ADMINISTRATOR ."/helpers/userideas.php");
+JLoader::register("UserIdeasCategories", USERIDEAS_PATH_COMPONENT_SITE ."/helpers/category.php");
+JLoader::register("UserIdeasHelperRoute", USERIDEAS_PATH_COMPONENT_SITE ."/helpers/route.php");
 
 // Register Observers
+JLoader::register("UserIdeasObserverVote", USERIDEAS_PATH_COMPONENT_ADMINISTRATOR ."/tables/observers/vote.php");
 JObserverMapper::addObserverClassToClass('UserIdeasObserverVote', 'UserIdeasTableVote', array('typeAlias' => 'com_userideas.vote'));
 
 // Include HTML helpers
-JHtml::addIncludePath(USERIDEAS_PATH_COMPONENT_SITE .DIRECTORY_SEPARATOR. 'helpers' .DIRECTORY_SEPARATOR. 'html');
+JHtml::addIncludePath(USERIDEAS_PATH_COMPONENT_SITE . "/helpers/html");

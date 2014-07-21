@@ -10,12 +10,10 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modelitem');
-
-class UserIdeasModelItem extends JModelItem {
-    
+class UserIdeasModelItem extends JModelItem
+{
     protected $item;
-    
+
     /**
      * Method to auto-populate the model state.
      *
@@ -23,52 +21,51 @@ class UserIdeasModelItem extends JModelItem {
      *
      * @since   1.6
      */
-    protected function populateState($ordering = null, $direction = null) {
-    
-        $app       = JFactory::getApplication();
-        /** @var $app JSite **/
-    
+    protected function populateState($ordering = null, $direction = null)
+    {
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
         $value = $app->input->getInt("id");
-        $this->setState($this->getName().'.id', $value);
-        
+        $this->setState($this->getName() . '.id', $value);
+
         // Load the component parameters.
         $params = $app->getParams($this->option);
         $this->setState('params', $params);
-    
+
     }
-    
-	/**
-	 * Method to get an ojbect.
-	 *
-	 * @param	integer	The id of the object to get.
-	 *
-	 * @return	mixed	Object on success, false on failure.
-	 */
-	public function getItem($id = null) {
-	    
-		if ($this->item === null) {
-		    
-			if (empty($id)) {
-				$id = $this->getState($this->getName().'.id');
-			}
 
-			// Get a level row instance.
-			$table = JTable::getInstance('Item', 'UserIdeasTable');
+    /**
+     * Method to get an object.
+     *
+     * @param    integer  $id  The id of the object to get.
+     *
+     * @return    mixed    Object on success, false on failure.
+     */
+    public function getItem($id = null)
+    {
+        if ($this->item === null) {
 
-			// Attempt to load the row.
-			if ($table->load($id)) {
-			    
-			    if (!$table->published) {
-					return $this->item;
-				}
+            if (empty($id)) {
+                $id = $this->getState($this->getName() . '.id');
+            }
 
-				// Convert the JTable to a clean JObject.
-				$properties = $table->getProperties(true);
-				$this->item = JArrayHelper::toObject($properties, 'JObject');
-			}
-		}
+            // Get a level row instance.
+            $table = JTable::getInstance('Item', 'UserIdeasTable');
 
-		return $this->item;
-	}
-    
+            // Attempt to load the row.
+            if ($table->load($id)) {
+
+                if (!$table->published) {
+                    return $this->item;
+                }
+
+                // Convert the JTable to a clean JObject.
+                $properties = $table->getProperties(true);
+                $this->item = JArrayHelper::toObject($properties, 'JObject');
+            }
+        }
+
+        return $this->item;
+    }
 }

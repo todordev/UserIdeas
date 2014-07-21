@@ -8,24 +8,23 @@
  */
 
 // no direct access
-defined( '_JEXEC' ) or die;
-
-jimport( 'joomla.application.component.modellist' );
+defined('_JEXEC') or die;
 
 /**
  * Get a list of items
  */
-class UserIdeasModelItems extends JModelList {
-    
-	 /**
+class UserIdeasModelItems extends JModelList
+{
+    /**
      * Constructor.
      *
-     * @param   array   $config An optional associative array of configuration settings.
+     * @param   array $config An optional associative array of configuration settings.
+     *
      * @see     JController
      * @since   1.6
      */
-    public function  __construct($config = array()) {
-        
+    public function __construct($config = array())
+    {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
                 'id', 'a.id',
@@ -33,16 +32,15 @@ class UserIdeasModelItems extends JModelList {
                 'votes', 'a.votes',
                 'record_date', 'a.record_date',
                 'ordering', 'a.ordering',
-            	'published', 'a.published',
-            	'user', 'b.name',
-            	'category', 'c.title'
+                'published', 'a.published',
+                'user', 'b.name',
+                'category', 'c.title'
             );
         }
 
         parent::__construct($config);
-		
     }
-    
+
     /**
      * Method to auto-populate the model state.
      *
@@ -50,22 +48,22 @@ class UserIdeasModelItems extends JModelList {
      *
      * @since   1.6
      */
-    protected function populateState($ordering = null, $direction = null) {
-        
+    protected function populateState($ordering = null, $direction = null)
+    {
         // Load the filter state.
-        $value = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
+        $value = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $value);
 
         // Get filter state
-        $value = $this->getUserStateFromRequest($this->context.'.filter.state', 'filter_state', '', 'string');
+        $value = $this->getUserStateFromRequest($this->context . '.filter.state', 'filter_state', '', 'string');
         $this->setState('filter.state', $value);
-        
+
         // Get filter category
-        $value = $this->getUserStateFromRequest($this->context.'.filter.category', 'filter_category', '', 'string');
+        $value = $this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category', '', 'string');
         $this->setState('filter.category', $value);
-        
+
         // Get filter status
-        $value = $this->getUserStateFromRequest($this->context.'.filter.status', 'filter_status', '', 'string');
+        $value = $this->getUserStateFromRequest($this->context . '.filter.status', 'filter_status', '', 'string');
         $this->setState('filter.status', $value);
 
         // Load the component parameters.
@@ -83,81 +81,82 @@ class UserIdeasModelItems extends JModelList {
      * different modules that might need different sets of data or different
      * ordering requirements.
      *
-     * @param   string      $id A prefix for the store id.
+     * @param   string $id A prefix for the store id.
+     *
      * @return  string      A store id.
      * @since   1.6
      */
-    protected function getStoreId($id = '') {
-        
+    protected function getStoreId($id = '')
+    {
         // Compile the store id.
-        $id.= ':' . $this->getState('filter.search');
-        $id.= ':' . $this->getState('filter.category');
-        $id.= ':' . $this->getState('filter.status');
-        $id.= ':' . $this->getState('filter.state');
+        $id .= ':' . $this->getState('filter.search');
+        $id .= ':' . $this->getState('filter.category');
+        $id .= ':' . $this->getState('filter.status');
+        $id .= ':' . $this->getState('filter.state');
 
         return parent::getStoreId($id);
     }
-    
-   /**
+
+    /**
      * Build an SQL query to load the list data.
      *
      * @return  JDatabaseQuery
      * @since   1.6
      */
-    protected function getListQuery() {
-        
+    protected function getListQuery()
+    {
         // Create a new query object.
-        $db     = $this->getDbo();
-        /** @var $db JDatabaseMySQLi **/
-        
-        $query  = $db->getQuery(true);
+        $db = $this->getDbo();
+        /** @var $db JDatabaseMySQLi */
+
+        $query = $db->getQuery(true);
 
         // Select the required fields from the table.
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.title, a.votes, a.record_date, a.catid, a.ordering, a.published, a.status_id, '.
-            	'b.name AS user, '.
-            	'c.title AS category, ' .
-            	'd.name AS status_name, d.params AS status_params, d.default AS status_default '
+                'a.id, a.title, a.votes, a.record_date, a.catid, a.ordering, a.published, a.status_id, ' .
+                'b.name AS user, ' .
+                'c.title AS category, ' .
+                'd.name AS status_name, d.params AS status_params, d.default AS status_default '
             )
         );
         $query->from($db->quoteName('#__uideas_items', 'a'));
-        $query->innerJoin($db->quoteName('#__users', 'b').' ON a.user_id = b.id');
-        $query->leftJoin($db->quoteName('#__categories', 'c').' ON a.catid = c.id');
-        $query->leftJoin($db->quoteName('#__uideas_statuses', 'd').' ON a.status_id = d.id');
+        $query->innerJoin($db->quoteName('#__users', 'b') . ' ON a.user_id = b.id');
+        $query->leftJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id');
+        $query->leftJoin($db->quoteName('#__uideas_statuses', 'd') . ' ON a.status_id = d.id');
 
         // Filter by category
         $categoryId = $this->getState('filter.category');
         if (!empty($categoryId)) {
-            $query->where('a.catid = '.(int)$categoryId);
+            $query->where('a.catid = ' . (int)$categoryId);
         }
-        
+
         // Filter by status
         $statusId = $this->getState("filter.status");
         if (!empty($statusId)) {
-            $query->where('a.status_id = '.(int)$statusId);
+            $query->where('a.status_id = ' . (int)$statusId);
         }
-        
+
         // Filter by state
         $state = $this->getState('filter.state');
         if (is_numeric($state)) {
-            $query->where('a.published = '.(int) $state);
-        } else if ($state === '') {
+            $query->where('a.published = ' . (int)$state);
+        } elseif ($state === '') {
             $query->where('(a.published IN (0, 1))');
         }
-        
+
         // Filter by search in title
         $search = $this->getState('filter.search');
         if (!empty($search)) {
             if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = '.(int) substr($search, 3));
+                $query->where('a.id = ' . (int)substr($search, 3));
             } else {
-                
+
                 $escaped = $db->escape($search, true);
                 $quoted  = $db->quote("%" . $escaped . "%", false);
-                $query->where('a.title LIKE '.$quoted);
-                
+                $query->where('a.title LIKE ' . $quoted);
+
             }
         }
 
@@ -167,12 +166,12 @@ class UserIdeasModelItems extends JModelList {
 
         return $query;
     }
-    
-    protected function getOrderString() {
-        
-        $orderCol   = $this->getState('list.ordering');
-        $orderDirn  = $this->getState('list.direction');
-        
-        return $orderCol.' '.$orderDirn;
+
+    protected function getOrderString()
+    {
+        $orderCol  = $this->getState('list.ordering');
+        $orderDirn = $this->getState('list.direction');
+
+        return $orderCol . ' ' . $orderDirn;
     }
 }

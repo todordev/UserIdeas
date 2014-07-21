@@ -15,19 +15,20 @@ jimport('itprism.controller.admin');
 /**
  * UserIdeas items controller class.
  *
- * @package		UserIdeas
- * @subpackage	Component
- * @since		1.6
+ * @package        UserIdeas
+ * @subpackage     Component
+ * @since          1.6
  */
-class UserIdeasControllerItems extends ITPrismControllerAdmin {
-    
+class UserIdeasControllerItems extends ITPrismControllerAdmin
+{
     /**
      * Proxy for getModel.
      * @since   1.6
      */
-    public function getModel($name = 'Item', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true)) {
+    public function getModel($name = 'Item', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
+    {
         $model = parent::getModel($name, $prefix, $config);
+
         return $model;
     }
-    
 }

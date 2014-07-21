@@ -17,16 +17,17 @@ jimport('itprism.controller.admin');
  *
  * @package     UserIdeas
  * @subpackage  Components
-  */
-class UserIdeasControllerComments extends ITPrismControllerAdmin {
-    
+ */
+class UserIdeasControllerComments extends ITPrismControllerAdmin
+{
     /**
      * Proxy for getModel.
      * @since   1.6
      */
-    public function getModel($name = 'Comment', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true)) {
+    public function getModel($name = 'Comment', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
+    {
         $model = parent::getModel($name, $prefix, $config);
+
         return $model;
     }
-    
 }

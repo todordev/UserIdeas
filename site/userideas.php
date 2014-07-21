@@ -13,8 +13,6 @@ defined('_JEXEC') or die;
 jimport("itprism.init");
 jimport('userideas.init');
 
-jimport('joomla.application.component.controller');
-
 $controller = JControllerLegacy::getInstance('UserIdeas');
 $controller->execute(JFactory::getApplication()->input->getCmd('task'));
 $controller->redirect();

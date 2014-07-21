@@ -10,23 +10,20 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.categories');
-jimport('joomla.application.component.view');
-
-class UserIdeasViewDetails extends JViewLegacy {
-
+class UserIdeasViewDetails extends JViewLegacy
+{
     /**
      * @var JDocumentHtml
      */
     public $document;
 
     /**
-     * @var JRegistry
+     * @var Joomla\Registry\Registry
      */
     protected $state;
 
     /**
-     * @var JRegistry
+     * @var Joomla\Registry\Registry
      */
     protected $params;
 
@@ -42,88 +39,91 @@ class UserIdeasViewDetails extends JViewLegacy {
 
     protected $disabledButton;
     protected $debugMode;
+    protected $version;
 
     protected $option;
 
     protected $pageclass_sfx;
-    
-    public function __construct($config){
+
+    public function __construct($config)
+    {
         parent::__construct($config);
         $this->option = JFactory::getApplication()->input->getCmd("option");
     }
-    
+
     /**
-     * Display the view
-     * @todo add ACL
+     * Display the view.
      */
-    public function display($tpl = null){
-        
+    public function display($tpl = null)
+    {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite **/
-        
+        /** @var $app JApplicationSite */
+
         // Initialise variables
-        $this->state      = $this->get('State');
-        $this->item       = $this->get('Item');
-        $this->params     = $this->state->get("params");
+        $this->state  = $this->get('State');
+        $this->item   = $this->get('Item');
+        $this->params = $this->state->get("params");
 
         jimport("userideas.category");
-        $this->category   = new UserIdeasCategory($this->item->catid);
-        
-        $this->userId     = JFactory::getUser()->get("id");
-        
+        $this->category = new UserIdeasCategory(JFactory::getDbo());
+        $this->category->load($this->item->catid);
+
+        $this->userId = JFactory::getUser()->get("id");
+
         // Get the model of the comments
         // that I will use to load all comments for this item.
-        $modelComments    = JModelLegacy::getInstance("Comments", "UserIdeasModel");
-        $this->comments   = $modelComments->getItems();
-        
+        $modelComments  = JModelLegacy::getInstance("Comments", "UserIdeasModel");
+        $this->comments = $modelComments->getItems();
+
         // Get the model of the comment
         $commentModelForm = JModelLegacy::getInstance("Comment", "UserIdeasModel");
-        
+
         // Validate the owner of the comment,
         // If someone wants to edit it.
-        $commentId        = $commentModelForm->getState("comment_id");
+        $commentId = $commentModelForm->getState("comment_id");
 
-        if(!empty($commentId)) {
+        if (!empty($commentId)) {
 
-            $comment      = $commentModelForm->getItem($commentId, $this->userId);
+            $comment = $commentModelForm->getItem($commentId, $this->userId);
 
-            if(!$comment) {
+            if (!$comment) {
                 $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_INVALID_COMMENT"), "error");
-                $app->redirect( JRoute::_(UserIdeasHelperRoute::getItemsRoute(), false) );
+                $app->redirect(JRoute::_(UserIdeasHelperRoute::getItemsRoute(), false));
+
                 return;
             }
 
         }
-        
+
         // Get comment form
-        $this->form             = $commentModelForm->getForm();
-        
+        $this->form = $commentModelForm->getForm();
+
         // Prepare integration. Load avatars and profiles.
         $this->prepareIntegration($this->params);
-        
+
         // Prepare the link to the details page.
-        $this->item->link       = UserIdeasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug);
-        $this->item->text       = $this->item->description;
+        $this->item->link = UserIdeasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug);
+        $this->item->text = $this->item->description;
 
         $this->version    = new UserIdeasVersion();
 
         $this->prepareDebugMode();
         $this->prepareDocument();
-        
+
         // Events
         JPluginHelper::importPlugin('content');
-        $dispatcher	       = JEventDispatcher::getInstance();
+        $dispatcher        = JEventDispatcher::getInstance();
         $this->item->event = new stdClass();
         $offset            = 0;
-        
-        $dispatcher->trigger('onContentPrepare', array ('com_userideas.details', &$this->item, &$this->params, $offset));
-        
-        $results           = $dispatcher->trigger('onContentBeforeDisplay', array('com_userideas.details', &$this->item, &$this->params, $offset));
+
+        $dispatcher->trigger('onContentPrepare', array('com_userideas.details', &$this->item, &$this->params, $offset));
+
+        $results                                 = $dispatcher->trigger('onContentBeforeDisplay', array('com_userideas.details', &$this->item, &$this->params, $offset));
         $this->item->event->beforeDisplayContent = trim(implode("\n", $results));
-        
-        $results           = $dispatcher->trigger('onContentAfterDisplay', array('com_userideas.details', &$this->item, &$this->params, $offset));
+
+        $results                                  = $dispatcher->trigger('onContentAfterDisplay', array('com_userideas.details', &$this->item, &$this->params, $offset));
         $this->item->event->onContentAfterDisplay = trim(implode("\n", $results));
-        
+
         $this->item->description = $this->item->text;
         unset($this->item->text);
 
@@ -133,170 +133,161 @@ class UserIdeasViewDetails extends JViewLegacy {
 
         parent::display($tpl);
     }
-    
+
     /**
      * Check the system for debug mode
      */
-    protected function prepareDebugMode() {
-        
+    protected function prepareDebugMode()
+    {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite **/
+        /** @var $app JApplicationSite */
 
         $this->disabledButton = "";
-        
+
         // Check for maintenance (debug) state
         $params = $this->state->get("params");
-        /** @var $params JRegistry */
+        /** @var $params Joomla\Registry\Registry */
 
         $this->debugMode = $params->get("debug_item_adding_disabled", 0);
-        if($this->debugMode) {
+        if ($this->debugMode) {
             $msg = JString::trim($params->get("debug_disabled_functionality_msg"));
-            if(!$msg) {
+            if (!$msg) {
                 $msg = JText::_("COM_USERIDEAS_DEBUG_MODE_DEFAULT_MSG");
             }
             $app->enqueueMessage($msg, "notice");
-            
+
             $this->disabledButton = 'disabled="disabled"';
         }
-        
     }
-    
-    
+
+
     /**
      * Prepares the document
      */
-    protected function prepareDocument(){
-
+    protected function prepareDocument()
+    {
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite **/
-        
-         // Prepare page suffix
+        /** @var $app JApplicationSite */
+
+        // Prepare page suffix
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
-        
+
         // Prepare page heading
         $this->preparePageHeading();
-        
+
         // Prepare page heading
         $this->preparePageTitle();
-        
+
         // Meta Description
         $this->document->setDescription($this->params->get('menu-meta_description'));
-        
+
         // Meta keywords
         $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
-        
-        // Add current layout into breadcrumbs 
-        $pathway    = $app->getPathway();
+
+        // Add current layout into breadcrumbs
+        $pathway = $app->getPathway();
         $pathway->addItem(JText::_("COM_USERIDEAS_PATHWAY_FORM_TITLE"));
-        
-        // Styles
-        $this->document->addStyleSheet('media/'.$this->option.'/css/site/style.css');
-        
+
         // Scripts
         JHtml::_('behavior.keepalive');
-        
+
         JHtml::_('jquery.framework');
         JHtml::_('itprism.ui.pnotify');
-        
     }
 
-    private function preparePageTitle() {
-        
-        $app        = JFactory::getApplication();
-        /** @var $app JApplicationSite **/
-        
+    private function preparePageTitle()
+    {
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
         // If it is assigned to menu item, params will contains "page_title".
         // If it is not assigned, I will use the title of the item
-        if($this->params->get("page_title")) {
+        if ($this->params->get("page_title")) {
             $title = $this->params->get("page_title");
         } else {
-        
+
             $seo = $this->params->get("seo_cat_to_title");
-            
-            switch($seo) {
-    	        
-    	        case "1": // Before page title
-    	            $title = $this->category->title . " | " . $this->item->title;
-    	            break;
-    	            
-                case "2": // After page title
-    	            $title = $this->item->title . " | " . $this->category->title;
-    	            break;
-    	            
-    	        default: // NONE
-    	            $title = $this->item->title;
+
+            switch ($seo) {
+
+                case "1": // Before page title
+                    $title = $this->category->title . " | " . $this->item->title;
                     break;
-    	    }
+
+                case "2": // After page title
+                    $title = $this->item->title . " | " . $this->category->title;
+                    break;
+
+                default: // NONE
+                    $title = $this->item->title;
+                    break;
+            }
         }
-            
-		
+
         // Add title before or after Site Name
-        if(!$title){
+        if (!$title) {
             $title = $app->get('sitename');
         } elseif ($app->get('sitename_pagetitles', 0) == 1) {
-			$title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-		} elseif ($app->get('sitename_pagetitles', 0) == 2) {
-			$title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
-		}
-		
+            $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+        } elseif ($app->get('sitename_pagetitles', 0) == 2) {
+            $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+        }
+
         $this->document->setTitle($title);
-		
     }
-    
-    private function preparePageHeading() {
-        
-        $app         = JFactory::getApplication();
-        /** @var $app JApplicationSite **/
-        
-        $menus       = $app->getMenu();
-        
+
+    private function preparePageHeading()
+    {
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
+        $menus = $app->getMenu();
+
         // Because the application sets a default page title,
-		// we need to get it from the menu item itself
-		$menu        = $menus->getActive();
-		
+        // we need to get it from the menu item itself
+        $menu = $menus->getActive();
+
         if ($menu) {
-			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
-		} else {
-			$this->params->def('page_heading', $this->item->title);
-		}
-		
+            $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+        } else {
+            $this->params->def('page_heading', $this->item->title);
+        }
     }
-    
+
     /**
      * Prepare social profiles.
      *
-     * @param JRegistry $params
+     * @param Joomla\Registry\Registry $params
      *
      * @todo Move it to a trait when traits become mass.
      */
-    protected function prepareIntegration($params) {
-
+    protected function prepareIntegration($params)
+    {
         // Get users IDs
         $usersIds = array();
-        foreach($this->comments as $comment) {
+        foreach ($this->comments as $comment) {
             $usersIds[] = $comment->user_id;
         }
         $usersIds[] = $this->item->user_id;
         $usersIds   = array_unique($usersIds);
 
         // Get a social platform for integration
-        $socialPlatform         = $params->get("integration_social_platform");
-        $this->socialProfiles   = null;
-        
-        $this->avatarsSize      = $params->get("integration_avatars_size", 50);
-        $this->defaultAvatar    = $params->get("integration_avatars_default", "/media/com_crowdfunding/images/no-profile.png");
-        
+        $socialPlatform       = $params->get("integration_social_platform");
+        $this->socialProfiles = null;
+
+        $this->avatarsSize   = $params->get("integration_avatars_size", 50);
+        $this->defaultAvatar = $params->get("integration_avatars_default", "/media/com_crowdfunding/images/no-profile.png");
+
         // If there is now users, do not continue.
-        if(!$usersIds) {
+        if (!$usersIds) {
             return;
         }
-        
+
         // Load the class
-        if(!empty($socialPlatform)) {
+        if (!empty($socialPlatform)) {
             jimport("itprism.integrate.profiles");
-            $this->socialProfiles   =  ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
+            $this->socialProfiles = ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
         }
-    
+
     }
-    
 }

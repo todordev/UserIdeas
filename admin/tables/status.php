@@ -8,10 +8,11 @@
  */
 
 defined('_JEXEC') or die;
-class UserIdeasTableStatus extends JTable {
 
-    public function __construct(JDatabaseDriver $db) {
+class UserIdeasTableStatus extends JTable
+{
+    public function __construct(JDatabaseDriver $db)
+    {
         parent::__construct('#__uideas_statuses', 'id', $db);
     }
-    
 }

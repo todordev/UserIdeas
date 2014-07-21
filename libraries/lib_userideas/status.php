@@ -1,7 +1,7 @@
 <?php
 /**
  * @package      UserIdeas
- * @subpackage   Library
+ * @subpackage   Statuses
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -11,9 +11,12 @@ defined('JPATH_PLATFORM') or die;
 
 /**
  * This class provides functionality for managing a status.
+ *
+ * @package      UserIdeas
+ * @subpackage   Statuses
  */
-class UserIdeasStatus {
-
+class UserIdeasStatus
+{
     protected $id;
     protected $name;
     protected $default;
@@ -27,21 +30,33 @@ class UserIdeasStatus {
     /**
      * This method initializes the object.
      *
-     * @param int $id Item ID.
+     * <code>
+     * $status   = new UserIdeasStatus(JFactory::getDbo());
+     * </code>
+     *
+     * @param JDatabaseDriver $db
      */
-    public function __construct($id = 0) {
-        $this->id = $id;
+    public function __construct(JDatabaseDriver $db = null)
+    {
+        $this->db = $db;
     }
 
     /**
      * This method sets a database driver.
      *
+     * <code>
+     * $status   = new UserIdeasStatus();
+     * $status->setDb(JFactory::getDbo());
+     * </code>
+     *
      * @param $db JDatabaseDriver
      *
      * @return self
      */
-    public function setDb(JDatabaseDriver $db) {
+    public function setDb(JDatabaseDriver $db)
+    {
         $this->db = $db;
+
         return $this;
     }
 
@@ -49,16 +64,14 @@ class UserIdeasStatus {
      * This method loads data about a status from a database.
      *
      * <code>
-     * $db       = JFactory::getDbo();
      * $statusId = 1;
      *
-     * $status   = new UserIdeasStatus($itemId);
-     * $status->setDb($db);
+     * $status   = new UserIdeasStatus(JFactory::getDbo());
      * $status->load($statusId);
      * </code>
      */
-    public function load() {
-
+    public function load()
+    {
         $query = $this->db->getQuery(true);
 
         $query
@@ -69,17 +82,16 @@ class UserIdeasStatus {
         $this->db->setQuery($query);
 
         $result = $this->db->loadAssoc();
-        if(!empty($result)) {
+        if (!empty($result)) {
 
-            if(!empty($result["params"])) {
+            if (!empty($result["params"])) {
                 $params = json_decode($result["params"]);
-                if(!empty($params)) {
+                if (!empty($params)) {
                     $result["params"] = $params;
                 }
             }
             $this->bind($result);
         }
-
     }
 
     /**
@@ -91,56 +103,100 @@ class UserIdeasStatus {
      *      "default"       => 1
      * );
      *
-     * $status   = new UserIdeasStatus();
+     * $status   = new UserIdeasStatus(JFactory::getDbo());
      * $status->bind($data);
+     * $status->store();
      * </code>
      */
-    public function bind($data, $ignored = array()) {
-
-        foreach($data as $key => $value) {
-            if(!in_array($key, $ignored)) {
+    public function bind($data, $ignored = array())
+    {
+        foreach ($data as $key => $value) {
+            if (!in_array($key, $ignored)) {
                 $this->$key = $value;
             }
         }
-
     }
 
     /**
      * Returns status ID.
      *
+     * <code>
+     * $statusId = 1;
+     *
+     * $status   = new UserIdeasStatus(JFactory::getDbo());
+     * $status->load($statusId);
+     *
+     * if (!$status->getId()) {
+     * ...
+     * }
+     * </code>
+     *
      * @return int
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
     /**
      * Returns status name.
      *
+     * <code>
+     * $statusId = 1;
+     *
+     * $status   = new UserIdeasStatus(JFactory::getDbo());
+     * $status->load($statusId);
+     *
+     * $name = $status->getName();
+     * </code>
+     *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return (string)$this->name;
     }
 
     /**
      * This method returns a value of a status parameter.
      *
-     * @param  string $key      A name of a parameter.
-     * @param  mixed $default   A default option if the parameter does not exists.
+     * <code>
+     * $statusId = 1;
+     *
+     * $status   = new UserIdeasStatus(JFactory::getDbo());
+     * $status->load($statusId);
+     *
+     * $styleClass = $status->getParam("style_class");
+     * </code>
+     *
+     * @param  string $key     A name of a parameter.
+     * @param  mixed  $default A default option if the parameter does not exists.
      *
      * @return mixed
      */
-    public function getParam($key, $default = null) {
+    public function getParam($key, $default = null)
+    {
         return (!isset($this->params[$key])) ? $default : $this->params[$key];
     }
 
     /**
      * This method checks the status if it is default state.
      *
+     * <code>
+     * $statusId = 1;
+     *
+     * $status   = new UserIdeasStatus(JFactory::getDbo());
+     * $status->load($statusId);
+     *
+     * if ($status->isDefault()) {
+     * ...
+     * }
+     * </code>
+     *
      * @return bool
      */
-    public function isDefault() {
+    public function isDefault()
+    {
         return (!$this->default) ? false : true;
     }
 }

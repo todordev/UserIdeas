@@ -1,29 +1,16 @@
 User Ideas for Joomla! 
 ==========================
-( Version 1.4 )
+( Version 1.5 )
 --------------------------
 
 User Ideas is an extension that provides functionality for creating and managing ideas pool, suggestions, issues, user feedbacks,...
 
-###v1.4
-* Added option to the plugin "Content - User Ideas - Admin Mail", the administrator to receive notification e-mail when someone post a new comment.
-* Added option for CSS style class to statuses. Now, they can be styled.
-* Added statistical information on dashboard.
+##Documentation
+You can find documentation on following pages.
 
-###v1.3
+[Documentation and FAQ] (http://itprism.com/help/108-userideas-documentation-faq)
 
-* Added content events "onAfterDisplay", "onBeforeDisplay", "onContentPrepare"
-* Improved routers.
-* Added a new view that lists all items.
-* Added statuses.
-* Ported to Joomla! 3
-* Changed the type of the field description with editor.
-* Fixed some issues.
+[API documentation] (http://cdn.itprism.com/api/userideas/index.html)
 
-###v1.2
-
-* Added plugin Content - User Ideas - Admin Mail
-
-###v1.1
-
-* Fixed some issues
+##Download
+You can [download UserIdeas package] (http://itprism.com/free-joomla-extensions/ecommerce-gamification/crowdfunding-collective-raising-capital) and all payment plugins from the website of ITPrism.

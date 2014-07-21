@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-    <fieldset name="form" label="COM_USERIDEAS_ITEM_DEFAULT_LABEL" >
+    <fieldset name="form" label="COM_USERIDEAS_ITEM_DEFAULT_LABEL">
 
         <field name="title" type="text" class="span12"
-            label="COM_USERIDEAS_FIELD_TITLE" 
-            size="40" 
-            filter="trim"
-            required="true"
-        />
-           
-        <field name="description" type="editor" class="span12"
-            label="COM_USERIDEAS_FIELD_DESCRIPTION" 
-            filter="safehtml"
-            rows="10" 
-            required="true"
-            buttons="false" 
-        />
+               label="COM_USERIDEAS_FIELD_TITLE"
+               size="40"
+               filter="trim"
+               required="true"
+                />
 
-        <field name="catid" type="category" 
-            label="COM_USERIDEAS_CATEGORY" 
-            extension="com_userideas"
-            required="true"
-            filter="int" 
-            published="1"
-        />
-         
-        <field name="id" type="hidden" filter="int" />
-         
+        <field name="description" type="editor" class="span12"
+               label="COM_USERIDEAS_FIELD_DESCRIPTION"
+               filter="safehtml"
+               rows="10"
+               required="true"
+               buttons="false"
+               />
+
+        <field name="catid" type="category"
+               label="COM_USERIDEAS_CATEGORY"
+               extension="com_userideas"
+               required="true"
+               filter="int"
+               published="1"
+               class="js-uideas-catid-select"
+               />
+
+        <field name="id" type="hidden" filter="int"/>
+
     </fieldset>
 </form>

@@ -10,53 +10,55 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('itprism.controller.admin');
-
 /**
  * UserIdeas items controller class.
  *
- * @package		UserIdeas
- * @subpackage	Component
- * @since		1.6
+ * @package        UserIdeas
+ * @subpackage     Component
+ * @since          1.6
  */
-class UserIdeasControllerItems extends JControllerAdmin {
-    
+class UserIdeasControllerItems extends JControllerAdmin
+{
     /**
      * Proxy for getModel.
      * @since   1.6
      */
-    public function getModel($name = 'Item', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true)) {
+    public function getModel($name = 'Item', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
+    {
         $model = parent::getModel($name, $prefix, $config);
+
         return $model;
     }
-    
+
     /**
      * Method to save the submitted ordering values for records via AJAX.
      *
      * @return  void
+     * @throws Exception
+     *
      * @since   3.0
      */
-    public function saveOrderAjax() {
-
+    public function saveOrderAjax()
+    {
         jimport("itprism.response.json");
         $response = new ITPrismResponseJson();
 
         // Get the input
-        $pks     = $this->input->post->get('cid', array(), 'array');
-        $order   = $this->input->post->get('order', array(), 'array');
-    
+        $pks   = $this->input->post->get('cid', array(), 'array');
+        $order = $this->input->post->get('order', array(), 'array');
+
         // Sanitize the input
         JArrayHelper::toInteger($pks);
         JArrayHelper::toInteger($order);
-    
+
         // Get the model
         $model = $this->getModel();
-    
+
         try {
-            
+
             $model->saveorder($pks, $order);
-        
-        } catch ( Exception $e ) {
+
+        } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
@@ -68,7 +70,6 @@ class UserIdeasControllerItems extends JControllerAdmin {
 
         echo $response;
         JFactory::getApplication()->close();
-    
+
     }
-    
 }

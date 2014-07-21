@@ -21,7 +21,8 @@ JFormHelper::loadFieldClass('list');
  * @subpackage   Component
  * @since        1.6
  */
-class JFormFieldUiItems extends JFormFieldList {
+class JFormFieldUiItems extends JFormFieldList
+{
     /**
      * The form field type.
      *
@@ -29,35 +30,32 @@ class JFormFieldUiItems extends JFormFieldList {
      * @since   1.6
      */
     protected $type = 'UiItems';
-    
+
     /**
      * Method to get the field options.
      *
      * @return  array   The field option objects.
      * @since   1.6
      */
-    protected function getOptions(){
-        
-        // Initialize variables.
-        $options = array();
-        
-        $db = JFactory::getDbo();
+    protected function getOptions()
+    {
+        $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
-        
+
         $query
             ->select('a.id AS value, a.title AS text')
             ->from($db->quoteName("#__uideas_items", "a"))
             ->order("a.title ASC")
             ->where("a.published = 1");
-        
+
         // Get the options.
         $db->setQuery($query);
-        
+
         $options = $db->loadAssocList();
-        
+
         // Merge any additional options in the XML definition.
         $options = array_merge(parent::getOptions(), $options);
-        
+
         return $options;
     }
 }

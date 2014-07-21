@@ -10,24 +10,21 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport( 'joomla.application.component.controller' );
-
 /**
  * Default controller
  *
- * @package		UserIdeas
- * @subpackage	Component
-  */
-class UserIdeasController extends JControllerLegacy {
-    
-	public function display($cachable = false, $urlparams = array()) {
-
-        $viewName      = $this->input->getCmd('view', 'dashboard');
+ * @package        UserIdeas
+ * @subpackage     Component
+ */
+class UserIdeasController extends JControllerLegacy
+{
+    public function display($cachable = false, $urlparams = array())
+    {
+        $viewName = $this->input->getCmd('view', 'dashboard');
         $this->input->set("view", $viewName);
 
         parent::display();
-        return $this;
-        
-	}
 
+        return $this;
+    }
 }

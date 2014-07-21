@@ -8,10 +8,11 @@
  */
 
 defined('_JEXEC') or die;
-class UserIdeasTableComment extends JTable {
 
-    public function __construct(JDatabaseDriver $db) {
+class UserIdeasTableComment extends JTable
+{
+    public function __construct(JDatabaseDriver $db)
+    {
         parent::__construct('#__uideas_comments', 'id', $db);
     }
-    
 }

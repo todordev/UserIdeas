@@ -8,8 +8,9 @@
  */
 
 defined('_JEXEC') or die;
-class UserIdeasTableItem extends JTable {
 
+class UserIdeasTableItem extends JTable
+{
     public $id;
     public $title;
     public $alias;
@@ -24,21 +25,24 @@ class UserIdeasTableItem extends JTable {
 
     protected $catslug;
 
-    public function __construct(JDatabaseDriver $db) {
+    public function __construct(JDatabaseDriver $db)
+    {
         parent::__construct('#__uideas_items', 'id', $db);
     }
 
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
 
-    public function getSlug() {
-        return $this->id .":" .$this->alias;
+    public function getSlug()
+    {
+        return $this->id . ":" . $this->alias;
     }
 
-    public function getCategorySlug() {
-
-        if(!$this->catslug) {
+    public function getCategorySlug()
+    {
+        if (!$this->catslug) {
 
             $db    = $this->getDbo();
             $query = $db->getQuery(true);
@@ -46,17 +50,17 @@ class UserIdeasTableItem extends JTable {
             $query
                 ->select($query->concatenate(array("a.id", "a.alias"), ":") . " AS catslug")
                 ->from($db->quoteName("#__categories", "a"))
-                ->where("a.id = " .(int)$this->catid);
+                ->where("a.id = " . (int)$this->catid);
 
             $db->setQuery($query);
             $result = $db->loadResult();
 
-            if(!empty($result)) {
+            if (!empty($result)) {
                 $this->catslug = $result;
             }
 
         }
+
         return $this->catslug;
     }
-
 }

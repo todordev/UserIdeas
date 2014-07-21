@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="userideas" default="build" basedir=".">
-	<description>User Ideas PRO Ant Build File</description>
+	<description>User Ideas Lite Ant Build File</description>
 
 	<!-- load variables from config file -->
 	<property name="cfg.configFile" location="antconfig.txt" />
@@ -57,6 +57,7 @@
 			<exclude name="**/${cfg.pkgName}.xml" />
 			<exclude name="**/${cfg.name}.xml" />
 			<exclude name="**/README.md" />
+			<exclude name="**/CHANGELOG.md" />
 			<exclude name="**/install.php" />
 		</fileset>
 	</copy>
@@ -81,6 +82,7 @@
 	<!-- copy main files of the component -->
     <copy file="${cfg.adminSourceDir}/${cfg.comName}/install.php" todir="${cfg.pkgDir}" />
     <copy file="${cfg.adminSourceDir}/${cfg.comName}/README.md" todir="${cfg.pkgDir}" />
+	<copy file="${cfg.adminSourceDir}/${cfg.comName}/CHANGELOG.md" todir="${cfg.pkgDir}" />
     <copy file="${cfg.adminSourceDir}/${cfg.comName}/${cfg.pkgName}.xml" todir="${cfg.pkgDir}" />
     <copy file="${cfg.adminSourceDir}/${cfg.comName}/${cfg.name}.xml" todir="${cfg.pkgDir}" />
 

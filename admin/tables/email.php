@@ -9,10 +9,10 @@
 
 defined('_JEXEC') or die;
 
-class UserIdeasTableEmail extends JTable {
-
-    public function __construct(JDatabaseDriver $db) {
+class UserIdeasTableEmail extends JTable
+{
+    public function __construct(JDatabaseDriver $db)
+    {
         parent::__construct('#__uideas_emails', 'id', $db);
     }
-    
 }

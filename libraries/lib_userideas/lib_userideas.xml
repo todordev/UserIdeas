@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<extension type="library" version="3.2" method="upgrade">
-	<name>User Ideas Library</name>
-	<libraryname>userideas</libraryname>
-	<author>Todor Iliev</author>
-	<authorEmail>todor@itprism.com</authorEmail>
+<extension type="library" version="3.3" method="upgrade">
+    <name>User Ideas Library</name>
+    <libraryname>userideas</libraryname>
+    <author>Todor Iliev</author>
+    <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-	<copyright>Copyright (C) 2014 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
-	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
-	<packager>ITPrism</packager>
-	<packagerurl>http://itprism.com</packagerurl>
-	<version>1.4</version>
-	<creationDate>09 April, 2014</creationDate>
-	<description>User Ideas Library</description>
+    <copyright>Copyright (C) 2014 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <packager>ITPrism</packager>
+    <packagerurl>http://itprism.com</packagerurl>
+    <version>1.5</version>
+    <creationDate>20 July, 2014</creationDate>
+    <description>User Ideas Library</description>
 
-	<files>
-		<folder>statistics</folder>
+    <files>
+        <folder>statistics</folder>
+        <folder>validator</folder>
 
-		<file>category.php</file>
-		<file>email.php</file>
-		<file>index.html</file>
-		<file>init.php</file>
-		<file>item.php</file>
-		<file>status.php</file>
-		<file>statuses.php</file>
-		<file>version.php</file>
-		<file>vote.php</file>
-	</files>
+        <file>category.php</file>
+        <file>constants.php</file>
+        <file>email.php</file>
+        <file>index.html</file>
+        <file>init.php</file>
+        <file>item.php</file>
+        <file>status.php</file>
+        <file>statuses.php</file>
+        <file>version.php</file>
+        <file>vote.php</file>
+    </files>
 
 </extension>
