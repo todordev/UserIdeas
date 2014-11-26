@@ -15,6 +15,7 @@ defined('_JEXEC') or die;
 if($this->item->event->beforeDisplayContent) {
 	echo $this->item->event->beforeDisplayContent;
 }?>
+
 <div class="row-fluid">
 	<div class="span12">
 		<div class="media ui-item">
@@ -31,17 +32,25 @@ if($this->item->event->beforeDisplayContent) {
             <div class="clearfix"></div>
             <div class="well well-small">
             	<div class="pull-left">
-                <?php 
-                
+                <?php
+
+                $name = (strcmp("name", $this->params->get("name_type")) == 0) ? $this->item->name : $this->item->username;
+
                 $profile = JHtml::_("userideas.profile", $this->socialProfiles, $this->item->user_id);
-                
-                echo JHtml::_("userideas.publishedByOn", $this->item->name, $this->item->record_date, $profile);
+
+                // Prepare item owner avatar.
+                $profileAvatar = null;
+                if ($this->params->get("integration_display_owner_avatar", 0)) {
+                    $profileAvatar = JHtml::_("userideas.avatar", $this->socialProfiles, $this->item->user_id, $this->integrationOptions);
+                }
+
+                echo JHtml::_("userideas.publishedByOn", $name, $this->item->record_date, $profile, $profileAvatar, $this->integrationOptions);
                 echo JHtml::_("userideas.category", $this->item->category, $this->item->catslug);
                 echo JHtml::_("userideas.status", $this->item->status);
                 ?>
                 </div>
                 <div class="pull-right">
-                	<?php if($this->userId == $this->item->user_id){?>
+                	<?php if (UserIdeasHelper::isValidOwner($this->userId, $this->item->user_id) and $this->canEdit){?>
                 	<a class="btn btn-small" href="<?php echo JRoute::_(UserIdeasHelperRoute::getFormRoute($this->item->id));?>" >
                 		<i class="icon-edit"></i>
                 		<?php echo JText::_("COM_USERIDEAS_EDIT");?>
@@ -55,9 +64,10 @@ if($this->item->event->beforeDisplayContent) {
 
 <?php 
 if(!empty($this->item->event->onContentAfterDisplay)) {
-    echo $this->item->event->onContentAfterDisplay; 
+    echo $this->item->event->onContentAfterDisplay;
 }?>
 
+<?php if($this->commentsEnabled) { ?>
 <div class="row-fluid" id="comments">
 	<div class="span12">
 	
@@ -69,7 +79,7 @@ if(!empty($this->item->event->onContentAfterDisplay)) {
         	    
         	    // Get the profile and avatar.
         	    $profile = JHtml::_("userideas.profile", $this->socialProfiles, $comment->user_id, "javascript: void(0);");
-        	    $avatar  = JHtml::_("userideas.avatar", $this->socialProfiles, $comment->user_id, "media/com_userideas/images/no-profile.png", $options=array("avatar_size" => $this->avatarsSize));
+        	    $avatar  = JHtml::_("userideas.avatar", $this->socialProfiles, $comment->user_id, $this->integrationOptions);
         	    
             	if(!empty($avatar)) {?>
             	<a class="pull-left" href="<?php echo $profile; ?>" rel="nofollow">
@@ -91,8 +101,8 @@ if(!empty($this->item->event->onContentAfterDisplay)) {
                 ?>
                 </div>
                 <div class="pull-right">
-                	<?php if($this->userId == $comment->user_id){?>
-                	<a class="btn btn-small" href="<?php echo JRoute::_(UserIdeasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catid)."&comment_id=".(int)$comment->id);?>" >
+                	<?php if (UserIdeasHelper::isValidOwner($this->userId, $comment->user_id) and $this->canEditComment){?>
+                	<a class="btn btn-small" href="<?php echo JRoute::_(UserIdeasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catid)."&comment_id=".(int)$comment->id);?>#ui-comment-form" >
                 		<i class="icon-edit"></i>
                 		<?php echo JText::_("COM_USERIDEAS_EDIT");?>
                 	</a>
@@ -104,29 +114,30 @@ if(!empty($this->item->event->onContentAfterDisplay)) {
         <?php }?>
         
         <div class="clearfix"></div>
-        
-        <?php if(!$this->userId) {?>
-        <a href="<?php echo JRoute::_("index.php?option=com_users&view=login&return=".urlencode(base64_encode($this->item->link)));?>" class="btn margin-top-10" ><?php echo JText::_("COM_USERIDEAS_LOGIN_AND_COMMENT")?></a>
-        <?php } else {?>
+
+        <?php if($this->canComment) {?>
         <form action="<?php echo JRoute::_('index.php?option=com_userideas'); ?>" method="post" name="commentForm" id="ui-comment-form" class="form-validate">
-            
+
             <?php echo $this->form->getLabel('comment'); ?>
             <?php echo $this->form->getInput('comment'); ?>
-            
+
+            <?php echo $this->form->getLabel('captcha'); ?>
+            <?php echo $this->form->getInput('captcha'); ?>
+
             <?php echo $this->form->getInput('id'); ?>
             <?php echo $this->form->getInput('item_id'); ?>
-            
+
             <input type="hidden" name="task" value="comment.save" />
             <?php echo JHtml::_('form.token'); ?>
-            
+
             <div class="clearfix"></div>
             <button type="submit" class="btn btn-primary" <?php echo $this->disabledButton;?>>
-            	<i class="icon-ok icon-white"></i>
+                <i class="icon-ok icon-white"></i>
                 <?php echo JText::_("COM_USERIDEAS_SUBMIT")?>
             </button>
         </form>
         <?php } ?>
-        
+
     </div>
 </div>
-<?php echo $this->version->backlink;?>
+<?php } ?>

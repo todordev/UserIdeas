@@ -31,11 +31,12 @@ class UserIdeasViewItems extends JViewLegacy
     protected $pagination;
 
     protected $comments;
+    protected $canEdit;
+    protected $user;
     protected $userId;
     protected $socialProfiles;
-    protected $avatarsSize;
-    protected $defaultAvatar;
-    protected $version;
+    protected $integrationOptions;
+    protected $commentsEnabled;
 
     protected $option;
 
@@ -57,14 +58,18 @@ class UserIdeasViewItems extends JViewLegacy
 
         $this->comments = $this->get("Comments");
 
-        $this->userId = JFactory::getUser()->id;
+        $user = JFactory::getUser();
+        $this->userId = $user->get("id");
+
+        // Set permission state. Is it possible to be edited items?
+        $this->canEdit = $user->authorise('core.edit.own', 'com_userideas');
 
         $this->items = UserIdeasHelper::prepareStatuses($this->items);
 
+        $this->commentsEnabled = $this->params->get("comments_enabled", 1);
+
         // Prepare integration. Load avatars and profiles.
         $this->prepareIntegration($this->params);
-
-        $this->version    = new UserIdeasVersion();
 
         $this->prepareDocument();
 
@@ -154,26 +159,36 @@ class UserIdeasViewItems extends JViewLegacy
         // Get users IDs
         $usersIds = array();
         foreach ($this->items as $item) {
-            $usersIds[] = $item->user_id;
+            if (!empty($item->user_id)) {
+                $usersIds[] = $item->user_id;
+            }
         }
         $usersIds = array_unique($usersIds);
 
         // Get a social platform for integration
         $socialPlatform       = $params->get("integration_social_platform");
-        $this->socialProfiles = null;
 
-        $this->avatarsSize   = $params->get("integration_avatars_size", 50);
-        $this->defaultAvatar = $params->get("integration_avatars_default", "/media/com_crowdfunding/images/no-profile.png");
+        $this->integrationOptions = array(
+            "size" => $params->get("integration_avatars_size", 50),
+            "default" => $params->get("integration_avatars_default", "/media/com_crowdfunding/images/no-profile.png"),
+            "width" => $params->get("integration_avatar_width", 24),
+            "height" => $params->get("integration_avatar_height", 24),
+        );
 
         // If there is now users, do not continue.
         if (!$usersIds) {
             return;
         }
 
-        // Load the class
-        if (!empty($socialPlatform)) {
-            jimport("itprism.integrate.profiles");
-            $this->socialProfiles = ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
-        }
+        $options = array(
+            "social_platform" => $socialPlatform,
+            "users_ids" => $usersIds
+        );
+
+        jimport("itprism.integrate.profiles.builder");
+        $profileBuilder = new ITPrismIntegrateProfilesBuilder($options);
+        $profileBuilder->build();
+
+        $this->socialProfiles = $profileBuilder->getProfiles();
     }
 }

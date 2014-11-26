@@ -26,7 +26,12 @@ defined('_JEXEC') or die;
                     <div class="control-label"><?php echo $this->form->getLabel('description'); ?></div>
 					<div class="controls"><?php echo $this->form->getInput('description'); ?></div>
                 </div>
-            
+
+                <div class="control-group">
+                    <div class="control-label"><?php echo $this->form->getLabel('captcha'); ?></div>
+                    <div class="controls"><?php echo $this->form->getInput('captcha'); ?></div>
+                </div>
+
             <?php echo $this->form->getInput('id'); ?>
             <input type="hidden" name="task" value="form.save" />
             <?php echo JHtml::_('form.token'); ?>
@@ -39,4 +44,3 @@ defined('_JEXEC') or die;
         </form>
     </div>
 </div>
-<?php echo $this->version->backlink;?>

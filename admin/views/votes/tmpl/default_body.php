@@ -16,7 +16,7 @@ defined('_JEXEC') or die;
             <?php echo JHtml::_('grid.id', $i, $item->id); ?>
         </td>
         <td>
-			<?php echo $this->escape($item->name); ?>
+			<?php echo (!empty($item->name)) ? $this->escape($item->name) : JText::_("COM_USERIDEAS_ANONYMOUS"); ?>
 		</td>
         <td class="hidden-phone">
 		    <?php echo $this->escape($item->title); ?>
@@ -24,7 +24,7 @@ defined('_JEXEC') or die;
         <td class="center">
             <?php echo $item->votes;?>
         </td>
-        <td class="center hidden-phone">
+        <td class="hidden-phone">
             <?php echo JHtml::_('date', $item->record_date, JText::_('DATE_FORMAT_LC2')); ?>
         </td>
         <td class="center hidden-phone">

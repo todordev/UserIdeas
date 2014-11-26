@@ -101,7 +101,7 @@ class UserIdeasModelVotes extends JModelList
         );
         $query->from($db->quoteName('#__uideas_votes') . ' AS a');
         $query->innerJoin($db->quoteName('#__uideas_items') . ' AS b ON a.item_id = b.id');
-        $query->innerJoin($db->quoteName('#__users') . ' AS c ON a.user_id = c.id');
+        $query->leftJoin($db->quoteName('#__users') . ' AS c ON a.user_id = c.id');
 
         // Filter by search in title
         $search = $this->getState('filter.search');

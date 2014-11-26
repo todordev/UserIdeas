@@ -32,7 +32,6 @@ class UserIdeasViewForm extends JViewLegacy
 
     protected $disabledButton;
     protected $debugMode;
-    protected $version;
 
     protected $option;
 
@@ -57,32 +56,29 @@ class UserIdeasViewForm extends JViewLegacy
         $this->form   = $this->get('Form');
         $this->params = $this->state->get("params");
 
-        $userId = JFactory::getUser()->get("id");
-        if (!$userId) {
-            $returnUrl = JRoute::_("index.php?option=com_userideas&view=form");
+        $user   = JFactory::getUser();
+        $userId = $user->get("id");
 
-            $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_NOT_LOG_IN"), "notice");
+        $model = $this->getModel();
+
+        if (!$user->authorise('core.create', 'com_userideas')) {
+            $returnUrl = UserIdeasHelperRoute::getFormRoute();
+
+            $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION"), "notice");
             $app->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($returnUrl), false));
-
             return;
         }
 
         $itemId = $this->state->get("form.id");
-        if (!empty($itemId)) {
+        if (!empty($itemId) and !$model->canEditOwn($itemId, $userId)) {
 
-            jimport("userideas.validator.item.owner");
-            $itemValidator = new UserIdeasValidatorItemOwner(JFactory::getDbo(), $itemId, $userId);
+            $returnUrl = UserIdeasHelperRoute::getFormRoute();
 
-            if (!$itemValidator->isValid()) {
-                $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_INVALID_ITEM"), "notice");
-                $app->redirect(JRoute::_('index.php', false));
+            $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION"), "notice");
+            $app->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($returnUrl), false));
 
-                return;
-            }
-
+            return;
         }
-
-        $this->version    = new UserIdeasVersion();
 
         $this->prepareDebugMode();
         $this->prepareDocument();

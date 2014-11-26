@@ -122,7 +122,7 @@ class UserIdeasModelItems extends JModelList
             )
         );
         $query->from($db->quoteName('#__uideas_items', 'a'));
-        $query->innerJoin($db->quoteName('#__users', 'b') . ' ON a.user_id = b.id');
+        $query->leftJoin($db->quoteName('#__users', 'b') . ' ON a.user_id = b.id');
         $query->leftJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id');
         $query->leftJoin($db->quoteName('#__uideas_statuses', 'd') . ' ON a.status_id = d.id');
 

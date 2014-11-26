@@ -26,7 +26,7 @@ defined('_JEXEC') or die;?>
     		</span>
     		<input type="text" style="display:none" name="order[]" size="5" value="<?php echo $item->ordering;?>" class="width-20 text-area-order " />
     	</td>
-		<td class="center hidden-phone">
+		<td class="hidden-phone">
             <?php echo JHtml::_('grid.id', $i, $item->id); ?>
         </td>
         <td class="center">
@@ -36,10 +36,10 @@ defined('_JEXEC') or die;?>
 			<a href="<?php echo JRoute::_("index.php?option=com_userideas&view=item&layout=edit&id=".$item->id); ?>" ><?php echo $this->escape($item->title); ?></a>
 		</td>
 		<td class="center hidden-phone"><?php echo $item->votes; ?></td>
-		<td class="center hidden-phone"><?php echo $item->record_date; ?></td>
-		<td class="center hidden-phone"><?php echo $item->user; ?></td>
-		<td class="center hidden-phone"><?php echo (!empty($item->category)) ? $this->escape($item->category) : "--"; ?></td>
-		<td class="hidden-phone"><?php echo JHtml::_("userideas.status", $item->status, false); ?></td>
+		<td class="hidden-phone"><?php echo $item->record_date; ?></td>
+		<td class="hidden-phone"><?php echo ($item->user) ?: JText::_("COM_USERIDEAS_ANONYMOUS"); ?></td>
+		<td class="hidden-phone"><?php echo (!empty($item->category)) ? $this->escape($item->category) : "--"; ?></td>
+		<td class="center hidden-phone"><?php echo JHtml::_("userideas.status", $item->status, false); ?></td>
         <td class="center hidden-phone"><?php echo $item->id;?></td>
 	</tr>
 <?php } ?>

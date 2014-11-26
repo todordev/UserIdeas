@@ -1,6 +1,15 @@
 User Ideas release notes
 ==========================
 
+###v1.6
+* Added option to select redirection when a user post an item.
+* Added option to select what you would like to display as a name of item create - name or username.
+* It was moved the items option to menu options of items list and category.
+* Added option for description length on category and items list views.
+* Added permissions. Now, you are able to manage actions of user groups.
+* It is possible anonymous users to post items and to write comments.
+* Added captcha to forms.
+
 ###v1.5
 * Fixed some issues.
 * Improved code quality.

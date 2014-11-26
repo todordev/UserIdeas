@@ -27,7 +27,6 @@ jimport('joomla.application.categories');
  */
 abstract class UserIdeasHelperRoute
 {
-
     protected static $lookup;
 
     /**
@@ -40,7 +39,6 @@ abstract class UserIdeasHelperRoute
      */
     public static function getDetailsRoute($id, $catid)
     {
-
         /**
          *
          * # category
@@ -88,15 +86,18 @@ abstract class UserIdeasHelperRoute
      *
      * @return string
      */
-    public static function getFormRoute($id)
+    public static function getFormRoute($id = 0)
     {
-
         $needles = array(
             'form' => array(0)
         );
 
         //Create the link
-        $link = 'index.php?option=com_userideas&view=form&id=' . $id;
+        $link = 'index.php?option=com_userideas&view=form';
+
+        if (!empty($id)) {
+            $link .= '&id=' . $id;
+        }
 
         // Looking for menu item (Itemid)
         if ($item = self::_findItem($needles)) {
@@ -117,7 +118,6 @@ abstract class UserIdeasHelperRoute
      */
     public static function getCategoryRoute($catid)
     {
-
         if ($catid instanceof JCategoryNode) {
             $id       = $catid->id;
             $category = $catid;
@@ -172,7 +172,6 @@ abstract class UserIdeasHelperRoute
      */
     public static function getItemsRoute($statusId = 0)
     {
-
         $needles = array(
             'items' => array(0),
         );

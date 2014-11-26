@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 class UserIdeasController extends JControllerLegacy
 {
-    protected $cacheableViews = array("category", "details", "items");
+    protected $cacheableViews = array("category", "items");
 
     /**
      * Method to display a view.

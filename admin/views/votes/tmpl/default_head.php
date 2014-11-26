@@ -23,7 +23,7 @@ defined('_JEXEC') or die;
     <th width="10%" class="nowrap center">
         <?php echo JText::_('COM_USERIDEAS_VOTES'); ?>
     </th>
-    <th class="nowrap center hidden-phone">
+    <th class="nowrap hidden-phone">
         <?php echo JHtml::_('grid.sort',  'COM_USERIDEAS_DATE', 'a.record_date', $this->listDirn, $this->listOrder); ?>
     </th>
     <th width="1%" class="nowrap center hidden-phone">

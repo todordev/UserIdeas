@@ -157,23 +157,26 @@ class UserIdeasModelComment extends JModelForm
         $id      = JArrayHelper::getValue($data, "id");
         $comment = JArrayHelper::getValue($data, "comment");
         $itemId  = JArrayHelper::getValue($data, "item_id");
-        $userId  = JFactory::getUser()->id;
+        $userId  = JFactory::getUser()->get("id");
 
         $isNew = false;
 
-        $keys = array(
-            "id"      => $id,
-            "user_id" => $userId
-        );
-
         // Load a record from the database
         $row = $this->getTable();
-        $row->load($keys);
+
+        if (!empty($id)) {
+            $keys = array(
+                "id"      => $id,
+                "user_id" => $userId
+            );
+
+            $row->load($keys);
+        }
 
         $row->set("comment", $comment);
 
-        // If there is no userId we are adding a new comment
-        if (!$row->get("user_id")) {
+        // If there is no ID we are adding a new comment
+        if (!$row->get("id")) {
 
             $isNew = true;
 

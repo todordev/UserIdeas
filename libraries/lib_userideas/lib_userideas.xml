@@ -9,14 +9,15 @@
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <packager>ITPrism</packager>
     <packagerurl>http://itprism.com</packagerurl>
-    <version>1.5</version>
-    <creationDate>20 July, 2014</creationDate>
+    <version>1.6</version>
+    <creationDate>26 November, 2014</creationDate>
     <description>User Ideas Library</description>
 
     <files>
         <folder>statistics</folder>
         <folder>validator</folder>
 
+        <file>categories.php</file>
         <file>category.php</file>
         <file>constants.php</file>
         <file>email.php</file>

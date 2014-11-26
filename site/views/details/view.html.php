@@ -31,15 +31,17 @@ class UserIdeasViewDetails extends JViewLegacy
     protected $item;
 
     protected $category;
+    protected $canEdit;
+    protected $canComment;
+    protected $canEditComment;
     protected $comments;
     protected $userId;
     protected $socialProfiles;
-    protected $avatarsSize;
-    protected $defaultAvatar;
+    protected $integrationOptions;
 
     protected $disabledButton;
     protected $debugMode;
-    protected $version;
+    protected $commentsEnabled;
 
     protected $option;
 
@@ -68,7 +70,15 @@ class UserIdeasViewDetails extends JViewLegacy
         $this->category = new UserIdeasCategory(JFactory::getDbo());
         $this->category->load($this->item->catid);
 
-        $this->userId = JFactory::getUser()->get("id");
+        $user = JFactory::getUser();
+        $this->userId = $user->get("id");
+
+        // Set permission state. Is it possible to be edited items?
+        $this->canEdit = $user->authorise('core.edit.own', 'com_userideas');
+
+        $this->commentsEnabled = $this->params->get("comments_enabled", 1);
+        $this->canComment = $user->authorise('userideas.comment.create', 'com_userideas');
+        $this->canEditComment = $user->authorise('userideas.comment.edit.own', 'com_userideas');
 
         // Get the model of the comments
         // that I will use to load all comments for this item.
@@ -104,8 +114,6 @@ class UserIdeasViewDetails extends JViewLegacy
         // Prepare the link to the details page.
         $this->item->link = UserIdeasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug);
         $this->item->text = $this->item->description;
-
-        $this->version    = new UserIdeasVersion();
 
         $this->prepareDebugMode();
         $this->prepareDocument();
@@ -266,28 +274,41 @@ class UserIdeasViewDetails extends JViewLegacy
         // Get users IDs
         $usersIds = array();
         foreach ($this->comments as $comment) {
-            $usersIds[] = $comment->user_id;
+            if (!empty($comment->user_id)) {
+                $usersIds[] = $comment->user_id;
+            }
         }
-        $usersIds[] = $this->item->user_id;
+
+        // Add the ID of item owner.
+        if (!empty($this->item->user_id)) {
+            $usersIds[] = $this->item->user_id;
+        }
         $usersIds   = array_unique($usersIds);
 
         // Get a social platform for integration
         $socialPlatform       = $params->get("integration_social_platform");
-        $this->socialProfiles = null;
 
-        $this->avatarsSize   = $params->get("integration_avatars_size", 50);
-        $this->defaultAvatar = $params->get("integration_avatars_default", "/media/com_crowdfunding/images/no-profile.png");
+        $this->integrationOptions = array(
+            "size" => $params->get("integration_avatars_size", 50),
+            "default" => $params->get("integration_avatars_default", "/media/com_crowdfunding/images/no-profile.png"),
+            "width" => $params->get("integration_avatar_width", 24),
+            "height" => $params->get("integration_avatar_height", 24),
+        );
 
         // If there is now users, do not continue.
         if (!$usersIds) {
             return;
         }
 
-        // Load the class
-        if (!empty($socialPlatform)) {
-            jimport("itprism.integrate.profiles");
-            $this->socialProfiles = ITPrismIntegrateProfiles::factory($socialPlatform, $usersIds);
-        }
+        $options = array(
+            "social_platform" => $socialPlatform,
+            "users_ids" => $usersIds
+        );
 
+        jimport("itprism.integrate.profiles.builder");
+        $profileBuilder = new ITPrismIntegrateProfilesBuilder($options);
+        $profileBuilder->build();
+
+        $this->socialProfiles = $profileBuilder->getProfiles();
     }
 }

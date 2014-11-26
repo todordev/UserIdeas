@@ -101,7 +101,7 @@ class UserIdeasModelComments extends JModelList
             )
         );
         $query->from($db->quoteName('#__uideas_comments', "a"));
-        $query->innerJoin($db->quoteName('#__users', "b") . ' ON a.user_id = b.id');
+        $query->leftJoin($db->quoteName('#__users', "b") . ' ON a.user_id = b.id');
 
         // Filter by item
         $itemId = $this->getState($this->getName() . '.id');

@@ -64,12 +64,13 @@ class UserIdeasControllerItem extends JControllerLegacy
             return;
         }
 
-        $userId = JFactory::getUser()->id;
-        if (!$userId) {
+        $user = JFactory::getUser();
+        $userId = $user->get("id");
 
+        if (!$user->authorise('userideas.vote', 'com_userideas')) {
             $response
                 ->setTitle(JText::_('COM_USERIDEAS_FAIL'))
-                ->setText(JText::_('COM_USERIDEAS_ERROR_NOT_LOG_IN'))
+                ->setText(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'))
                 ->failure();
 
             echo $response;
@@ -100,7 +101,7 @@ class UserIdeasControllerItem extends JControllerLegacy
                     $message = JArrayHelper::getValue($result, "message", JText::_('COM_USERIDEAS_VOTED_UNSUCCESSFULLY'));
 
                     $response
-                        ->setTitle(JText::_('COM_USERIDEAS_SUCCESS'))
+                        ->setTitle(JText::_('COM_USERIDEAS_FAIL'))
                         ->setText($message)
                         ->failure();
 

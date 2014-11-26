@@ -105,4 +105,21 @@ class UserIdeasHelper
 
         return $items;
     }
+
+    /**
+     * This method check for valid user ID and item owner.
+     *
+     * @param int $userId
+     * @param int $itemOwnerId
+     *
+     * @return bool
+     */
+    public static function isValidOwner($userId, $itemOwnerId)
+    {
+        if (!empty($userId) and ($userId == $itemOwnerId)) {
+            return true;
+        }
+
+        return false;
+    }
 }

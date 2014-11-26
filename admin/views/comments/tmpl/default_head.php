@@ -19,13 +19,13 @@ defined('_JEXEC') or die;?>
     <th class="title">
     	<?php echo JText::_('COM_USERIDEAS_COMMENT'); ?>
     </th>
-    <th  width="20%" class="center nowrap hidden-phone">
+    <th  width="20%" class="nowrap hidden-phone">
         <?php echo JHtml::_('grid.sort',  'COM_USERIDEAS_ITEM', 'b.title', $this->listDirn, $this->listOrder); ?>
     </th>
-    <th width="10%" class="center nowrap hidden-phone">
+    <th width="10%" class="nowrap hidden-phone">
         <?php echo JHtml::_('grid.sort',  'COM_USERIDEAS_CREATED', 'a.record_date', $this->listDirn, $this->listOrder); ?>
     </th>
-    <th width="10%" class="center nowrap hidden-phone">
+    <th width="10%" class="nowrap hidden-phone">
     	<?php echo JHtml::_('grid.sort',  'COM_USERIDEAS_USER', 'c.name', $this->listDirn, $this->listOrder); ?>
     </th>
     <th width="3%" class="center nowrap hidden-phone">

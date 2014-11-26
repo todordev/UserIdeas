@@ -24,7 +24,6 @@ class UserIdeasControllerItem extends ITPrismControllerFormBackend
 
     public function save($key = null, $urlVar = null)
     {
-
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
         $data   = $this->input->post->get('jform', array(), 'array');
@@ -36,10 +35,10 @@ class UserIdeasControllerItem extends ITPrismControllerFormBackend
         );
 
         $model = $this->getModel();
-        /** @var $model UserIdeasModelItem * */
+        /** @var $model UserIdeasModelItem */
 
         $form = $model->getForm($data, false);
-        /** @var $form JForm * */
+        /** @var $form JForm */
 
         if (!$form) {
             throw new Exception(JText::_("COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED"), 500);

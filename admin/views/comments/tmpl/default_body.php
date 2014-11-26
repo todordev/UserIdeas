@@ -26,8 +26,8 @@ defined('_JEXEC') or die;
 		<td>
 			<?php echo $item->item; ?>
 		</td>
-		<td class="center hidden-phone"><?php echo $item->record_date; ?></td>
-		<td class="center hidden-phone"><?php echo $item->user; ?></td>
+		<td class="hidden-phone"><?php echo $item->record_date; ?></td>
+		<td class="hidden-phone"><?php echo ($item->user) ?: JText::_("COM_USERIDEAS_ANONYMOUS"); ?></td>
         <td class="center hidden-phone"><?php echo $item->id;?></td>
 	</tr>
 <?php } ?>

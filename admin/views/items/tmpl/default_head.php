@@ -26,16 +26,16 @@ defined('_JEXEC') or die;
     <th width="10%" class="center hidden-phone">
     	<?php echo JHtml::_('grid.sort',  'COM_USERIDEAS_VOTES', 'a.votes', $this->listDirn, $this->listOrder); ?>
     </th>
-    <th width="10%" class="center hidden-phone">
+    <th width="10%" class="hidden-phone">
         <?php echo JHtml::_('grid.sort',  'COM_USERIDEAS_CREATED', 'a.record_date', $this->listDirn, $this->listOrder); ?>
     </th>
-    <th width="10%" class="center hidden-phone">
+    <th width="10%" class="hidden-phone">
     	<?php echo JHtml::_('grid.sort',  'COM_USERIDEAS_USER', 'b.name', $this->listDirn, $this->listOrder); ?>
     </th>
-    <th width="10%" class="center hidden-phone">
+    <th width="10%" class="hidden-phone">
         <?php echo JHtml::_('grid.sort',  'COM_USERIDEAS_CATEGORY', 'c.title', $this->listDirn, $this->listOrder); ?>
     </th>
-    <th width="10%" class="hidden-phone">
+    <th width="10%" class="center hidden-phone">
         <?php echo JHtml::_('grid.sort',  'COM_USERIDEAS_ITEM_STATUS', 'd.name', $this->listDirn, $this->listOrder); ?>
     </th>
     <th width="3%" class="center hidden-phone">

@@ -20,6 +20,7 @@ class UserIdeasVote
     protected $id;
     protected $item_id;
     protected $user_id;
+    protected $hash;
     protected $votes;
     protected $record_date;
 
@@ -91,6 +92,7 @@ class UserIdeasVote
      * $data = array(
      *      "item_id"    => 1,
      *      "user_id"    => 2,
+     *      "hash"    => "HASH1JD92J09",
      *      "votes"      => 1
      * );
      *
@@ -106,6 +108,7 @@ class UserIdeasVote
         $query
             ->set($this->db->quoteName("item_id") . "=" . $this->db->quote($this->item_id))
             ->set($this->db->quoteName("user_id") . "=" . $this->db->quote($this->user_id))
+            ->set($this->db->quoteName("hash") . "=" . $this->db->quote($this->hash))
             ->set($this->db->quoteName("votes") . "=" . $this->db->quote($this->votes));
 
         if (!empty($this->id)) { // Update
@@ -154,6 +157,27 @@ class UserIdeasVote
     public function setUserId($userId)
     {
         $this->user_id = (int)$userId;
+
+        return $this;
+    }
+
+    /**
+     * This method sets an hash used to recognize votes from anonymous users.
+     *
+     * <code>
+     * $hash = "HASHHF0HQ30SF09";
+     *
+     * $vote   = new UserIdeasVote(JFactory::getDbo());
+     * $vote->setHash($hash);
+     * </code>
+     *
+     * @param string $hash
+     *
+     * @return self
+     */
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
 
         return $this;
     }

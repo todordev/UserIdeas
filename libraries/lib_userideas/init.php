@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      ITPrism Libraries
- * @subpackage   Library
+ * @package      UserIdeas
+ * @subpackage   Initialization
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -27,10 +27,10 @@ jimport('joomla.utilities.arrayhelper');
 // Register Component libraries
 JLoader::register("UserIdeasConstants", USERIDEAS_PATH_LIBRARY ."/constants.php");
 JLoader::register("UserIdeasVersion", USERIDEAS_PATH_LIBRARY ."/version.php");
+JLoader::register("UserIdeasCategories", USERIDEAS_PATH_LIBRARY ."/categories.php");
 
 // Register helpers
 JLoader::register("UserIdeasHelper", USERIDEAS_PATH_COMPONENT_ADMINISTRATOR ."/helpers/userideas.php");
-JLoader::register("UserIdeasCategories", USERIDEAS_PATH_COMPONENT_SITE ."/helpers/category.php");
 JLoader::register("UserIdeasHelperRoute", USERIDEAS_PATH_COMPONENT_SITE ."/helpers/route.php");
 
 // Register Observers

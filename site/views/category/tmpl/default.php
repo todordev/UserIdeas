@@ -45,28 +45,41 @@ defined('_JEXEC') or die;?>
         	        <?php echo $this->escape($item->title);?>
         	    </a>
     	    </h4>
-         	<p><?php echo $item->description;?></p>
+            <?php if ($this->params->get("items_display_description", 1)) { ?>
+                <?php echo JHtmlString::truncate($item->description, $this->params->get("items_description_length", 255), true, $this->params->get("items_description_html", 0));?>
+            <?php } ?>
         </div>
         <div class="clearfix"></div>
         <div class="well well-small">
         	<div class="pull-left">
-            <?php 
-            
+            <?php
+
+            $name = (strcmp("name", $this->params->get("name_type")) == 0) ? $item->name : $item->username;
+
             $profile = JHtml::_("userideas.profile", $this->socialProfiles, $item->user_id);
-            
-            echo JHtml::_("userideas.publishedByOn", $item->name, $item->record_date, $profile);
+
+            // Prepare item owner avatar.
+            $profileAvatar = null;
+            if ($this->params->get("integration_display_owner_avatar", 0)) {
+                $profileAvatar = JHtml::_("userideas.avatar", $this->socialProfiles, $item->user_id, $this->integrationOptions);
+            }
+
+            echo JHtml::_("userideas.publishedByOn", $name, $item->record_date, $profile, $profileAvatar, $this->integrationOptions);
             echo JHtml::_("userideas.category", $item->category, $item->catslug);
             echo JHtml::_("userideas.status", $item->status);
             ?>
             </div>
             <div class="pull-right">
+
+                <?php if($this->commentsEnabled) { ?>
             	<a class="btn btn-small" href="<?php echo JRoute::_(UserIdeasHelperRoute::getDetailsRoute($item->slug, $item->catid))."#comments";?>" >
             		<i class="icon-comment"></i>
             		<?php echo JText::_("COM_USERIDEAS_COMMENTS");?>
             		<?php echo "( ".$commentsNumber." )";?>
             	</a> 
-            	
-            	<?php if($this->userId == $item->user_id){?>
+            	<?php } ?>
+
+            	<?php if(UserIdeasHelper::isValidOwner($this->userId, $item->user_id) and $this->canEdit){?>
             	<a class="btn btn-small" href="<?php echo JRoute::_(UserIdeasHelperRoute::getFormRoute($item->id));?>" >
             		<i class="icon-edit"></i>
             		<?php echo JText::_("COM_USERIDEAS_EDIT");?>
@@ -89,4 +102,3 @@ defined('_JEXEC') or die;?>
     </div>
 
 </div>
-<?php echo $this->version->backlink;?>

@@ -1,31 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-	<fieldset name="items" label="COM_USERIDEAS_ITEMS" description="COM_USERIDEAS_ITEMS_PARAMS">
-		<field name="items_display_description" type="radio" default="0" label="COM_USERIDEAS_ITEMS_DISPLAY_DESCRIPTION" description="COM_USERIDEAS_ITEMS_DISPLAY_DESCRIPTION_DESC" class="btn-group">
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-        <field name="items_display_button" type="radio" default="1" label="COM_USERIDEAS_ITEMS_DISPLAY_BUTTON" description="COM_USERIDEAS_ITEMS_DISPLAY_BUTTON_DESC" class="btn-group">
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-        <field name="items_ordering" type="list" default="2" label="COM_USERIDEAS_ORDERING" description="COM_USERIDEAS_ITEMS_ORDERING_DESC">
-            <option value="0">COM_USERIDEAS_ORDER_BY_ORDERING</option>
-            <option value="1">COM_USERIDEAS_ORDER_BY_TITLE</option>
-            <option value="2">COM_USERIDEAS_ORDER_BY_DATE</option>
-        </field>
-        <field name="items_ordering_direction" type="list" default="ASC" label="COM_USERIDEAS_ORDERING_DIRECTION" description="COM_USERIDEAS_ORDERING_DIRECTION_DESC">
-            <option value="ASC">Ascending</option>
-            <option value="DESC">Descending</option>
-        </field>
-        <field name="items_display_results_number" type="text" default="20" size="50" label="COM_USERIDEAS_ITEMS_RESULTS_NUMBER" description="COM_USERIDEAS_ITEMS_RESULTS_NUMBER_DESC" />
-	</fieldset>
+	<!--<fieldset name="items" label="COM_USERIDEAS_ITEMS" description="COM_USERIDEAS_ITEMS_PARAMS">
+
+	</fieldset>-->
     
     <fieldset name="seo" label="COM_USERIDEAS_SEO" description="COM_USERIDEAS_SEO_PARAMS">
         <field name="seo_cat_to_title" type="list" default="0"  label="COM_USERIDEAS_SEO_CATEOGRY_TO_TITLE" description="COM_USERIDEAS_SEO_CATEOGRY_TO_TITLE_DESC" >
             <option value="0">JNONE</option>
             <option value="1">COM_USERIDEAS_BEFORE</option>
             <option value="2">COM_USERIDEAS_AFTER</option>
+        </field>
+    </fieldset>
+
+    <fieldset name="comments" label="COM_USERIDEAS_COMMENTS" description="COM_USERIDEAS_COMMENTS_PARAMS">
+        <field name="comments_enabled" type="radio" default="1"  label="COM_USERIDEAS_COMMENTS_ENABLED" description="COM_USERIDEAS_COMMENTS_ENABLED_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
         </field>
     </fieldset>
     
@@ -37,8 +27,15 @@
             <option value="jomsocial">COM_USERIDEAS_JOMSOCIAL</option>
             <option value="gravatar">COM_USERIDEAS_GRAVATAR</option>
         </field>
-        <field name="integration_avatars_size" type="text" default="50" label="COM_USERIDEAS_AVATARS_SIZE" description="COM_USERIDEAS_AVATARS_SIZE_DESC" />
-        <field name="integration_avatars_default" type="text" default="/media/com_userideas/images/no-profile.png" label="COM_USERIDEAS_AVATARS_DEFAULT" description="COM_USERIDEAS_AVATARS_DEFAULT_DESC" class="span6" />  
+        <field name="integration_avatars_size" type="text" default="" label="COM_USERIDEAS_AVATARS_SIZE" description="COM_USERIDEAS_AVATARS_SIZE_DESC" />
+        <field name="integration_avatars_default" type="text" default="/media/com_userideas/images/no-profile.png" label="COM_USERIDEAS_AVATARS_DEFAULT" description="COM_USERIDEAS_AVATARS_DEFAULT_DESC" class="span6" />
+        <field name="integration_display_owner_avatar" type="radio" default="0" label="COM_USERIDEAS_DISPLAY_OWNER_AVATAR" description="COM_USERIDEAS_DISPLAY_OWNER_AVATAR_DESC" class="btn-group">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+
+        <field name="integration_avatar_width" type="text" default="24" label="COM_USERIDEAS_OWNER_AVATAR_WIDTH" description="COM_USERIDEAS_AVATAR_WIDTH_DESC" />
+        <field name="integration_avatar_height" type="text" default="24" label="COM_USERIDEAS_OWNER_AVATAR_HEIGHT" description="COM_USERIDEAS_AVATAR_HEIGHT_DESC" />
     </fieldset>
     
     <fieldset name="security" label="COM_USERIDEAS_SECURITY" description="COM_USERIDEAS_SECURITY_PARAMS">
@@ -49,6 +46,21 @@
         <field name="security_comment_auto_publish" type="radio" default="0" label="COM_USERIDEAS_SECURITY_COMMENT_AUTO_PUBLISH" description="COM_USERIDEAS_SECURITY_COMMENT_AUTO_PUBLISH_DESC" class="btn-group">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
+        </field>
+        <field
+                name="captcha"
+                type="plugins"
+                folder="captcha"
+                default=""
+                label="COM_USERIDEAS_CAPTCHA_LABEL"
+                description="COM_USERIDEAS_CAPTCHA_DESC"
+                filter="cmd">
+            <option
+                    value="">JOPTION_USE_DEFAULT
+            </option>
+            <option
+                    value="0">JOPTION_DO_NOT_USE
+            </option>
         </field>
      </fieldset>
      
@@ -66,6 +78,18 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
+        <field name="redirect_when_post" type="list" default="list" label="COM_USERIDEAS_REDIRECT_WHEN_POST" description="COM_USERIDEAS_REDIRECT_WHEN_POST_DESC">
+            <option value="list">COM_USERIDEAS_LIST</option>
+            <option value="form">COM_USERIDEAS_FORM</option>
+        </field>
+        <field name="name_type" type="list" default="name" label="COM_USERIDEAS_OWNER_NAME" description="COM_USERIDEAS_OWNER_NAME_DESC">
+            <option value="name">COM_USERIDEAS_NAME</option>
+            <option value="username">COM_USERIDEAS_USERNAME</option>
+        </field>
+        <field name="administrator_id" type="user" label="COM_USERIDEAS_ADMINISTRATOR" description="COM_USERIDEAS_FIELD_ADMINISTRATOR_DESC" />
     </fieldset>
-    
+
+    <fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">
+        <field name="rules" type="rules" component="com_userideas" filter="rules" validate="rules" label="JCONFIG_PERMISSIONS_LABEL" section="component"/>
+    </fieldset>
 </config>

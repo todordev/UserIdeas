@@ -19,11 +19,18 @@ defined('_JEXEC') or die;
 class plgUserIdeasVote extends JPlugin
 {
     /**
+     * Hash used to recognize anonymous users.
+     *
+     * @var string
+     */
+    protected $hash;
+
+    /**
      *
      * This method is triggered bofore user vote be stored.
      *
-     * @param string    $context
-     * @param array     $data
+     * @param string                   $context
+     * @param array                    $data
      * @param Joomla\Registry\Registry $params
      *
      * @return null|array
@@ -50,6 +57,8 @@ class plgUserIdeasVote extends JPlugin
             return null;
         }
 
+        $numberOfVotes = abs($this->params->get("votes_per_item", 0));
+
         $itemId = JArrayHelper::getValue($data, "id", 0, "int");
         $userId = JArrayHelper::getValue($data, "user_id", 0, "int");
 
@@ -59,13 +68,29 @@ class plgUserIdeasVote extends JPlugin
         $query
             ->select("COUNT(*)")
             ->from($db->quoteName("#__uideas_votes", "a"))
-            ->where("a.item_id = " . (int)$itemId)
-            ->where("a.user_id = " . (int)$userId);
+            ->where("a.item_id = " . (int)$itemId);
+
+        // Check if it is anonymous user.
+        if (!$userId) {
+            $hash = $this->generateHash();
+            $query->where("a.hash = " . $db->quote($hash));
+        } else {
+            $query->where("a.user_id = " . (int)$userId);
+        }
 
         $db->setQuery($query, 0, 1);
         $result = $db->loadResult();
 
-        if (!$result) { // User vote is not recorded. Return true
+        $votingAllowed = false;
+        if (!$result or ($numberOfVotes == 0)) {
+            $votingAllowed = true;
+        }
+
+        if (!empty($numberOfVotes) and ($result < $numberOfVotes)) {
+            $votingAllowed = true;
+        }
+
+        if ($votingAllowed) { // User vote is not recorded. Return true
 
             $result = array(
                 "success" => true
@@ -88,8 +113,8 @@ class plgUserIdeasVote extends JPlugin
     /**
      * Store user vote.
      *
-     * @param string    $context
-     * @param array     $data   This is a data about user and his vote
+     * @param string                   $context
+     * @param array                    $data   This is a data about user and his vote
      * @param Joomla\Registry\Registry $params The parameters of the component
      *
      * @return  null|array
@@ -136,8 +161,14 @@ class plgUserIdeasVote extends JPlugin
         jimport("userideas.vote");
         $history = new UserIdeasVote(JFactory::getDbo());
 
+        if (!$userId) {
+            $hash = $this->generateHash();
+            $history->setHash($hash);
+        } else {
+            $history->setUserId($userId);
+        }
+
         $history
-            ->setUserId($userId)
             ->setItemId($itemId)
             ->setVotes(1)
             ->store();
@@ -148,5 +179,31 @@ class plgUserIdeasVote extends JPlugin
             "votes"      => $item->getVotes()
         );
 
+    }
+
+    protected function generateHash()
+    {
+        if (!$this->hash) {
+
+            // Get user IP address
+            $app = JFactory::getApplication();
+            $app->input->server->get("HTTP_CLIENT_IP");
+
+            if ($app->input->server->get("HTTP_CLIENT_IP")) {
+                $ip = $app->input->server->get("HTTP_CLIENT_IP");
+            } elseif ($app->input->server->get("HTTP_X_FORWARDED_FOR")) {
+                $ip = $app->input->server->get("HTTP_X_FORWARDED_FOR");
+            } else {
+                $ip = ($app->input->server->get("REMOTE_ADDR")) ?: "0.0.0.0";
+            }
+
+            // Validate the IP address.
+            $ip = filter_var($ip, FILTER_VALIDATE_IP);
+            $ip = ($ip === false) ? '0.0.0.0' : $ip;
+
+            $this->hash = md5($ip);
+        }
+
+        return $this->hash;
     }
 }

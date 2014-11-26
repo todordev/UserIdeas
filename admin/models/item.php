@@ -91,10 +91,6 @@ class UserIdeasModelItem extends JModelAdmin
         $userId      = JArrayHelper::getValue($data, "user_id");
         $published   = JArrayHelper::getValue($data, "published");
 
-        if (!$userId) {
-            $userId = JFactory::getUser()->get("id");
-        }
-
         // Load a record from the database
         $row = $this->getTable();
         /** @var $row UserIdeasTableItem */

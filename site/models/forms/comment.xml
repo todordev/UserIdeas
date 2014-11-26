@@ -9,6 +9,12 @@
                required="true"
                 />
 
+        <field name="captcha" type="captcha"
+               label="COM_USERIDEAS_CAPTCHA_LABEL"
+               description="COM_USERIDEAS_FRONT_CAPTCHA_DESC"
+               validate="captcha"
+               />
+
         <field name="id" type="hidden" filter="int"/>
         <field name="item_id" type="hidden" filter="int"/>
 

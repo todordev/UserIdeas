@@ -42,17 +42,6 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-        // Check for valid user id
-        $userId = JFactory::getUser()->get("id");
-        if (!$userId) {
-            $redirectOptions = array(
-                "force_direction" => "index.php?option=com_users&view=login"
-            );
-            $this->displayNotice(JText::_('COM_USERIDEAS_ERROR_NOT_LOG_IN'), $redirectOptions);
-
-            return;
-        }
-
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
@@ -66,11 +55,21 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend
             "id"   => $itemId,
         );
 
+        // Check for valid user id
+        if (!$this->allowSave($data)) {
+            $redirectOptions = array(
+                "force_direction" => "index.php?option=com_users&view=login"
+            );
+            $this->displayNotice(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), $redirectOptions);
+
+            return;
+        }
+
         $model = $this->getModel();
         /** @var $model UserIdeasModelComment */
 
         $form = $model->getForm($data, false);
-        /** @var $form JForm * */
+        /** @var $form JForm */
 
         if (!$form) {
             throw new Exception(JText::_("COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED"), 500);
@@ -106,5 +105,58 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend
         // Redirect to next page
         $this->displayMessage(JText::_("COM_USERIDEAS_COMMENT_SENT_SUCCESSFULLY"), $redirectOptions);
 
+    }
+
+    /**
+     * Method override to check if you can add a new record.
+     *
+     * @param   array $data An array of input data.
+     *
+     * @return  boolean
+     *
+     * @since   1.6
+     */
+    protected function allowAdd($data = array())
+    {
+        $user  = JFactory::getUser();
+
+        if ($user->authorise('userideas.comment.create', 'com_userideas')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Method override to check if you can edit an existing record.
+     *
+     * @param   array  $data An array of input data.
+     * @param   string $key  The name of the key for the primary key; default is comment_id.
+     *
+     * @return  boolean
+     *
+     * @since   1.6
+     */
+    protected function allowEdit($data = array(), $key = 'id')
+    {
+        $user     = JFactory::getUser();
+
+        // Validate action role.
+        if (!$user->authorise('userideas.comment.edit.own', 'com_userideas')) {
+            return false;
+        }
+
+        // Validate item owner.
+        $itemId = JArrayHelper::getValue($data, $key);
+        $userId = $user->get("id");
+
+        // Validate item owner.
+        jimport("userideas.validator.comment.owner");
+        $itemValidator = new UserIdeasValidatorCommentOwner(JFactory::getDbo(), $itemId, $userId);
+        if (!$itemValidator->isValid()) {
+            return false;
+        }
+
+        return true;
     }
 }

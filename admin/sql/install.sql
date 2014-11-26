@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS `#__uideas_votes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` smallint(5) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
+  `hash` varchar(32) DEFAULT NULL COMMENT 'Anonymous users hash.',
   `votes` tinyint(3) unsigned NOT NULL,
   `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

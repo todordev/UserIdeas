@@ -24,7 +24,6 @@ abstract class JHtmlUserIdeas
      *
      * @param object  $socialProfiles Social profiles object.
      * @param integer $userId         User ID
-     * @param string  $default        A link to default picture.
      * @param array   $options        Options that will be used to integration.
      *
      * @return string
@@ -39,9 +38,10 @@ abstract class JHtmlUserIdeas
      * </code>
      *
      */
-    public static function avatar($socialProfiles, $userId, $default = null, $options = array())
+    public static function avatar($socialProfiles, $userId, $options = array())
     {
-        $avatarSize = JArrayHelper::getValue($options, "avatar_size", 50);
+        $avatarSize = JArrayHelper::getValue($options, "size", 50);
+        $default = JArrayHelper::getValue($options, "default");
 
         $link = (!$socialProfiles) ? null : $socialProfiles->getAvatar($userId, $avatarSize);
 
@@ -54,7 +54,7 @@ abstract class JHtmlUserIdeas
     }
 
     /**
-     * Generate a link to an user image of a social platform
+     * Generate a link to an user profile of a social platform.
      *
      * @param object  $socialProfiles Social profiles object.
      * @param integer $userId         User ID
@@ -64,10 +64,6 @@ abstract class JHtmlUserIdeas
      *
      *
      * <code>
-     *
-     * $options = array(
-     *      "avatar_size" => 50
-     * );
      * $avatar  = JHtml::_("userideas.profile", $socialProfiles, $userId, "javascript: void(0);");
      *
      * </code>
@@ -76,7 +72,7 @@ abstract class JHtmlUserIdeas
     {
         $link = (!$socialProfiles) ? null : $socialProfiles->getLink($userId);
 
-        // Set the linke to default picture
+        // Set the link to default picture
         if (!$link and !empty($default)) {
             $link = $default;
         }
@@ -89,7 +85,7 @@ abstract class JHtmlUserIdeas
         if (!empty($link)) {
             $profile = '<a href="' . $link . '" rel="nofollow">' . htmlspecialchars($name, ENT_QUOTES, "utf-8") . '</a>';
         } else {
-            $profile = $name;
+            $profile = ($name) ?: JText::_("COM_USERIDEAS_ANONYMOUS");
         }
 
         $html = JText::sprintf("COM_USERIDEAS_PUBLISHED_BY", $profile);
@@ -97,12 +93,21 @@ abstract class JHtmlUserIdeas
         return $html;
     }
 
-    public static function publishedByOn($name, $date, $link = null)
+    public static function publishedByOn($name, $date, $link = null, $profileAvatar = null, $options = array())
     {
+        $name = htmlspecialchars($name, ENT_QUOTES, "utf-8");
+
         if (!empty($link)) {
-            $profile = '<a href="' . $link . '" rel="nofollow">' . htmlspecialchars($name, ENT_QUOTES, "utf-8") . '</a>';
+            $profile = '<a href="' . $link . '" rel="nofollow">' . $name . '</a>';
         } else {
-            $profile = $name;
+            $profile = ($name) ?: JText::_("COM_USERIDEAS_ANONYMOUS");
+        }
+
+        if (!empty($profileAvatar)) {
+            $width = JArrayHelper::getValue($options, "width", 24);
+            $height = JArrayHelper::getValue($options, "height", 24);
+
+            $profile = '<img src="' . $profileAvatar . '" width="'.$width.'" height="'.$height.'" alt="'.$name.'" /> ' . $profile;
         }
 
         $date = JHTML::_('date', $date, JText::_('DATE_FORMAT_LC3'));

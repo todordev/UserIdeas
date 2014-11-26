@@ -174,7 +174,7 @@ class UserIdeasModelForm extends JModelForm
 
         // If there is an id, the item is not new
         $isNew = true;
-        if (!empty($row->id)) {
+        if ($row->get("id")) {
             $isNew = false;
         }
 
@@ -211,6 +211,8 @@ class UserIdeasModelForm extends JModelForm
 
         $this->triggerAfterSaveEvent($row, $isNew);
 
+        $this->cleanCache();
+
         return $row->get("id");
     }
 
@@ -233,12 +235,14 @@ class UserIdeasModelForm extends JModelForm
 
     /**
      * Prepare and sanitise the table prior to saving.
+     *
+     * @param UserIdeasTableItem $table
      * @since    1.6
      */
     protected function prepareTable(&$table)
     {
         // get maximum order number
-        if (empty($table->id)) {
+        if (!$table->get("id")) {
 
             // Set ordering to the last item if not set
             if (empty($table->ordering)) {
@@ -251,20 +255,48 @@ class UserIdeasModelForm extends JModelForm
                 $db->setQuery($query, 0, 1);
                 $max = $db->loadResult();
 
-                $table->ordering = $max + 1;
+                $table->set("ordering", $max + 1);
             }
         }
 
         // Fix magic quotes
         if (get_magic_quotes_gpc()) {
-            $table->alias       = stripcslashes($table->title);
-            $table->description = stripcslashes($table->description);
+            $table->set("alias", stripcslashes($table->title));
+            $table->set("description", stripcslashes($table->description));
         }
 
         // If does not exist alias, I will generate the new one from the title
-        if (!$table->alias) {
-            $table->alias = $table->title;
+        if (!$table->get("alias")) {
+            $table->set("alias", $table->get("title"));
         }
-        $table->alias = JApplicationHelper::stringURLSafe($table->alias);
+        $table->set("alias", JApplicationHelper::stringURLSafe($table->get("alias")));
+    }
+
+    /**
+     * Method to test whether a record can be created or edited.
+     *
+     * @param   int  $itemId  Item ID/
+     * @param   int  $userId  User ID.
+     *
+     * @return  boolean  True if allowed to change the state of the record. Defaults to the permission for the component.
+     *
+     * @since   12.2
+     */
+    public function canEditOwn($itemId, $userId)
+    {
+        $user = JFactory::getUser();
+
+        if (!$user->authorise('core.edit.own', "com_userideas")) {
+            return false;
+        }
+
+        // Validate item owner.
+        jimport("userideas.validator.item.owner");
+        $itemValidator = new UserIdeasValidatorItemOwner(JFactory::getDbo(), $itemId, $userId);
+        if (!$itemValidator->isValid()) {
+            return false;
+        }
+
+        return true;
     }
 }

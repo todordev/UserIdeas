@@ -121,21 +121,6 @@ class plgContentUserIdeasAdminMail extends JPlugin
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
-        jimport("userideas.email");
-        $email = new UserIdeasEmail();
-        $email->setDb(JFactory::getDbo());
-        $email->load($emailId);
-
-        // Set sender name
-        if (!$email->getSenderName()) {
-            $email->setSenderName($app->get("fromname"));
-        }
-
-        $fromMail = (!$email->getSenderEmail()) ? $app->get("mailfrom") : $email->getSenderEmail();
-        $fromName = (!$email->getSenderName()) ? $app->get("fromname") : $email->getSenderName();
-
-        $recipientMail = $fromMail;
-
         $uri     = JUri::getInstance();
         $website = $uri->toString(array("scheme", "host"));
 
@@ -144,10 +129,40 @@ class plgContentUserIdeasAdminMail extends JPlugin
             "site_url"       => JUri::root(),
             "item_title"     => $title,
             "item_url"       => $website . JRoute::_(UserIdeasHelperRoute::getDetailsRoute($itemId, $categoryId)),
-            "sender_name"    => $fromName,
-            "sender_email"   => $fromMail,
-            "recipient_name" => $fromName,
         );
+
+        jimport("userideas.email");
+        $email = new UserIdeasEmail();
+        $email->setDb(JFactory::getDbo());
+        $email->load($emailId);
+
+        // Set sender name and email.
+        if (!$email->getSenderName()) {
+            $email->setSenderName($app->get("fromname"));
+        }
+        if (!$email->getSenderEmail()) {
+            $email->setSenderEmail($app->get("mailfrom"));
+        }
+
+        // Prepare recipient data.
+        $componentParams = JComponentHelper::getParams("com_userideas");
+        /** @var  $componentParams Joomla\Registry\Registry */
+
+        $recipientId = $componentParams->get("administrator_id");
+        if (!empty($recipientId)) {
+            $recipient = JFactory::getUser($recipientId);
+            $recipientName = $recipient->get("name");
+            $recipientMail = $recipient->get("email");
+        } else {
+            $recipientName = $app->get("fromname");
+            $recipientMail = $app->get("mailfrom");
+        }
+
+        // Prepare data for parsing
+        $data["sender_name"]     = $email->getSenderName();
+        $data["sender_email"]    = $email->getSenderEmail();
+        $data["recipient_name"]  = $recipientName;
+        $data["recipient_email"] = $recipientMail;
 
         $emailMode = $this->params->get("email_mode", "plain");
 
@@ -158,13 +173,9 @@ class plgContentUserIdeasAdminMail extends JPlugin
 
         $mailer = JFactory::getMailer();
         if (strcmp("html", $emailMode) == 0) { // Send as HTML message
-
-            $return = $mailer->sendMail($fromMail, $fromName, $recipientMail, $subject, $body, UserIdeasConstants::MAIL_MODE_HTML);
-
+            $return = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, UserIdeasConstants::MAIL_MODE_HTML);
         } else { // Send as plain text.
-
-            $return = $mailer->sendMail($fromMail, $fromName, $recipientMail, $subject, $body, UserIdeasConstants::MAIL_MODE_PLAIN);
-
+            $return = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, UserIdeasConstants::MAIL_MODE_PLAIN);
         }
 
         // Check for an error.

@@ -6,8 +6,8 @@
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.5</version>
-    <creationDate>20 July, 2014</creationDate>
+    <version>1.6</version>
+    <creationDate>26 November, 2014</creationDate>
     <description><![CDATA[
     <p><a href='http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions' target='_blank'>User Ideas - Vote</a> is a plugin that stores user vote.</p>
     <p>Invest in the extension improvement. You can <a href='http://itprism.com/sponsorship' target='_blank'>sponsor the extension via SMS, PayPal or Bitcoin</a>.</p>
@@ -23,5 +23,13 @@
     </files>
     
     <help url="PLG_USERIDEAS_VOTE_HELP_URL"/>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic" >
+                <field name="votes_per_item" type="text" default="1" label="PLG_USERIDEAS_VOTE_VOTE_PER_ITEM" description="PLG_USERIDEAS_VOTE_VOTE_PER_ITEM_DESC" />
+            </fieldset>
+        </fields>
+    </config>
     
 </extension>

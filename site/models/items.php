@@ -127,14 +127,14 @@ class UserIdeasModelItems extends JModelList
                 'list.select',
                 'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, ' .
                 $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug, " .
-                'b.name, ' .
+                'b.name, b.username, ' .
                 'c.title AS category, ' .
                 $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug, " .
                 'd.name AS status_name, d.params AS status_params, d.default AS status_default'
             )
         );
         $query->from($db->quoteName('#__uideas_items', "a"));
-        $query->innerJoin($db->quoteName('#__users', "b") . ' ON a.user_id = b.id');
+        $query->leftJoin($db->quoteName('#__users', "b") . ' ON a.user_id = b.id');
         $query->leftJoin($db->quoteName('#__categories', "c") . ' ON a.catid = c.id');
         $query->leftJoin($db->quoteName('#__uideas_statuses', "d") . ' ON a.status_id = d.id');
 
