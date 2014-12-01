@@ -1,6 +1,6 @@
 User Ideas for Joomla! 
 ==========================
-( Version 1.6 )
+( Version 1.6.1 )
 --------------------------
 
 User Ideas is an extension that provides functionality for creating and managing ideas pool, suggestions, issues, user feedbacks,...

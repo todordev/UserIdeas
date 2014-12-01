@@ -1,6 +1,9 @@
 User Ideas release notes
 ==========================
 
+###v1.6.1
+* Fixed category manager permissions.
+
 ###v1.6
 * Added option to select redirection when a user post an item.
 * Added option to select what you would like to display as a name of item create - name or username.

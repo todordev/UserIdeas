@@ -9,8 +9,8 @@
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <packager>ITPrism</packager>
     <packagerurl>http://itprism.com</packagerurl>
-    <version>1.6</version>
-    <creationDate>26 November, 2014</creationDate>
+    <version>1.6.1</version>
+    <creationDate>01 December, 2014</creationDate>
     <description>User Ideas Library</description>
 
     <files>

@@ -36,7 +36,7 @@ class UserIdeasVersion
      *
      * @var integer
      */
-    public $devLevel = '6';
+    public $devLevel = '6.1';
 
     /**
      * Release Type
@@ -57,7 +57,7 @@ class UserIdeasVersion
      *
      * @var string
      */
-    public $releaseDate = '26 November, 2014';
+    public $releaseDate = '01 December, 2014';
 
     /**
      * License
