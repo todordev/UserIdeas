@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Version
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -36,7 +36,7 @@ class UserIdeasVersion
      *
      * @var integer
      */
-    public $devLevel = '6.1';
+    public $devLevel = '6.2';
 
     /**
      * Release Type
@@ -57,7 +57,7 @@ class UserIdeasVersion
      *
      * @var string
      */
-    public $releaseDate = '01 December, 2014';
+    public $releaseDate = '08 May, 2015';
 
     /**
      * License
@@ -71,7 +71,7 @@ class UserIdeasVersion
      *
      * @var string
      */
-    public $copyright = '&copy; 2014 ITPrism. All rights reserved.';
+    public $copyright = '&copy; 2015 ITPrism. All rights reserved.';
 
     /**
      * URL

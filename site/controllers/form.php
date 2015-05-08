@@ -3,7 +3,7 @@
  * @package      UserIdeas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2014 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -83,16 +83,13 @@ class UserIdeasControllerForm extends ITPrismControllerFormFrontend
         // Check for validation errors.
         if ($validData === false) {
             $this->displayNotice($form->getErrors(), $redirectOptions);
-
             return;
         }
 
         try {
 
             // Set the user ID.
-            if (!empty($itemId) and empty($validData["user_id"])) {
-                $validData["user_id"] = (int)$userId;
-            }
+            $validData["user_id"]  = (int)$userId;
 
             $itemId                = $model->save($validData);
 
@@ -113,7 +110,6 @@ class UserIdeasControllerForm extends ITPrismControllerFormFrontend
 
         // Redirect to next page
         $this->displayMessage(JText::_('COM_USERIDEAS_ITEM_SAVED_SUCCESSFULLY'), $redirectOptions);
-
     }
 
     /**

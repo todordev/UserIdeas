@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="3.3" method="upgrade">
+<extension type="component" version="3.4" method="upgrade">
     <name>COM_USERIDEAS</name>
     <author>Todor Iliev</author>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <copyright>Copyright (C) 2014 Todor Iliev ( ITPrism.com )</copyright>
+    <copyright>Copyright (C) 2015 Todor Iliev ( ITPrism.com )</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html</license>
-    <version>1.6.1</version>
-    <creationDate>01 December, 2014</creationDate>
+    <version>1.6.2</version>
+    <creationDate>08 May, 2015</creationDate>
     <description><![CDATA[
     <p><a href='http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions' target='_blank'>User Ideas</a> is an extension that provides functionality for creating and managing ideas pool, suggestions, issues, user feedbacks,...</p>
-    <p>Invest in the extension and help for its improvement. You can <a href='http://itprism.com/sponsorship' title='Sponsoring' target='_blank'>sponsor the extension via SMS, PayPal or Bitcoin</a>.</p>
+    <p>Invest in the extension and help for its improvement. You can <a href='http://itprism.com/sponsorship' target='_blank'>sponsor the extension via SMS, PayPal or Bitcoin</a>.</p>
     <p><a href='http://itprism.com/' target='_blank'>Subscribe for the newsletter</a> to receive <strong>gifts</strong>, <strong>discount codes</strong>, information about <strong>updates</strong> and information about <strong>new ITPrism extensions</strong>.</p>
-    <p>Please, <a href='http://extensions.joomla.org/extensions/contacts-and-feedback/testimonials-a-suggestions/24422' target='_blank'>vote for the extension</a> on Joomla! Extensions Directory</p>
+    <p>Please, <a href='http://extensions.joomla.org/extensions/extension/contacts-and-feedback/testimonials-a-suggestions/user-ideas' target='_blank'>vote for the extension</a> on Joomla! Extensions Directory</p>
     ]]></description>
 
     <install>
@@ -34,7 +34,6 @@
     </update>
 
     <media destination="com_userideas" folder="media">
-        <filename>index.html</filename>
         <folder>css</folder>
         <folder>images</folder>
         <folder>js</folder>
@@ -50,7 +49,6 @@
 
         <filename>controller.php</filename>
         <filename>userideas.php</filename>
-        <filename>index.html</filename>
         <filename>router.php</filename>
     </files>
 
@@ -61,14 +59,12 @@
             <folder>controllers</folder>
             <folder>helpers</folder>
             <folder>language</folder>
-            <folder>libraries</folder>
             <folder>models</folder>
             <folder>sql</folder>
             <folder>tables</folder>
             <folder>views</folder>
 
             <filename>controller.php</filename>
-            <filename>index.html</filename>
             <filename>config.xml</filename>
             <filename>access.xml</filename>
             <filename>userideas.php</filename>

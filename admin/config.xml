@@ -24,6 +24,7 @@
             <option value="">COM_USERIDEAS_NONE</option>
             <option value="socialcommunity">COM_USERIDEAS_SOCIAL_COMMUNITY</option>
             <option value="kunena">COM_USERIDEAS_KUNENA</option>
+            <option value="easysocial">COM_USERIDEAS_EASYSOCIAL</option>
             <option value="jomsocial">COM_USERIDEAS_JOMSOCIAL</option>
             <option value="gravatar">COM_USERIDEAS_GRAVATAR</option>
         </field>

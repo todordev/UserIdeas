@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<extension type="library" version="3.3" method="upgrade">
+<extension type="library" version="3.4" method="upgrade">
     <name>User Ideas Library</name>
     <libraryname>userideas</libraryname>
     <author>Todor Iliev</author>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <copyright>Copyright (C) 2014 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
+    <copyright>Copyright (C) 2015 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
     <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
     <packager>ITPrism</packager>
     <packagerurl>http://itprism.com</packagerurl>
-    <version>1.6.1</version>
-    <creationDate>01 December, 2014</creationDate>
+    <version>1.6.2</version>
+    <creationDate>08 May, 2015</creationDate>
     <description>User Ideas Library</description>
 
     <files>
@@ -21,7 +21,6 @@
         <file>category.php</file>
         <file>constants.php</file>
         <file>email.php</file>
-        <file>index.html</file>
         <file>init.php</file>
         <file>item.php</file>
         <file>status.php</file>

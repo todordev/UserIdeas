@@ -1,6 +1,10 @@
 User Ideas release notes
 ==========================
 
+###v1.6.2
+* Fixed issue [#22] (https://github.com/ITPrism/UserIdeas/issues/22).
+* Integrated with Easy Social.
+
 ###v1.6.1
 * Fixed category manager permissions.
 
