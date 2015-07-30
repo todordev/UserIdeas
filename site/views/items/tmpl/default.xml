@@ -25,6 +25,7 @@
                 <option value="0">COM_USERIDEAS_ORDER_BY_ORDERING</option>
                 <option value="1">COM_USERIDEAS_ORDER_BY_TITLE</option>
                 <option value="2">COM_USERIDEAS_ORDER_BY_DATE</option>
+                <option value="3">COM_USERIDEAS_ORDER_BY_VOTES</option>
             </field>
             <field name="items_ordering_direction" type="list" default="ASC" label="COM_USERIDEAS_ORDERING_DIRECTION" description="COM_USERIDEAS_ORDERING_DIRECTION_DESC">
                 <option value="ASC">Ascending</option>
