@@ -185,7 +185,11 @@ class UserIdeasModelItems extends JModelList
                 $orderCol  = "a.record_date";
                 $orderDir  = "DESC";
                 break;
-
+                
+            case 3:
+                $orderCol  = "a.votes";
+                break;
+                
             default:
                 $orderCol = "a.ordering";
                 break;
