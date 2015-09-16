@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -47,9 +47,6 @@ class UserIdeasViewStatuses extends JViewLegacy
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
 
-        // Add submenu
-        UserIdeasHelper::addSubmenu($this->getName());
-
         // Prepare sorting data
         $this->prepareSorting();
 
@@ -87,6 +84,8 @@ class UserIdeasViewStatuses extends JViewLegacy
      */
     protected function addSidebar()
     {
+        UserIdeasHelper::addSubmenu($this->getName());
+
         $this->sidebar = JHtmlSidebar::render();
     }
 
@@ -125,6 +124,6 @@ class UserIdeasViewStatuses extends JViewLegacy
 
         JHtml::_('formbehavior.chosen', 'select');
 
-        JHtml::_('itprism.ui.joomla_list');
+        JHtml::_('Prism.ui.joomlaList');
     }
 }

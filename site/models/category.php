@@ -4,15 +4,12 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-/**
- * Get a list of items
- */
 class UserIdeasModelCategory extends JModelList
 {
     /**
@@ -194,7 +191,7 @@ class UserIdeasModelCategory extends JModelList
     public function getComments()
     {
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi */
+        /** @var $db JDatabaseDriver */
 
         $query = $db->getQuery(true);
 

@@ -4,7 +4,7 @@
  * @subpackage   Plugins
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.helper');
 jimport('joomla.plugin.plugin');
+jimport("Prism.init");
+jimport("UserIdeas.init");
 
 /**
  * This plugin initializes the job of the button
@@ -62,8 +64,7 @@ class plgSystemUserIdeasVote extends JPlugin
             return;
         }
 
-        jimport("itprism.init");
-        JHtml::_('itprism.ui.joomla_helper');
+        JHtml::_('Prism.ui.joomlaHelper');
 
         $document->addScript('plugins/system/userideasvote/votebutton.js');
     }

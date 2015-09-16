@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -26,7 +26,9 @@ defined('_JEXEC') or die;
 		<td>
 			<?php echo $item->item; ?>
 		</td>
-		<td class="hidden-phone"><?php echo $item->record_date; ?></td>
+		<td class="hidden-phone">
+            <?php echo JHtml::_('date', $item->record_date, JText::_('DATE_FORMAT_LC3')) ; ?>
+        </td>
 		<td class="hidden-phone"><?php echo ($item->user) ?: JText::_("COM_USERIDEAS_ANONYMOUS"); ?></td>
         <td class="center hidden-phone"><?php echo $item->id;?></td>
 	</tr>

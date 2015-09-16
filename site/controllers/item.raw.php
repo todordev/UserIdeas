@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -41,9 +41,8 @@ class UserIdeasControllerItem extends JControllerLegacy
     {
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
-
-        jimport("itprism.response.json");
-        $response = new ITPrismResponseJson();
+        
+        $response = new Prism\Response\Json();
 
         $params = $app->getParams("com_userideas");
 
@@ -94,11 +93,11 @@ class UserIdeasControllerItem extends JControllerLegacy
 
             // Check for error.
             foreach ($results as $result) {
-                $success = JArrayHelper::getValue($result, "success");
+                $success = Joomla\Utilities\ArrayHelper::getValue($result, "success");
 
                 if (false === $success) {
 
-                    $message = JArrayHelper::getValue($result, "message", JText::_('COM_USERIDEAS_VOTED_UNSUCCESSFULLY'));
+                    $message = Joomla\Utilities\ArrayHelper::getValue($result, "message", JText::_('COM_USERIDEAS_VOTED_UNSUCCESSFULLY'));
 
                     $response
                         ->setTitle(JText::_('COM_USERIDEAS_FAIL'))
@@ -130,9 +129,9 @@ class UserIdeasControllerItem extends JControllerLegacy
 
         }
 
-        $responseData = JArrayHelper::getValue($data, "response_data", 0);
-        $userVotes    = JArrayHelper::getValue($responseData, "user_votes", 0);
-        $votes        = JArrayHelper::getValue($responseData, "votes", 0);
+        $responseData = Joomla\Utilities\ArrayHelper::getValue($data, "response_data", 0);
+        $userVotes    = Joomla\Utilities\ArrayHelper::getValue($responseData, "user_votes", 0);
+        $votes        = Joomla\Utilities\ArrayHelper::getValue($responseData, "votes", 0);
 
         $data = array(
             "votes" => $votes

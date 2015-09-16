@@ -1,6 +1,6 @@
 User Ideas for Joomla! 
 ==========================
-( Version 1.6.2 )
+( Version 2.0 )
 --------------------------
 
 User Ideas is an extension that provides functionality for creating and managing ideas pool, suggestions, issues, user feedbacks,...
@@ -14,3 +14,6 @@ You can find documentation on following pages.
 
 ##Download
 You can [download UserIdeas package] (http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions) and all payment plugins from the website of ITPrism.
+
+##License
+Crowdfunding Platform is under [GPLv3 license] (http://www.gnu.org/licenses/gpl-3.0.en.html).

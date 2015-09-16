@@ -4,7 +4,7 @@
  * @subpackage      Plugins
  * @author          Todor Iliev
  * @copyright       Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license         http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license         http://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
 // no direct access
@@ -59,8 +59,8 @@ class plgUserIdeasVote extends JPlugin
 
         $numberOfVotes = abs($this->params->get("votes_per_item", 0));
 
-        $itemId = JArrayHelper::getValue($data, "id", 0, "int");
-        $userId = JArrayHelper::getValue($data, "user_id", 0, "int");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "int");
+        $userId = Joomla\Utilities\ArrayHelper::getValue($data, "user_id", 0, "int");
 
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -142,13 +142,11 @@ class plgUserIdeasVote extends JPlugin
             return;
         }
 
-        $itemId = JArrayHelper::getValue($data, "id", 0, "int");
-        $userId = JArrayHelper::getValue($data, "user_id", 0, "int");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "int");
+        $userId = Joomla\Utilities\ArrayHelper::getValue($data, "user_id", 0, "int");
 
         // Save vote
-        jimport("userideas.item");
-
-        $item = new UserIdeasItem(JFactory::getDbo());
+        $item = new UserIdeas\Item\Item(JFactory::getDbo());
         $item->load($itemId);
 
         if (!$item->getId()) {
@@ -158,8 +156,7 @@ class plgUserIdeasVote extends JPlugin
         $item->vote();
 
         // Add record to history table
-        jimport("userideas.vote");
-        $history = new UserIdeasVote(JFactory::getDbo());
+        $history = new UserIdeas\Vote\Vote(JFactory::getDbo());
 
         if (!$userId) {
             $hash = $this->generateHash();
@@ -178,7 +175,6 @@ class plgUserIdeasVote extends JPlugin
             "user_votes" => 1,
             "votes"      => $item->getVotes()
         );
-
     }
 
     protected function generateHash()

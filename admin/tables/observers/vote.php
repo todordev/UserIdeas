@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 defined('JPATH_PLATFORM') or die;
 
@@ -45,7 +45,7 @@ class UserIdeasObserverVote extends JTableObserver
     {
         $observer = new self($observableObject);
 
-        $observer->typeAliasPattern = JArrayHelper::getValue($params, 'typeAlias');
+        $observer->typeAliasPattern = Joomla\Utilities\ArrayHelper::getValue($params, 'typeAlias');
 
         return $observer;
     }
@@ -64,9 +64,7 @@ class UserIdeasObserverVote extends JTableObserver
     {
         $db = $this->table->getDbo();
 
-        jimport("userideas.item");
-
-        $item = new UserIdeasItem($db);
+        $item = new UserIdeas\Item\Item($db);
         $item->load($this->table->item_id);
         $item->decreaseVote($this->table->votes);
     }

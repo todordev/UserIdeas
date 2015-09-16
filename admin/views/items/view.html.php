@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -50,9 +50,6 @@ class UserIdeasViewItems extends JViewLegacy
 
         $this->items = UserIdeasHelper::prepareStatuses($this->items);
 
-        // Add submenu
-        UserIdeasHelper::addSubmenu($this->getName());
-
         // Prepare sorting data
         $this->prepareSorting();
 
@@ -96,6 +93,8 @@ class UserIdeasViewItems extends JViewLegacy
      */
     protected function addSidebar()
     {
+        UserIdeasHelper::addSubmenu($this->getName());
+
         JHtmlSidebar::setAction('index.php?option=' . $this->option . '&view=' . $this->getName());
 
         JHtmlSidebar::addFilter(
@@ -111,8 +110,7 @@ class UserIdeasViewItems extends JViewLegacy
         );
 
         // Item statuses
-        jimport("userideas.statuses");
-        $statuses = UserIdeasStatuses::getInstance(JFactory::getDbo());
+        $statuses = UserIdeas\Status\Statuses::getInstance(JFactory::getDbo());
         JHtmlSidebar::addFilter(
             JText::_('COM_USERIDEAS_SELECT_ITEM_STATUS'),
             'filter_status',
@@ -157,6 +155,6 @@ class UserIdeasViewItems extends JViewLegacy
 
         JHtml::_('formbehavior.chosen', 'select');
 
-        JHtml::_('itprism.ui.joomla_list');
+        JHtml::_('Prism.ui.joomlaList');
     }
 }

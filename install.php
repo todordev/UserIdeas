@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -125,12 +125,11 @@ class pkg_userIdeasInstallerScript
         }
         UserIdeasInstallHelper::addRow($title, $result, $info);
 
-        // Display result about verification of installed ITPrism Library
-        jimport("itprism.version");
-        $title = JText::_("COM_USERIDEAS_ITPRISM_LIBRARY");
+        // Display result about verification of installed Prism Library
+        $title = JText::_("COM_USERIDEAS_PRISM_LIBRARY");
         $info  = "";
-        if (!class_exists("ITPrismVersion")) {
-            $info   = JText::_("COM_USERIDEAS_ITPRISM_LIBRARY_DOWNLOAD");
+        if (!class_exists("Prism\\Version")) {
+            $info   = JText::_("COM_USERIDEAS_PRISM_LIBRARY_DOWNLOAD");
             $result = array("type" => "important", "text" => JText::_("JNO"));
         } else {
             $result = array("type" => "success", "text" => JText::_("JYES"));
@@ -162,9 +161,17 @@ class pkg_userIdeasInstallerScript
 
         echo JText::sprintf("COM_USERIDEAS_MESSAGE_REVIEW_SAVE_SETTINGS", JRoute::_("index.php?option=com_userideas"));
 
-        jimport("itprism.version");
-        if (!class_exists("ITPrismVersion")) {
-            echo JText::_("COM_USERIDEAS_MESSAGE_INSTALL_ITPRISM_LIBRARY");
+        if (!class_exists("Prism\\Version")) {
+            echo JText::_("COM_USERIDEAS_MESSAGE_INSTALL_PRISM_LIBRARY");
+        } else {
+
+            if (class_exists("UserIdeas\\Version")) {
+                $prismVersion     = new Prism\Version();
+                $componentVersion = new UserIdeas\Version();
+                if (version_compare($prismVersion->getShortVersion(), $componentVersion->requiredPrismVersion, "<")) {
+                    echo JText::_("COM_USERIDEAS_MESSAGE_INSTALL_PRISM_LIBRARY");
+                }
+            }
         }
     }
 }

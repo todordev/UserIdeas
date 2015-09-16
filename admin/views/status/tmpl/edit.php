@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -18,28 +18,17 @@ defined('_JEXEC') or die;
 
         <?php echo JHtml::_('bootstrap.addTab', 'userideasStatus', 'details', JText::_('COM_USERIDEAS_CONTENT')); ?>
             <div class="row-fluid">
-                <div class="span6">
-                    <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('name'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('name'); ?></div>
-                    </div>
-
-                    <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('default'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('default'); ?></div>
-                    </div>
-
-                    <div class="control-group">
-                        <div class="control-label"><?php echo $this->form->getLabel('id'); ?></div>
-                        <div class="controls"><?php echo $this->form->getInput('id'); ?></div>
-                    </div>
+                <div class="span12">
+                    <?php echo $this->form->getControlGroup('name'); ?>
+                    <?php echo $this->form->getControlGroup('default'); ?>
+                    <?php echo $this->form->getControlGroup('id'); ?>
                 </div>
             </div>
         <?php echo JHtml::_('bootstrap.endTab'); ?>
 
         <?php echo JHtml::_('bootstrap.addTab', 'userideasStatus', 'options', JText::_('COM_USERIDEAS_OPTIONS')); ?>
             <div class="row-fluid">
-                <div class="span6">
+                <div class="span12">
 
                 <?php foreach ($this->form->getFieldset("basic") as $field) { ?>
                     <div class="control-group">

@@ -2,32 +2,31 @@
 <form>
     <fieldset name="item">
 
-        <field name="title" type="text" class="span6"
+        <field name="title" type="text" class="input-xxlarge"
                label="COM_USERIDEAS_TITLE"
                description="COM_USERIDEAS_TITLE_DESC"
                filter="trim"
                required="true"
                 />
 
-        <field name="alias" type="text" class="span6"
-               size="60"
+        <field name="alias" type="text"
                label="JFIELD_ALIAS_LABEL"
                description="JFIELD_ALIAS_DESC"
                filter="trim"
                 />
 
-        <field name="description" type="editor" buttons="false" class="span6"
+        <field name="description" type="editor" buttons="false"
                label="COM_USERIDEAS_DESCRIPTION_TITLE"
                description="COM_USERIDEAS_DESCRIPTION_DESC"
                filter="trim"
                required="true"
-                />
+               />
 
         <field name="catid" type="category"
                label="JCATEGORY"
                description="JFIELD_CATEGORY_DESC"
                extension="com_userideas"
-                />
+               />
 
         <field name="status_id" type="uistatuses"
                label="COM_USERIDEAS_ITEM_STATUS"
@@ -41,13 +40,13 @@
                 desc="JGLOBAL_FIELD_CREATED_BY_DESC"
                 />
 
-        <field name="published" type="list"
+        <field name="published" type="radio" class="btn-group"
                label="JSTATUS"
                description="JFIELD_PUBLISHED_DESC"
                filter="intval"
                size="1"
                default="1"
-                >
+               >
             <option value="1">JPUBLISHED</option>
             <option value="0">JUNPUBLISHED</option>
         </field>

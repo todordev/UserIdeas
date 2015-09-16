@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -14,13 +14,6 @@ class UserIdeasModelItem extends JModelItem
 {
     protected $item;
 
-    /**
-     * Method to auto-populate the model state.
-     *
-     * Note. Calling getState in this method will result in recursion.
-     *
-     * @since   1.6
-     */
     protected function populateState($ordering = null, $direction = null)
     {
         $app = JFactory::getApplication();
@@ -56,13 +49,13 @@ class UserIdeasModelItem extends JModelItem
             // Attempt to load the row.
             if ($table->load($id)) {
 
-                if (!$table->published) {
+                if (!$table->get("published")) {
                     return $this->item;
                 }
 
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(true);
-                $this->item = JArrayHelper::toObject($properties, 'JObject');
+                $this->item = Joomla\Utilities\ArrayHelper::toObject($properties, 'JObject');
             }
         }
 

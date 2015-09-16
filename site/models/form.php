@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -155,11 +155,11 @@ class UserIdeasModelForm extends JModelForm
      */
     public function save($data)
     {
-        $id          = JArrayHelper::getValue($data, "id", 0, "int");
-        $title       = JArrayHelper::getValue($data, "title");
-        $description = JArrayHelper::getValue($data, "description");
-        $categoryId  = JArrayHelper::getValue($data, "catid", 0, "int");
-        $userId      = JArrayHelper::getValue($data, "user_id", 0, "int");
+        $id          = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "int");
+        $title       = Joomla\Utilities\ArrayHelper::getValue($data, "title");
+        $description = Joomla\Utilities\ArrayHelper::getValue($data, "description");
+        $categoryId  = Joomla\Utilities\ArrayHelper::getValue($data, "catid", 0, "int");
+        $userId      = Joomla\Utilities\ArrayHelper::getValue($data, "user_id", 0, "int");
 
         $keys = array(
             "id"      => $id,
@@ -189,8 +189,7 @@ class UserIdeasModelForm extends JModelForm
             $row->set("user_id", $userId);
 
             // Set status
-            jimport("userideas.statuses");
-            $statuses      = UserIdeasStatuses::getInstance(JFactory::getDbo());
+            $statuses      = UserIdeas\Status\Statuses::getInstance(JFactory::getDbo());
             $defaultStatus = $statuses->getDefault();
 
             if (!empty($defaultStatus->id)) {
@@ -291,8 +290,7 @@ class UserIdeasModelForm extends JModelForm
         }
 
         // Validate item owner.
-        jimport("userideas.validator.item.owner");
-        $itemValidator = new UserIdeasValidatorItemOwner(JFactory::getDbo(), $itemId, $userId);
+        $itemValidator = new UserIdeas\Validator\Item\Owner(JFactory::getDbo(), $itemId, $userId);
         if (!$itemValidator->isValid()) {
             return false;
         }

@@ -25,10 +25,17 @@
             <option value="socialcommunity">COM_USERIDEAS_SOCIAL_COMMUNITY</option>
             <option value="kunena">COM_USERIDEAS_KUNENA</option>
             <option value="easysocial">COM_USERIDEAS_EASYSOCIAL</option>
+            <option value="easyprofile">COM_USERIDEAS_EASYPROFILE</option>
+            <option value="communitybuilder">COM_USERIDEAS_COMMUNITY_BUILDER</option>
             <option value="jomsocial">COM_USERIDEAS_JOMSOCIAL</option>
             <option value="gravatar">COM_USERIDEAS_GRAVATAR</option>
         </field>
-        <field name="integration_avatars_size" type="text" default="" label="COM_USERIDEAS_AVATARS_SIZE" description="COM_USERIDEAS_AVATARS_SIZE_DESC" />
+        <field name="integration_avatars_size" type="list" default="small" label="COM_USERIDEAS_AVATARS_SIZE" description="COM_USERIDEAS_AVATARS_SIZE_DESC" >
+            <option value="icon">COM_USERIDEAS_ICON</option>
+            <option value="small">COM_USERIDEAS_SMALL</option>
+            <option value="medium">COM_USERIDEAS_MEDIUM</option>
+            <option value="large">COM_USERIDEAS_LARGE</option>
+        </field>
         <field name="integration_avatars_default" type="text" default="/media/com_userideas/images/no-profile.png" label="COM_USERIDEAS_AVATARS_DEFAULT" description="COM_USERIDEAS_AVATARS_DEFAULT_DESC" class="span6" />
         <field name="integration_display_owner_avatar" type="radio" default="0" label="COM_USERIDEAS_DISPLAY_OWNER_AVATAR" description="COM_USERIDEAS_DISPLAY_OWNER_AVATAR_DESC" class="btn-group">
             <option value="0">JNO</option>

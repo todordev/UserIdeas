@@ -4,22 +4,18 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-/**
- * Get a list of items
- */
 class UserIdeasModelItems extends JModelList
 {
-
     /**
      * Constructor.
      *
-     * @param   array   An optional associative array of configuration settings.
+     * @param   array $config  An optional associative array of configuration settings.
      *
      * @see     JController
      * @since   1.6
@@ -37,13 +33,6 @@ class UserIdeasModelItems extends JModelList
         parent::__construct($config);
     }
 
-    /**
-     * Method to auto-populate the model state.
-     *
-     * Note. Calling getState in this method will result in recursion.
-     *
-     * @since   1.6
-     */
     protected function populateState($ordering = null, $direction = null)
     {
         // List state information.
@@ -57,7 +46,7 @@ class UserIdeasModelItems extends JModelList
         $this->setState('params', $params);
 
         // Get category id
-        $value = $app->input->get("filter_search");
+        $value = $app->input->getString("filter_search");
         $this->setState('filter.search', $value);
 
         // Get category id
@@ -82,7 +71,6 @@ class UserIdeasModelItems extends JModelList
 
         $value = $app->input->getInt('limitstart', 0);
         $this->setState('list.start', $value);
-
     }
 
     /**
@@ -186,6 +174,10 @@ class UserIdeasModelItems extends JModelList
                 $orderDir  = "DESC";
                 break;
 
+            case 3:
+                $orderCol  = "a.votes";
+                break;
+
             default:
                 $orderCol = "a.ordering";
                 break;
@@ -212,7 +204,7 @@ class UserIdeasModelItems extends JModelList
     public function getComments()
     {
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi */
+        /** @var $db JDatabaseDriver */
 
         $query = $db->getQuery(true);
 

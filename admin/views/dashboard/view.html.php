@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -28,7 +28,8 @@ class UserIdeasViewDashboard extends JViewLegacy
     protected $totalComments;
 
     protected $version;
-    protected $itprismVersion;
+    protected $prismVersion;
+    protected $prismVersionLowerMessage;
 
     protected $sidebar;
 
@@ -40,40 +41,36 @@ class UserIdeasViewDashboard extends JViewLegacy
 
     public function display($tpl = null)
     {
-        $this->version = new UserIdeasVersion();
+        $this->version = new UserIdeas\Version();
 
         // Load ITPrism library version
-        jimport("itprism.version");
-        if (!class_exists("ITPrismVersion")) {
-            $this->itprismVersion = JText::_("COM_USERIDEAS_ITPRISM_LIBRARY_DOWNLOAD");
+        if (!class_exists("Prism\\Version")) {
+            $this->prismVersion = JText::_("COM_USERIDEAS_PRISM_LIBRARY_DOWNLOAD");
         } else {
-            $itprismVersion       = new ITPrismVersion();
-            $this->itprismVersion = $itprismVersion->getShortVersion();
+            $prismVersion       = new Prism\Version();
+            $this->prismVersion = $prismVersion->getShortVersion();
+
+            if (version_compare($this->prismVersion, $this->version->requiredPrismVersion, "<")) {
+                $this->prismVersionLowerMessage = JText::_("COM_USERIDEAS_PRISM_LIBRARY_LOWER_VERSION");
+            }
         }
 
-        jimport("userideas.statistics.basic");
-        $basic               = new UserIdeasStatisticsBasic(JFactory::getDbo());
+        $basic               = new UserIdeas\Statistic\Basic(JFactory::getDbo());
         $this->totalItems    = $basic->getTotalItems();
         $this->totalVotes    = $basic->getTotalVotes();
         $this->totalComments = $basic->getTotalComments();
 
         // Get popular items.
-        jimport("userideas.statistics.items.popular");
-        $this->popular = new UserIdeasStatisticsItemsPopular(JFactory::getDbo());
-        $this->popular->load(5);
+        $this->popular = new UserIdeas\Statistic\Items\Popular(JFactory::getDbo());
+        $this->popular->load(array("limit" => 5));
 
         // Get most voted items.
-        jimport("userideas.statistics.items.mostvoted");
-        $this->mostVoted = new UserIdeasStatisticsItemsMostVoted(JFactory::getDbo());
-        $this->mostVoted->load(5);
+        $this->mostVoted = new UserIdeas\Statistic\Items\MostVoted(JFactory::getDbo());
+        $this->mostVoted->load(array("limit" => 5));
 
         // Get latest items.
-        jimport("userideas.statistics.items.latest");
-        $this->latest = new UserIdeasStatisticsItemsLatest(JFactory::getDbo());
-        $this->latest->load(5);
-
-        // Add submenu
-        UserIdeasHelper::addSubmenu($this->getName());
+        $this->latest = new UserIdeas\Statistic\Items\Latest(JFactory::getDbo());
+        $this->latest->load(array("limit" => 5));
 
         $this->addToolbar();
         $this->addSidebar();
@@ -87,6 +84,8 @@ class UserIdeasViewDashboard extends JViewLegacy
      */
     protected function addSidebar()
     {
+        UserIdeasHelper::addSubmenu($this->getName());
+
         $this->sidebar = JHtmlSidebar::render();
     }
 

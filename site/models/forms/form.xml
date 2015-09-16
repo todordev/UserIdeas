@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
     <fieldset name="form" label="COM_USERIDEAS_ITEM_DEFAULT_LABEL">
-
-        <field name="title" type="text" class="span12"
+        <field name="title" type="text" class="form-control"
                label="COM_USERIDEAS_FIELD_TITLE"
                size="40"
                filter="trim"
                required="true"
                 />
 
-        <field name="description" type="editor" class="span12"
+        <field name="description" type="editor" class="form-control"
                label="COM_USERIDEAS_FIELD_DESCRIPTION"
                filter="safehtml"
                rows="10"
@@ -33,6 +32,5 @@
                />
 
         <field name="id" type="hidden" filter="int"/>
-
     </fieldset>
 </form>

@@ -4,13 +4,11 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
-
-jimport('itprism.controller.form.frontend');
 
 /**
  * UserIdeas form controller
@@ -18,7 +16,7 @@ jimport('itprism.controller.form.frontend');
  * @package     UserIdeas
  * @subpackage  Component
  */
-class UserIdeasControllerForm extends ITPrismControllerFormFrontend
+class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -44,7 +42,7 @@ class UserIdeasControllerForm extends ITPrismControllerFormFrontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = JArrayHelper::getValue($data, "id", 0, "int");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "int");
 
         $redirectOptions = array(
             "view" => "form",
@@ -152,12 +150,11 @@ class UserIdeasControllerForm extends ITPrismControllerFormFrontend
         }
 
         // Validate item owner.
-        $itemId = JArrayHelper::getValue($data, $key);
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, $key);
         $userId = $user->get("id");
 
         // Validate item owner.
-        jimport("userideas.validator.item.owner");
-        $itemValidator = new UserIdeasValidatorItemOwner(JFactory::getDbo(), $itemId, $userId);
+        $itemValidator = new UserIdeas\Validator\Item\Owner(JFactory::getDbo(), $itemId, $userId);
         if (!$itemValidator->isValid()) {
             return false;
         }

@@ -53,6 +53,11 @@
 
 .ui-status-label {
 	margin-left: 10px;
+	text-decoration: none;
+}
+
+.ui-status-label:hover {
+	text-decoration: none;
 }
 
 .ui-category-label {

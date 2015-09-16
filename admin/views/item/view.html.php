@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -34,16 +34,12 @@ class UserIdeasViewItem extends JViewLegacy
         $this->option = JFactory::getApplication()->input->get("option");
     }
 
-    /**
-     * Display the view
-     */
     public function display($tpl = null)
     {
         $this->state = $this->get('State');
         $this->item  = $this->get('Item');
         $this->form  = $this->get('Form');
 
-        // Prepare actions, behaviors, scritps and document
         $this->addToolbar();
         $this->setDocument();
 
@@ -59,8 +55,7 @@ class UserIdeasViewItem extends JViewLegacy
         JFactory::getApplication()->input->set('hidemainmenu', true);
         $isNew = ($this->item->id == 0);
 
-        $this->documentTitle = $isNew ? JText::_('COM_USERIDEAS_ADD_ITEM')
-            : JText::_('COM_USERIDEAS_EDIT_ITEM');
+        $this->documentTitle = $isNew ? JText::_('COM_USERIDEAS_ADD_ITEM') : JText::_('COM_USERIDEAS_EDIT_ITEM');
 
         JToolbarHelper::title($this->documentTitle);
 

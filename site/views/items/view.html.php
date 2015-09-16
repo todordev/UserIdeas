@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -35,7 +35,7 @@ class UserIdeasViewItems extends JViewLegacy
     protected $user;
     protected $userId;
     protected $socialProfiles;
-    protected $integrationOptions;
+    protected $integrationOptions = array();
     protected $commentsEnabled;
 
     protected $option;
@@ -106,7 +106,7 @@ class UserIdeasViewItems extends JViewLegacy
 
         // Scripts
         JHtml::_('bootstrap.tooltip');
-        JHtml::_('itprism.ui.pnotify');
+        JHtml::_("Prism.ui.pnotify");
     }
 
     private function preparePageHeading()
@@ -148,11 +148,9 @@ class UserIdeasViewItems extends JViewLegacy
     }
 
     /**
-     * Prepare social profiles
+     * Prepare social profiles.
      *
      * @param Joomla\Registry\Registry $params
-     *
-     * @todo Move it to a trait when traits become mass.
      */
     protected function prepareIntegration($params)
     {
@@ -163,32 +161,26 @@ class UserIdeasViewItems extends JViewLegacy
                 $usersIds[] = $item->user_id;
             }
         }
-        $usersIds = array_unique($usersIds);
+        $usersIds = array_filter(array_unique($usersIds));
 
-        // Get a social platform for integration
-        $socialPlatform       = $params->get("integration_social_platform");
+        // If there are no users, do not continue.
+        if (!empty($usersIds)) {
 
-        $this->integrationOptions = array(
-            "size" => $params->get("integration_avatars_size", 50),
-            "default" => $params->get("integration_avatars_default", "/media/com_crowdfunding/images/no-profile.png"),
-            "width" => $params->get("integration_avatar_width", 24),
-            "height" => $params->get("integration_avatar_height", 24),
-        );
+            $this->integrationOptions = array(
+                "size" => $params->get("integration_avatars_size", "small"),
+                "default" => $params->get("integration_avatars_default", "/media/com_userideas/images/no-profile.png")
+            );
 
-        // If there is now users, do not continue.
-        if (!$usersIds) {
-            return;
+            $socialProfilesBuilder = new Prism\Integration\Profiles\Builder(
+                array(
+                    "social_platform" => $params->get("integration_social_platform"),
+                    "users_ids"       => $usersIds
+                )
+            );
+
+            $socialProfilesBuilder->build();
+
+            $this->socialProfiles = $socialProfilesBuilder->getProfiles();
         }
-
-        $options = array(
-            "social_platform" => $socialPlatform,
-            "users_ids" => $usersIds
-        );
-
-        jimport("itprism.integrate.profiles.builder");
-        $profileBuilder = new ITPrismIntegrateProfilesBuilder($options);
-        $profileBuilder->build();
-
-        $this->socialProfiles = $profileBuilder->getProfiles();
     }
 }

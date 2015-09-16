@@ -6,15 +6,14 @@
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
     <copyright>Copyright (C) 2015 Todor Iliev ( ITPrism.com )</copyright>
-    <license>http://www.gnu.org/copyleft/gpl.html</license>
-    <version>1.6.2</version>
-    <creationDate>08 May, 2015</creationDate>
+    <license>http://www.gnu.org/licenses/gpl-3.0.en.html</license>
+    <version>2.0</version>
+    <creationDate>14 September, 2015</creationDate>
     <url>http://itprism.com</url>
     <packager>Todor Iliev</packager>
     <packagerurl>http://itprism.com</packagerurl>
     <description><![CDATA[
 	<p><a href='http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions' target='_blank'>User Ideas</a> is an extension that provides functionality for creating and managing ideas pool, suggestions, issues, user feedbacks,...</p>
-	<p>Invest in the extension and help for its improvement. You can <a href='http://itprism.com/sponsorship' target='_blank'>sponsor the extension via SMS, PayPal or Bitcoin</a>.</p>
 	<p><a href='http://itprism.com/' target='_blank'>Subscribe for the newsletter</a> to receive <strong>gifts</strong>, <strong>discount codes</strong>, information about <strong>updates</strong> and information about <strong>new ITPrism extensions</strong>.</p>
 	<p>Please, <a href='http://extensions.joomla.org/extensions/extension/contacts-and-feedback/testimonials-a-suggestions/user-ideas' target='_blank'>vote for the extension</a> on Joomla! Extensions Directory</p>
 	]]></description>
@@ -28,4 +27,8 @@
     </files>
 
     <scriptfile>install.php</scriptfile>
+
+    <updateservers>
+        <server type="extension" priority="1" name="UserIdeas ( from CDN )">http://cdn.itprism.com/updates/userideas.xml</server>
+    </updateservers>
 </extension>

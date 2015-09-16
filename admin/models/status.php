@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -73,10 +73,10 @@ class UserIdeasModelStatus extends JModelAdmin
      */
     public function save($data)
     {
-        $id      = JArrayHelper::getValue($data, "id");
-        $name    = JArrayHelper::getValue($data, "name");
-        $default = JArrayHelper::getValue($data, "default");
-        $params  = JArrayHelper::getValue($data, "params");
+        $id      = Joomla\Utilities\ArrayHelper::getValue($data, "id");
+        $name    = Joomla\Utilities\ArrayHelper::getValue($data, "name");
+        $default = Joomla\Utilities\ArrayHelper::getValue($data, "default");
+        $params  = Joomla\Utilities\ArrayHelper::getValue($data, "params");
 
         // Encode parameters to JSON format.
         if (!empty($params)) {
@@ -107,10 +107,6 @@ class UserIdeasModelStatus extends JModelAdmin
         return $row->get("id");
     }
 
-    /**
-     * Prepare and sanitise the table prior to saving.
-     * @since    1.6
-     */
     protected function prepareTable($table)
     {
         // Fix magic quotes.

@@ -4,13 +4,11 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
-
-jimport('itprism.controller.form.frontend');
 
 /**
  * UserIdeas comment controller
@@ -18,7 +16,7 @@ jimport('itprism.controller.form.frontend');
  * @package     ITPrism Components
  * @subpackage  UserIdeas
  */
-class UserIdeasControllerComment extends ITPrismControllerFormFrontend
+class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -33,7 +31,6 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend
     public function getModel($name = 'Comment', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
-
         return $model;
     }
 
@@ -47,7 +44,7 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend
 
         // Get the data from the form POST
         $data   = $app->input->post->get('jform', array(), 'array');
-        $itemId = JArrayHelper::getValue($data, "item_id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "item_id");
 
         // Prepare response data
         $redirectOptions = array(
@@ -89,8 +86,7 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend
 
             $model->save($validData);
 
-            jimport("userideas.item");
-            $item = new UserIdeasItem(JFactory::getDbo());
+            $item = new UserIdeas\Item\Item(JFactory::getDbo());
             $item->load($itemId);
 
         } catch (Exception $e) {
@@ -147,12 +143,11 @@ class UserIdeasControllerComment extends ITPrismControllerFormFrontend
         }
 
         // Validate item owner.
-        $itemId = JArrayHelper::getValue($data, $key);
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, $key);
         $userId = $user->get("id");
 
         // Validate item owner.
-        jimport("userideas.validator.comment.owner");
-        $itemValidator = new UserIdeasValidatorCommentOwner(JFactory::getDbo(), $itemId, $userId);
+        $itemValidator = new UserIdeas\Validator\Comment\Owner(JFactory::getDbo(), $itemId, $userId);
         if (!$itemValidator->isValid()) {
             return false;
         }

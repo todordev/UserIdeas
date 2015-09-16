@@ -4,11 +4,15 @@
  * @subpackage      Plugins
  * @author          Todor Iliev
  * @copyright       Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license         http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license         http://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
 // no direct access
 defined('_JEXEC') or die;
+
+jimport("Prism.init");
+jimport("UserIdeas.init");
+jimport("EmailTemplates.init");
 
 /**
  * This plugin send notification mails to the administrator.
@@ -52,17 +56,11 @@ class plgContentUserIdeasAdminMail extends JPlugin
 
         // Check for enabled option for sending mail
         // when user create a item.
-        if (!empty($emailId)) {
-
-            if ($isNew and !empty($row->id)) {
-
-                $success = $this->sendMail($emailId, $row->getTitle(), $row->getSlug(), $row->getCategorySlug());
-                if (!$success) {
-                    return false;
-                }
-
+        if (!empty($emailId) and ($isNew and $row->get("id"))) {
+            $success = $this->sendMail($emailId, $row->get("title"), $row->getSlug(), $row->getCategorySlug());
+            if (!$success) {
+                return false;
             }
-
         }
 
         return true;
@@ -94,20 +92,15 @@ class plgContentUserIdeasAdminMail extends JPlugin
 
         // Check for enabled option for sending mail
         // when user sends a comment.
-        if (!empty($emailId)) {
+        if (!empty($emailId) and ($isNew and !empty($row->id))) {
 
-            if ($isNew and !empty($row->id)) {
+            $item = new UserIdeas\Item\Item(JFactory::getDbo());
+            $item->load($row->get("item_id"));
 
-                jimport("userideas.item");
-                $item = new UserIdeasItem(JFactory::getDbo());
-                $item->load($row->get("item_id"));
-
-                $success = $this->sendMail($emailId, $item->getTitle(), $item->getSlug(), $item->getCategorySlug());
-                if (!$success) {
-                    return false;
-                }
+            $success = $this->sendMail($emailId, $item->getTitle(), $item->getSlug(), $item->getCategorySlug());
+            if (!$success) {
+                return false;
             }
-
         }
 
         return true;
@@ -125,14 +118,13 @@ class plgContentUserIdeasAdminMail extends JPlugin
         $website = $uri->toString(array("scheme", "host"));
 
         $data = array(
-            "site_name"      => $app->get("sitename"),
-            "site_url"       => JUri::root(),
-            "item_title"     => $title,
-            "item_url"       => $website . JRoute::_(UserIdeasHelperRoute::getDetailsRoute($itemId, $categoryId)),
+            "site_name"  => $app->get("sitename"),
+            "site_url"   => JUri::root(),
+            "item_title" => $title,
+            "item_url"   => $website . JRoute::_(UserIdeasHelperRoute::getDetailsRoute($itemId, $categoryId)),
         );
 
-        jimport("userideas.email");
-        $email = new UserIdeasEmail();
+        $email = new EmailTemplates\Email();
         $email->setDb(JFactory::getDbo());
         $email->load($emailId);
 
@@ -150,7 +142,7 @@ class plgContentUserIdeasAdminMail extends JPlugin
 
         $recipientId = $componentParams->get("administrator_id");
         if (!empty($recipientId)) {
-            $recipient = JFactory::getUser($recipientId);
+            $recipient     = JFactory::getUser($recipientId);
             $recipientName = $recipient->get("name");
             $recipientMail = $recipient->get("email");
         } else {
@@ -173,9 +165,9 @@ class plgContentUserIdeasAdminMail extends JPlugin
 
         $mailer = JFactory::getMailer();
         if (strcmp("html", $emailMode) == 0) { // Send as HTML message
-            $return = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, UserIdeasConstants::MAIL_MODE_HTML);
+            $return = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, Prism\Constants::MAIL_MODE_HTML);
         } else { // Send as plain text.
-            $return = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, UserIdeasConstants::MAIL_MODE_PLAIN);
+            $return = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, Prism\Constants::MAIL_MODE_PLAIN);
         }
 
         // Check for an error.

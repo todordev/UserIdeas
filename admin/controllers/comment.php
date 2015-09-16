@@ -4,13 +4,11 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // No direct access
 defined('_JEXEC') or die;
-
-jimport('itprism.controller.form.backend');
 
 /**
  * UserIdeas comment controller class.
@@ -19,17 +17,14 @@ jimport('itprism.controller.form.backend');
  * @subpackage     Component
  * @since          1.6
  */
-class UserIdeasControllerComment extends ITPrismControllerFormBackend
+class UserIdeasControllerComment extends Prism\Controller\Form\Backend
 {
-    /**
-     * Save an item
-     */
     public function save($key = null, $urlVar = null)
     {
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = JArrayHelper::getValue($data, "id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id");
 
         $responseOptions = array(
             "task" => $this->getTask(),
@@ -52,7 +47,6 @@ class UserIdeasControllerComment extends ITPrismControllerFormBackend
         // Check for errors
         if ($validData === false) {
             $this->displayNotice($form->getErrors(), $responseOptions);
-
             return;
         }
 

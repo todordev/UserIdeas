@@ -4,13 +4,11 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // No direct access
 defined('_JEXEC') or die();
-
-jimport('itprism.controller.admin');
 
 /**
  * UserIdeas statuses controller class
@@ -18,16 +16,11 @@ jimport('itprism.controller.admin');
  * @package     UserIdeas
  * @subpackage  Components
  */
-class UserIdeasControllerStatuses extends ITPrismControllerAdmin
+class UserIdeasControllerStatuses extends Prism\Controller\Admin
 {
-    /**
-     * Proxy for getModel.
-     * @since   1.6
-     */
     public function getModel($name = 'Status', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
-
         return $model;
     }
 
@@ -38,12 +31,11 @@ class UserIdeasControllerStatuses extends ITPrismControllerAdmin
      */
     public function setDefault()
     {
-
         // Check for request forgeries
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
         $pks = $this->input->post->get('cid', array(), 'array');
-        JArrayHelper::toInteger($pks);
+        Joomla\Utilities\ArrayHelper::toInteger($pks);
 
         $redirectOptions = array(
             "view" => $this->view_list,
@@ -52,7 +44,6 @@ class UserIdeasControllerStatuses extends ITPrismControllerAdmin
         // Check for errors
         if (!$pks) {
             $this->displayNotice(JText::_("COM_USERIDEAS_ERROR_NO_ITEM_SELECTED"), $redirectOptions);
-
             return;
         }
 
@@ -81,12 +72,11 @@ class UserIdeasControllerStatuses extends ITPrismControllerAdmin
      */
     public function unsetDefault()
     {
-
         // Check for request forgeries
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
         $pks = $this->input->post->get('cid', array(), 'array');
-        JArrayHelper::toInteger($pks);
+        $pks = Joomla\Utilities\ArrayHelper::toInteger($pks);
 
         $redirectOptions = array(
             "view" => $this->view_list,

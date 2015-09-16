@@ -1,6 +1,13 @@
 User Ideas release notes
 ==========================
 
+###v2.0
+* Replaced ITPrism Library with Prism Library.
+* It was done to use Bootstrap 3.
+* Integrated with Easy Profile.
+* Integrated with Community Builder.
+* Added order by votes.
+
 ###v1.6.2
 * Fixed issue [#22] (https://github.com/ITPrism/UserIdeas/issues/22).
 * Integrated with Easy Social.

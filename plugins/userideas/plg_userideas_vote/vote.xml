@@ -3,14 +3,13 @@
     <name>PLG_USERIDEAS_VOTE</name>
     <author>Todor Iliev</author>
     <copyright>Copyright (C) 2015 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
-    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <license>http://www.gnu.org/licenses/gpl-3.0.en.html</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.6.2</version>
-    <creationDate>08 May, 2015</creationDate>
+    <version>2.0</version>
+    <creationDate>14 September, 2015</creationDate>
     <description><![CDATA[
     <p><a href='http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions' target='_blank'>User Ideas - Vote</a> is a plugin that stores user vote.</p>
-    <p>Invest in the extension improvement. You can <a href='http://itprism.com/sponsorship' target='_blank'>sponsor the extension via SMS, PayPal or Bitcoin</a>.</p>
     <p><a href='http://itprism.com/' target='_blank'>Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>
     <p>Please, <a href='http://extensions.joomla.org/extensions/extension/contacts-and-feedback/testimonials-a-suggestions/user-ideas' target='_blank'>vote for the extension</a> on Joomla! Extensions Directory</p>
     ]]></description>

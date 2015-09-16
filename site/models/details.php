@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -51,7 +51,7 @@ class UserIdeasModelDetails extends JModelItem
     }
 
     /**
-     * Method to get an ojbect.
+     * Method to get an object.
      *
      * @param    integer $id The id of the object to get.
      *
@@ -111,8 +111,7 @@ class UserIdeasModelDetails extends JModelItem
             "params"  => $item->status_params
         );
 
-        jimport("userideas.status");
-        $item->status = new UserIdeasStatus();
+        $item->status = new UserIdeas\Status\Status();
         $item->status->bind($statusData);
     }
 

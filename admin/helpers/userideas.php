@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -63,12 +63,6 @@ class UserIdeasHelper
         );
 
         JHtmlSidebar::addEntry(
-            JText::_('COM_USERIDEAS_EMAILS'),
-            'index.php?option=' . self::$extension . '&view=emails',
-            $vName == 'emails'
-        );
-
-        JHtmlSidebar::addEntry(
             JText::_('COM_USERIDEAS_PLUGINS'),
             'index.php?option=com_plugins&view=plugins&filter_search=' . rawurlencode("user ideas"),
             $vName == 'plugins'
@@ -78,8 +72,6 @@ class UserIdeasHelper
 
     public static function prepareStatuses($items)
     {
-        jimport("userideas.status");
-
         foreach ($items as &$item) {
 
             if (!empty($item->status_params)) {
@@ -99,7 +91,7 @@ class UserIdeasHelper
                 "params"  => $item->status_params
             );
 
-            $item->status = new UserIdeasStatus();
+            $item->status = new UserIdeas\Status\Status();
             $item->status->bind($statusData);
         }
 

@@ -2,12 +2,12 @@
 <form>
     <fieldset name="comment">
 
-        <field name="comment" type="textarea" class="span12"
+        <field name="comment" type="textarea" class="form-control"
                label="COM_USERIDEAS_COMMENT"
                filter="trim"
                rows="5"
                required="true"
-                />
+               />
 
         <field name="captcha" type="captcha"
                label="COM_USERIDEAS_CAPTCHA_LABEL"

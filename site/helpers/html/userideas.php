@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -22,26 +22,25 @@ abstract class JHtmlUserIdeas
     /**
      * Generate a link to an user image of a social platform.
      *
+     * <code>
+     * $options = array(
+     *      "size" => "small",
+     *      "default" => "media/com_userideas/images/no-profile.png"
+     * );
+     *
+     * $avatar  = JHtml::_("userideas.avatar", $socialProfiles, $userId, $options);
+     * </code>
+     *
      * @param object  $socialProfiles Social profiles object.
      * @param integer $userId         User ID
      * @param array   $options        Options that will be used to integration.
      *
      * @return string
-     *
-     * <code>
-     *
-     * $options = array(
-     *      "avatar_size" => 50
-     * );
-     * $avatar  = JHtml::_("userideas.avatar", $socialProfiles, $userId, "media/com_userideas/images/no-profile.png", $options);
-     *
-     * </code>
-     *
      */
     public static function avatar($socialProfiles, $userId, $options = array())
     {
-        $avatarSize = JArrayHelper::getValue($options, "size", 50);
-        $default = JArrayHelper::getValue($options, "default");
+        $avatarSize = Joomla\Utilities\ArrayHelper::getValue($options, "size", "small");
+        $default    = Joomla\Utilities\ArrayHelper::getValue($options, "default");
 
         $link = (!$socialProfiles) ? null : $socialProfiles->getAvatar($userId, $avatarSize);
 
@@ -56,17 +55,15 @@ abstract class JHtmlUserIdeas
     /**
      * Generate a link to an user profile of a social platform.
      *
+     * <code>
+     * $avatar  = JHtml::_("userideas.profile", $socialProfiles, $userId, "javascript: void(0);");
+     * </code>
+     *
      * @param object  $socialProfiles Social profiles object.
      * @param integer $userId         User ID
      * @param string  $default        A link to default profile.
      *
      * @return string
-     *
-     *
-     * <code>
-     * $avatar  = JHtml::_("userideas.profile", $socialProfiles, $userId, "javascript: void(0);");
-     *
-     * </code>
      */
     public static function profile($socialProfiles, $userId, $default = null)
     {
@@ -104,8 +101,8 @@ abstract class JHtmlUserIdeas
         }
 
         if (!empty($profileAvatar)) {
-            $width = JArrayHelper::getValue($options, "width", 24);
-            $height = JArrayHelper::getValue($options, "height", 24);
+            $width = Joomla\Utilities\ArrayHelper::getValue($options, "width", 24);
+            $height = Joomla\Utilities\ArrayHelper::getValue($options, "height", 24);
 
             $profile = '<img src="' . $profileAvatar . '" width="'.$width.'" height="'.$height.'" alt="'.$name.'" /> ' . $profile;
         }
@@ -139,7 +136,7 @@ abstract class JHtmlUserIdeas
         return $html;
     }
 
-    public static function status(UserIdeasStatus $status, $displayLink = true)
+    public static function status(UserIdeas\Status\Status $status, $displayLink = true)
     {
         if (!$status->getId()) {
             return "";

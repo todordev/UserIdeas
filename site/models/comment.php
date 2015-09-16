@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -39,7 +39,7 @@ class UserIdeasModelComment extends JModelForm
         parent::populateState();
 
         $app = JFactory::getApplication("Site");
-        /** @var $app JApplicationSite * */
+        /** @var $app JApplicationSite */
 
         // Get the pk of the record from the request.
         $value = $app->input->getInt("id");
@@ -139,7 +139,7 @@ class UserIdeasModelComment extends JModelForm
 
         // Convert to the JObject before adding other data.
         $properties = $table->getProperties();
-        $this->item = JArrayHelper::toObject($properties, 'JObject');
+        $this->item = Joomla\Utilities\ArrayHelper::toObject($properties, 'JObject');
 
         return $this->item;
     }
@@ -154,9 +154,9 @@ class UserIdeasModelComment extends JModelForm
      */
     public function save($data)
     {
-        $id      = JArrayHelper::getValue($data, "id");
-        $comment = JArrayHelper::getValue($data, "comment");
-        $itemId  = JArrayHelper::getValue($data, "item_id");
+        $id      = Joomla\Utilities\ArrayHelper::getValue($data, "id");
+        $comment = Joomla\Utilities\ArrayHelper::getValue($data, "comment");
+        $itemId  = Joomla\Utilities\ArrayHelper::getValue($data, "item_id");
         $userId  = JFactory::getUser()->get("id");
 
         $isNew = false;
@@ -202,7 +202,6 @@ class UserIdeasModelComment extends JModelForm
     protected function triggerAfterSaveEvent($row, $isNew)
     {
         // Trigger the event
-
         $context = $this->option . '.' . $this->getName();
 
         // Include the content plugins.
@@ -214,6 +213,5 @@ class UserIdeasModelComment extends JModelForm
         if (in_array(false, $results, true)) {
             throw new Exception(JText::_("COM_USERIDEAS_ERROR_DURING_ITEM_POSTING_COMMENT"));
         }
-
     }
 }

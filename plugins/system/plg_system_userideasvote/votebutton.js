@@ -4,7 +4,7 @@ jQuery(document).ready(function() {
 		event.preventDefault();
 				
 		var id  = jQuery(this).data("id");
-		var url = "/index.php?option=com_userideas&task=item.vote&format=raw";
+		var url = "index.php?option=com_userideas&task=item.vote&format=raw";
 		
 		var fields = {
 			id: id
@@ -18,12 +18,10 @@ jQuery(document).ready(function() {
 		}).done(function( response ) {
 			
 			if(response.success) {
-				
-				ITPrismUIHelper.displayMessageSuccess(response.title, response.text);
+				PrismUIHelper.displayMessageSuccess(response.title, response.text);
 				jQuery("#js-ui-vote-counter-"+id).html(response.data.votes);
-				
 			} else {
-				ITPrismUIHelper.displayMessageFailure(response.title, response.text);
+				PrismUIHelper.displayMessageFailure(response.title, response.text);
 			}
 			
 		});

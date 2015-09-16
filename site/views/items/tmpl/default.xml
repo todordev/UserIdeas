@@ -25,12 +25,35 @@
                 <option value="0">COM_USERIDEAS_ORDER_BY_ORDERING</option>
                 <option value="1">COM_USERIDEAS_ORDER_BY_TITLE</option>
                 <option value="2">COM_USERIDEAS_ORDER_BY_DATE</option>
+                <option value="3">COM_USERIDEAS_ORDER_BY_VOTES</option>
             </field>
             <field name="items_ordering_direction" type="list" default="ASC" label="COM_USERIDEAS_ORDERING_DIRECTION" description="COM_USERIDEAS_ORDERING_DIRECTION_DESC">
                 <option value="ASC">Ascending</option>
                 <option value="DESC">Descending</option>
             </field>
             <field name="items_display_results_number" type="text" default="20" size="50" label="COM_USERIDEAS_ITEMS_RESULTS_NUMBER" description="COM_USERIDEAS_ITEMS_RESULTS_NUMBER_DESC" />
+            <field
+                name="show_pagination"
+                type="list"
+                description="JGLOBAL_PAGINATION_DESC"
+                label="JGLOBAL_PAGINATION_LABEL"
+                >
+                <option value="">JGLOBAL_USE_GLOBAL</option>
+                <option value="0">JHIDE</option>
+                <option value="1">JSHOW</option>
+                <option value="2">JGLOBAL_AUTO</option>
+            </field>
+
+            <field
+                name="show_pagination_results"
+                type="list"
+                label="JGLOBAL_PAGINATION_RESULTS_LABEL"
+                description="JGLOBAL_PAGINATION_RESULTS_DESC"
+                >
+                <option value="">JGLOBAL_USE_GLOBAL</option>
+                <option value="0">JHIDE</option>
+                <option value="1">JSHOW</option>
+            </field>
         </fieldset>
     </fields>
 </metadata>

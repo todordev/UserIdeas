@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // No direct access
@@ -19,14 +19,9 @@ defined('_JEXEC') or die;
  */
 class UserIdeasControllerItems extends JControllerAdmin
 {
-    /**
-     * Proxy for getModel.
-     * @since   1.6
-     */
     public function getModel($name = 'Item', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
-
         return $model;
     }
 
@@ -40,24 +35,21 @@ class UserIdeasControllerItems extends JControllerAdmin
      */
     public function saveOrderAjax()
     {
-        jimport("itprism.response.json");
-        $response = new ITPrismResponseJson();
+        $response = new Prism\Response\Json();
 
         // Get the input
         $pks   = $this->input->post->get('cid', array(), 'array');
         $order = $this->input->post->get('order', array(), 'array');
 
         // Sanitize the input
-        JArrayHelper::toInteger($pks);
-        JArrayHelper::toInteger($order);
+        $pks   = Joomla\Utilities\ArrayHelper::toInteger($pks);
+        $order = Joomla\Utilities\ArrayHelper::toInteger($order);
 
         // Get the model
         $model = $this->getModel();
 
         try {
-
             $model->saveorder($pks, $order);
-
         } catch (Exception $e) {
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
@@ -70,6 +62,5 @@ class UserIdeasControllerItems extends JControllerAdmin
 
         echo $response;
         JFactory::getApplication()->close();
-
     }
 }

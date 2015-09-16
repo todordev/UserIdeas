@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -38,7 +38,7 @@ class UserIdeasModelItem extends JModelAdmin
     /**
      * Method to get the record form.
      *
-     * @param   array   $data     An optional array of data for the form to interogate.
+     * @param   array   $data     An optional array of data for the form to interrogate.
      * @param   boolean $loadData True if the form is to load its own data (default case), false if not.
      *
      * @return  JForm   A JForm object on success, false on failure
@@ -82,14 +82,14 @@ class UserIdeasModelItem extends JModelAdmin
      */
     public function save($data)
     {
-        $id          = JArrayHelper::getValue($data, "id");
-        $title       = JArrayHelper::getValue($data, "title");
-        $alias       = JArrayHelper::getValue($data, "alias");
-        $description = JArrayHelper::getValue($data, "description");
-        $statusId    = JArrayHelper::getValue($data, "status_id");
-        $catId       = JArrayHelper::getValue($data, "catid");
-        $userId      = JArrayHelper::getValue($data, "user_id");
-        $published   = JArrayHelper::getValue($data, "published");
+        $id          = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "int");
+        $title       = Joomla\Utilities\ArrayHelper::getValue($data, "title");
+        $alias       = Joomla\Utilities\ArrayHelper::getValue($data, "alias");
+        $description = Joomla\Utilities\ArrayHelper::getValue($data, "description");
+        $statusId    = Joomla\Utilities\ArrayHelper::getValue($data, "status_id", 0, "int");
+        $catId       = Joomla\Utilities\ArrayHelper::getValue($data, "catid", 0, "int");
+        $userId      = Joomla\Utilities\ArrayHelper::getValue($data, "user_id", 0, "int");
+        $published   = Joomla\Utilities\ArrayHelper::getValue($data, "published");
 
         // Load a record from the database
         $row = $this->getTable();

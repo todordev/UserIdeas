@@ -4,7 +4,7 @@
  * @subpackage   Component
  * @author       Todor Iliev
  * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
@@ -12,7 +12,6 @@ defined('_JEXEC') or die;
 
 class UserIdeasModelVotes extends JModelList
 {
-
     /**
      * Constructor.
      *
@@ -35,13 +34,6 @@ class UserIdeasModelVotes extends JModelList
         parent::__construct($config);
     }
 
-    /**
-     * Method to auto-populate the model state.
-     *
-     * Note. Calling getState in this method will result in recursion.
-     *
-     * @since   1.6
-     */
     protected function populateState($ordering = null, $direction = null)
     {
         // Load the filter state.
@@ -99,9 +91,9 @@ class UserIdeasModelVotes extends JModelList
                 'c.name'
             )
         );
-        $query->from($db->quoteName('#__uideas_votes') . ' AS a');
-        $query->innerJoin($db->quoteName('#__uideas_items') . ' AS b ON a.item_id = b.id');
-        $query->leftJoin($db->quoteName('#__users') . ' AS c ON a.user_id = c.id');
+        $query->from($db->quoteName('#__uideas_votes', 'a'));
+        $query->innerJoin($db->quoteName('#__uideas_items', 'b') . ' ON a.item_id = b.id');
+        $query->leftJoin($db->quoteName('#__users', 'c') . ' ON a.user_id = c.id');
 
         // Filter by search in title
         $search = $this->getState('filter.search');
