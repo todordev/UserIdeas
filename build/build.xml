@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="userideas" default="build" basedir=".">
-	<description>User Ideas Lite Ant Build File</description>
+	<description>User Ideas Ant Build File</description>
 
 	<!-- load variables from config file -->
 	<property name="cfg.configFile" location="antconfig.txt" />
@@ -46,7 +46,8 @@
 			<fileset dir="${cfg.pkgDir}/packages" includes="*"/>
 			
 			<fileset dir="${cfg.pkgDir}" includes="CHANGELOG.md"/>
-			<fileset dir="${cfg.pkgDir}" includes="${cfg.comName}.xml"/>
+			<fileset dir="${cfg.pkgDir}" includes="LICENSE.txt"/>
+			<fileset dir="${cfg.pkgDir}" includes="${cfg.name}.xml"/>
 			<fileset dir="${cfg.pkgDir}" includes="install.php"/>
 			<fileset dir="${cfg.pkgDir}" includes="${cfg.pkgName}.xml"/>
 			<fileset dir="${cfg.pkgDir}" includes="README.md"/>
@@ -77,6 +78,7 @@
 				<exclude name="**/${cfg.name}.xml" />
 				<exclude name="**/README.md" />
 				<exclude name="**/CHANGELOG.md" />
+				<exclude name="**/LICENSE.txt" />
 				<exclude name="**/install.php" />
 			</fileset>
 		</copy>
@@ -102,6 +104,7 @@
 		<copy file="${cfg.adminSourceDir}/${cfg.comName}/install.php" todir="${cfg.pkgDir}" />
 		<copy file="${cfg.adminSourceDir}/${cfg.comName}/README.md" todir="${cfg.pkgDir}" />
 		<copy file="${cfg.adminSourceDir}/${cfg.comName}/CHANGELOG.md" todir="${cfg.pkgDir}" />
+		<copy file="${cfg.adminSourceDir}/${cfg.comName}/LICENSE.txt" todir="${cfg.pkgDir}" />
 		<copy file="${cfg.adminSourceDir}/${cfg.comName}/${cfg.pkgName}.xml" todir="${cfg.pkgDir}" />
 		<copy file="${cfg.adminSourceDir}/${cfg.comName}/${cfg.name}.xml" todir="${cfg.pkgDir}" />
 
@@ -158,7 +161,7 @@
 		<zip destfile="${cfg.pkgDir}/packages/plg_userideas_vote.zip" basedir="${cfg.pluginsDestDir}/userideas/plg_userideas_vote" />
 		
 		<!-- build package -->
-		<zip destfile="${cfg.pkgDir}/${cfg.pkgName}_${cfg.version}-${cfg.joomlaVersion}.zip" basedir="${cfg.pkgDir}" includes="packages/**,${cfg.pkgName}.xml,install.php,README.md" />
+		<zip destfile="${cfg.pkgDir}/${cfg.pkgName}_${cfg.version}-${cfg.joomlaVersion}.zip" basedir="${cfg.pkgDir}" includes="packages/**,${cfg.pkgName}.xml,install.php,README.md,LICENSE.txt" />
 		
 	</target>
 
