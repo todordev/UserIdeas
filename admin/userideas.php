@@ -10,11 +10,11 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport("Prism.init");
+jimport('Prism.init');
 jimport('UserIdeas.init');
 
 // Get an instance of the controller prefixed by HelloWorld
-$controller = JControllerLegacy::getInstance("UserIdeas");
+$controller = JControllerLegacy::getInstance('UserIdeas');
 
 // Perform the Request task
 $controller->execute(JFactory::getApplication()->input->getCmd('task'));

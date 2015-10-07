@@ -74,6 +74,9 @@ class pkg_userIdeasInstallerScript
             define('COM_USERIDEAS_PATH_COMPONENT_ADMINISTRATOR', JPATH_ADMINISTRATOR . '/components/com_userideas');
         }
 
+        jimport('Prism.init');
+        jimport('UserIdeas.init');
+
         // Register Component helpers
         JLoader::register('UserIdeasInstallHelper', COM_USERIDEAS_PATH_COMPONENT_ADMINISTRATOR . '/helpers/install.php');
         
