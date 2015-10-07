@@ -5,9 +5,9 @@
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
     <copyright>Copyright (C) 2015 Todor Iliev ( ITPrism.com )</copyright>
-    <license>http://www.gnu.org/licenses/gpl-3.0.en.html</license>
-    <version>2.0</version>
-    <creationDate>14 September, 2015</creationDate>
+    <license>http://www.gnu.org/licenses/gpl-3.0.en.html GNU/GPLv3</license>
+    <version>2.1</version>
+    <creationDate>07 October, 2015</creationDate>
     <description><![CDATA[
     <p><a href='http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions' target='_blank'>User Ideas</a> is an extension that provides functionality for creating and managing ideas pool, suggestions, issues, user feedbacks,...</p>
     <p><a href='http://itprism.com/' target='_blank'>Subscribe for the newsletter</a> to receive <strong>gifts</strong>, <strong>discount codes</strong>, information about <strong>updates</strong> and information about <strong>new ITPrism extensions</strong>.</p>

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <extension type="library" version="3.4" method="upgrade">
     <name>User Ideas Library</name>
-    <libraryname>userideas</libraryname>
+    <libraryname>UserIdeas</libraryname>
     <author>Todor Iliev</author>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
     <copyright>Copyright (C) 2015 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
-    <license>http://www.gnu.org/licenses/gpl-3.0.en.html</license>
+    <license>http://www.gnu.org/licenses/gpl-3.0.en.html GNU/GPLv3</license>
     <packager>ITPrism</packager>
     <packagerurl>http://itprism.com</packagerurl>
-    <version>2.0</version>
-    <creationDate>14 September, 2015</creationDate>
+    <version>2.1</version>
+    <creationDate>07 October, 2015</creationDate>
     <description>User Ideas Library</description>
 
     <files>

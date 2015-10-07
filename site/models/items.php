@@ -46,24 +46,24 @@ class UserIdeasModelItems extends JModelList
         $this->setState('params', $params);
 
         // Get category id
-        $value = $app->input->getString("filter_search");
+        $value = $app->input->getString('filter_search');
         $this->setState('filter.search', $value);
 
         // Get category id
-        $value = $app->input->getInt("filter_category");
+        $value = $app->input->getInt('filter_category');
         $this->setState('filter.category_id', $value);
 
         // Get status id
-        $value = $app->input->getInt("filter_status");
+        $value = $app->input->getInt('filter_status');
         $this->setState('filter.status_id', $value);
 
         // Ordering
-        $order    = $params->get("items_ordering", 0);
-        $orderDir = $params->get("items_ordering_direction", "ASC");
+        $order    = $params->get('items_ordering', 0);
+        $orderDir = $params->get('items_ordering_direction', 'ASC');
         $this->prepareOrderingState($order, $orderDir);
 
         // Pagination
-        $value = $params->get("items_display_results_number", 0);
+        $value = $params->get('items_display_results_number', 0);
         if (!$value) {
             $value = $app->input->getInt('limit', $app->get('list_limit', 0));
         }
@@ -114,35 +114,35 @@ class UserIdeasModelItems extends JModelList
             $this->getState(
                 'list.select',
                 'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, ' .
-                $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug, " .
+                $query->concatenate(array('a.id', 'a.alias'), '-') . ' AS slug, ' .
                 'b.name, b.username, ' .
                 'c.title AS category, ' .
-                $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug, " .
+                $query->concatenate(array('c.id', 'c.alias'), '-') . ' AS catslug, ' .
                 'd.name AS status_name, d.params AS status_params, d.default AS status_default'
             )
         );
-        $query->from($db->quoteName('#__uideas_items', "a"));
-        $query->leftJoin($db->quoteName('#__users', "b") . ' ON a.user_id = b.id');
-        $query->leftJoin($db->quoteName('#__categories', "c") . ' ON a.catid = c.id');
-        $query->leftJoin($db->quoteName('#__uideas_statuses', "d") . ' ON a.status_id = d.id');
+        $query->from($db->quoteName('#__uideas_items', 'a'));
+        $query->leftJoin($db->quoteName('#__users', 'b') . ' ON a.user_id = b.id');
+        $query->leftJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id');
+        $query->leftJoin($db->quoteName('#__uideas_statuses', 'd') . ' ON a.status_id = d.id');
 
         // Filter by category
-        $categoryId = $this->getState("filter.category_id");
-        if (!empty($categoryId)) {
+        $categoryId = (int)$this->getState('filter.category_id');
+        if ($categoryId > 0) {
             $query->where('a.catid = ' . (int)$categoryId);
         }
 
         // Filter by status
-        $statusId = $this->getState("filter.status_id");
-        if (!empty($statusId)) {
+        $statusId = (int)$this->getState('filter.status_id');
+        if ($statusId > 0) {
             $query->where('a.status_id = ' . (int)$statusId);
         }
 
         // Filter by search in title
         $search = $this->getState('filter.search');
-        if (!empty($search)) {
+        if (JString::strlen($search) > 0) {
             $escaped = $db->escape($search, true);
-            $quoted  = $db->quote("%" . $escaped . "%", false);
+            $quoted  = $db->quote('%' . $escaped . '%', false);
             $query->where('a.title LIKE ' . $quoted);
         }
 
@@ -166,20 +166,20 @@ class UserIdeasModelItems extends JModelList
     {
         switch ($order) {
             case 1:
-                $orderCol = "a.title";
+                $orderCol = 'a.title';
                 break;
 
             case 2:
-                $orderCol  = "a.record_date";
-                $orderDir  = "DESC";
+                $orderCol  = 'a.record_date';
+                $orderDir  = 'DESC';
                 break;
 
             case 3:
-                $orderCol  = "a.votes";
+                $orderCol  = 'a.votes';
                 break;
 
             default:
-                $orderCol = "a.ordering";
+                $orderCol = 'a.ordering';
                 break;
         }
 
@@ -187,7 +187,7 @@ class UserIdeasModelItems extends JModelList
         $this->setState('list.ordering', $orderCol);
 
         // Set the type of ordering
-        if (!in_array(JString::strtoupper($orderDir), array('ASC', 'DESC'))) {
+        if (!in_array(JString::strtoupper($orderDir), array('ASC', 'DESC'), true)) {
             $orderDir = 'ASC';
         }
         $this->setState('list.direction', $orderDir);
@@ -209,12 +209,12 @@ class UserIdeasModelItems extends JModelList
         $query = $db->getQuery(true);
 
         $query
-            ->select("a.item_id, COUNT(*) AS number")
+            ->select('a.item_id, COUNT(*) AS number')
             ->from($db->quoteName('#__uideas_comments', 'a'))
-            ->group("a.item_id");
+            ->group('a.item_id');
 
         $db->setQuery($query);
-        $results = $db->loadAssocList("item_id", "number");
+        $results = $db->loadAssocList('item_id', 'number');
 
         return $results;
     }

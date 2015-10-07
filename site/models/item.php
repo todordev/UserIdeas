@@ -19,7 +19,7 @@ class UserIdeasModelItem extends JModelItem
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
-        $value = $app->input->getInt("id");
+        $value = $app->input->getInt('id');
         $this->setState($this->getName() . '.id', $value);
 
         // Load the component parameters.
@@ -39,7 +39,7 @@ class UserIdeasModelItem extends JModelItem
     {
         if ($this->item === null) {
 
-            if (empty($id)) {
+            if ($id === null) {
                 $id = $this->getState($this->getName() . '.id');
             }
 
@@ -49,7 +49,7 @@ class UserIdeasModelItem extends JModelItem
             // Attempt to load the row.
             if ($table->load($id)) {
 
-                if (!$table->get("published")) {
+                if (!$table->get('published')) {
                     return $this->item;
                 }
 

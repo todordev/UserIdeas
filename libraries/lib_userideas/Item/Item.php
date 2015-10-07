@@ -21,7 +21,7 @@ defined('JPATH_PLATFORM') or die;
  */
 class Item extends Table
 {
-    protected $id;
+    protected $id = 0;
     protected $title;
     protected $alias;
     protected $description;
@@ -29,9 +29,9 @@ class Item extends Table
     protected $record_date;
     protected $ordering;
     protected $published;
-    protected $status_id;
-    protected $catid;
-    protected $user_id;
+    protected $status_id = 0;
+    protected $catid = 0;
+    protected $user_id = 0;
 
     protected $category;
     protected $username;
@@ -58,25 +58,25 @@ class Item extends Table
 
         $query
             ->select(
-                "a.id, a.title, a.alias, a.description, a.votes, a.record_date, " .
-                "a.ordering, a.published, a.status_id, a.catid, a.user_id, " .
-                "b.title AS category, " .
-                "c.name AS username, " .
-                "d.name AS status, " .
-                $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug, " .
-                $query->concatenate(array("b.id", "b.alias"), ":") . " AS catslug"
+                'a.id, a.title, a.alias, a.description, a.votes, a.record_date, ' .
+                'a.ordering, a.published, a.status_id, a.catid, a.user_id, ' .
+                'b.title AS category, ' .
+                'c.name AS username, ' .
+                'd.name AS status, ' .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
+                $query->concatenate(array('b.id', 'b.alias'), ':') . ' AS catslug'
             )
-            ->from($this->db->quoteName("#__uideas_items", "a"))
-            ->leftJoin($this->db->quoteName("#__categories", "b") . " ON a.catid = b.id")
-            ->leftJoin($this->db->quoteName("#__users", "c") . " ON a.user_id = c.id")
-            ->leftJoin($this->db->quoteName("#__uideas_statuses", "d") . " ON a.status_id = d.id");
+            ->from($this->db->quoteName('#__uideas_items', 'a'))
+            ->leftJoin($this->db->quoteName('#__categories', 'b') . ' ON a.catid = b.id')
+            ->leftJoin($this->db->quoteName('#__users', 'c') . ' ON a.user_id = c.id')
+            ->leftJoin($this->db->quoteName('#__uideas_statuses', 'd') . ' ON a.status_id = d.id');
 
         if (is_array($keys)) {
             foreach ($keys as $key => $value) {
-                $query->where($this->db->quoteName("a.".$key) ." = ". $this->db->quote($value));
+                $query->where($this->db->quoteName('a.'.$key) .' = '. $this->db->quote($value));
             }
         } else {
-            $query->where("a.id = " . (int)$keys);
+            $query->where('a.id = ' . (int)$keys);
         }
 
         $this->db->setQuery($query);
@@ -107,22 +107,22 @@ class Item extends Table
         $query = $this->db->getQuery(true);
 
         $query
-            ->set($this->db->quoteName("title") . "=" . $this->db->quote($this->title))
-            ->set($this->db->quoteName("alias") . "=" . $this->db->quote($this->alias))
-            ->set($this->db->quoteName("description") . "=" . $this->db->quote($this->description))
-            ->set($this->db->quoteName("votes") . "=" . (int)$this->votes)
-            ->set($this->db->quoteName("ordering") . "=" . (int)$this->ordering)
-            ->set($this->db->quoteName("published") . "=" . $this->db->quote($this->published))
-            ->set($this->db->quoteName("status_id") . "=" . (int)$this->status_id)
-            ->set($this->db->quoteName("catid") . "=" . (int)$this->catid)
-            ->set($this->db->quoteName("user_id") . "=" . (int)$this->user_id);
+            ->set($this->db->quoteName('title') . '=' . $this->db->quote($this->title))
+            ->set($this->db->quoteName('alias') . '=' . $this->db->quote($this->alias))
+            ->set($this->db->quoteName('description') . '=' . $this->db->quote($this->description))
+            ->set($this->db->quoteName('votes') . '=' . (int)$this->votes)
+            ->set($this->db->quoteName('ordering') . '=' . (int)$this->ordering)
+            ->set($this->db->quoteName('published') . '=' . $this->db->quote($this->published))
+            ->set($this->db->quoteName('status_id') . '=' . (int)$this->status_id)
+            ->set($this->db->quoteName('catid') . '=' . (int)$this->catid)
+            ->set($this->db->quoteName('user_id') . '=' . (int)$this->user_id);
 
-        if (!empty($this->id)) { // Update
+        if ($this->id > 0) { // Update
             $query
-                ->update($this->db->quoteName("#__uideas_items"))
-                ->where($this->db->quoteName("id") . "=" . (int)$this->id);
+                ->update($this->db->quoteName('#__uideas_items'))
+                ->where($this->db->quoteName('id') . '=' . (int)$this->id);
         } else {
-            $query->insert($this->db->quoteName("#__uideas_items"));
+            $query->insert($this->db->quoteName('#__uideas_items'));
         }
 
         $this->db->setQuery($query);
@@ -176,9 +176,9 @@ class Item extends Table
         $query = $this->db->getQuery(true);
 
         $query
-            ->update($this->db->quoteName("#__uideas_items"))
-            ->set($this->db->quoteName("votes") . "=" . (int)$this->votes)
-            ->where($this->db->quoteName("id") . "=" . (int)$this->id);
+            ->update($this->db->quoteName('#__uideas_items'))
+            ->set($this->db->quoteName('votes') . '=' . (int)$this->votes)
+            ->where($this->db->quoteName('id') . '=' . (int)$this->id);
 
         $this->db->setQuery($query);
         $this->db->execute();

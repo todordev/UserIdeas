@@ -27,15 +27,15 @@ abstract class Items extends ArrayObject
 
         $query
             ->select(
-                "a.id, a.title, a.alias, a.description, a.votes, a.hits, " .
-                "a.record_date, a.ordering, a.published, a.status_id, a.catid, a.user_id, " .
-                "c.name, " .
-                $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug, " .
-                $query->concatenate(array("b.id", "b.alias"), ":") . " AS catslug"
+                'a.id, a.title, a.alias, a.description, a.votes, a.hits, ' .
+                'a.record_date, a.ordering, a.published, a.status_id, a.catid, a.user_id, ' .
+                'c.name, ' .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
+                $query->concatenate(array('b.id', 'b.alias'), ':') . ' AS catslug'
             )
-            ->from($this->db->quoteName("#__uideas_items", "a"))
-            ->leftJoin($this->db->quoteName("#__categories", "b") . " ON a.catid = b.id")
-            ->leftJoin($this->db->quoteName("#__users", "c") . " ON a.user_id = c.id");
+            ->from($this->db->quoteName('#__uideas_items', 'a'))
+            ->leftJoin($this->db->quoteName('#__categories', 'b') . ' ON a.catid = b.id')
+            ->leftJoin($this->db->quoteName('#__users', 'c') . ' ON a.user_id = c.id');
 
         return $query;
     }

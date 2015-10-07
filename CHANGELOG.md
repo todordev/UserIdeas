@@ -1,6 +1,10 @@
 User Ideas release notes
 ==========================
 
+###v2.1
+* Improved code quality.
+* Fixed bug with the library folder name (renamed from /libraries/userideas to /libraries/UserIdeas).
+
 ###v2.0
 * Replaced ITPrism Library with Prism Library.
 * It was done to use Bootstrap 3.

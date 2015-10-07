@@ -24,7 +24,7 @@ if ($this->item->event->beforeDisplayContent) {
                          id="js-ui-vote-counter-<?php echo $this->item->id; ?>"><?php echo $this->item->votes; ?></div>
                     <a class="btn btn-default ui-btn-vote js-ui-btn-vote" href="javascript: void(0);"
                        data-id="<?php echo $this->item->id; ?>">
-                        <?php echo JText::_("COM_USERIDEAS_VOTE"); ?>
+                        <?php echo JText::_('COM_USERIDEAS_VOTE'); ?>
                     </a>
                 </div>
                 <div class="media-body">
@@ -39,19 +39,19 @@ if ($this->item->event->beforeDisplayContent) {
                     <div class="pull-left">
                         <?php
 
-                        $name = (strcmp("name", $this->params->get("name_type")) == 0) ? $this->item->name : $this->item->username;
+                        $name = (strcmp('name', $this->params->get('name_type')) === 0) ? $this->item->name : $this->item->username;
 
-                        $profile = JHtml::_("userideas.profile", $this->socialProfiles, $this->item->user_id);
+                        $profile = JHtml::_('userideas.profile', $this->socialProfiles, $this->item->user_id);
 
                         // Prepare item owner avatar.
                         $profileAvatar = null;
-                        if ($this->params->get("integration_display_owner_avatar", 0)) {
-                            $profileAvatar = JHtml::_("userideas.avatar", $this->socialProfiles, $this->item->user_id, $this->integrationOptions);
+                        if ($this->params->get('integration_display_owner_avatar', 0)) {
+                            $profileAvatar = JHtml::_('userideas.avatar', $this->socialProfiles, $this->item->user_id, $this->integrationOptions);
                         }
 
-                        echo JHtml::_("userideas.publishedByOn", $name, $this->item->record_date, $profile, $profileAvatar, $this->integrationOptions);
-                        echo JHtml::_("userideas.category", $this->item->category, $this->item->catslug);
-                        echo JHtml::_("userideas.status", $this->item->status);
+                        echo JHtml::_('userideas.publishedByOn', $name, $this->item->record_date, $profile, $profileAvatar, $this->integrationOptions);
+                        echo JHtml::_('userideas.category', $this->item->category, $this->item->catslug);
+                        echo JHtml::_('userideas.status', $this->item->status);
                         ?>
                     </div>
                     <div class="pull-right">
@@ -59,7 +59,7 @@ if ($this->item->event->beforeDisplayContent) {
                             <a class="btn btn-default btn-sm"
                                href="<?php echo JRoute::_(UserIdeasHelperRoute::getFormRoute($this->item->id)); ?>">
                                 <span class="fa fa-edit"></span>
-                                <?php echo JText::_("COM_USERIDEAS_EDIT"); ?>
+                                <?php echo JText::_('COM_USERIDEAS_EDIT'); ?>
                             </a>
                         <?php } ?>
                     </div>
@@ -77,15 +77,15 @@ if (!empty($this->item->event->onContentAfterDisplay)) {
     <div class="row" id="comments">
         <div class="col-md-12">
 
-            <h4><?php echo JText::_("COM_USERIDEAS_COMMENTS"); ?></h4>
+            <h4><?php echo JText::_('COM_USERIDEAS_COMMENTS'); ?></h4>
             <hr/>
             <?php foreach ($this->comments as $comment) { ?>
                 <div class="media ui-comment">
                     <?php
 
                     // Get the profile and avatar.
-                    $profile = JHtml::_("userideas.profile", $this->socialProfiles, $comment->user_id, "javascript: void(0);");
-                    $avatar  = JHtml::_("userideas.avatar", $this->socialProfiles, $comment->user_id, $this->integrationOptions);
+                    $profile = JHtml::_('userideas.profile', $this->socialProfiles, $comment->user_id, 'javascript: void(0);');
+                    $avatar  = JHtml::_('userideas.avatar', $this->socialProfiles, $comment->user_id, $this->integrationOptions);
 
                     if (!empty($avatar)) { ?>
                     <div class="media-left">
@@ -102,15 +102,15 @@ if (!empty($this->item->event->onContentAfterDisplay)) {
                     <div class="well well-sm clearfix">
                         <div class="pull-left">
                             <?php
-                            $profile = JHtml::_("userideas.profile", $this->socialProfiles, $comment->user_id);
-                            echo JHtml::_("userideas.publishedByOn", $comment->author, $comment->record_date, $profile);
+                            $profile = JHtml::_('userideas.profile', $this->socialProfiles, $comment->user_id);
+                            echo JHtml::_('userideas.publishedByOn', $comment->author, $comment->record_date, $profile);
                             ?>
                         </div>
                         <div class="pull-right">
                             <?php if (UserIdeasHelper::isValidOwner($this->userId, $comment->user_id) and $this->canEditComment) { ?>
-                                <a class="btn btn-default btn-sm" href="<?php echo JRoute::_(UserIdeasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catid) . "&comment_id=" . (int)$comment->id); ?>#ui-comment-form">
+                                <a class="btn btn-default btn-sm" href="<?php echo JRoute::_(UserIdeasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catid) . '&comment_id=' . (int)$comment->id); ?>#ui-comment-form">
                                     <span class="fa fa-edit"></span>
-                                    <?php echo JText::_("COM_USERIDEAS_EDIT"); ?>
+                                    <?php echo JText::_('COM_USERIDEAS_EDIT'); ?>
                                 </a>
                             <?php } ?>
                         </div>
@@ -143,7 +143,7 @@ if (!empty($this->item->event->onContentAfterDisplay)) {
                     <div class="clearfix"></div>
                     <button type="submit" class="btn btn-primary" <?php echo $this->disabledButton; ?>>
                         <span class="fa fa-check"></span>
-                        <?php echo JText::_("COM_USERIDEAS_SUBMIT") ?>
+                        <?php echo JText::_('COM_USERIDEAS_SUBMIT') ?>
                     </button>
                 </form>
             <?php } ?>

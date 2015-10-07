@@ -43,25 +43,25 @@ class Status extends TableImmutable
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("a.id, a.name, a.default, a.params")
-            ->from($this->db->quoteName("#__uideas_statuses", "a"));
+            ->select('a.id, a.name, a.default, a.params')
+            ->from($this->db->quoteName('#__uideas_statuses', 'a'));
 
         if (is_array($keys)) {
             foreach ($keys as $key => $value) {
-                $query->where($this->db->quoteName("a.".$key) ." = ". $this->db->quote($value));
+                $query->where($this->db->quoteName('a.'.$key) .' = '. $this->db->quote($value));
             }
         } else {
-            $query->where("a.id = " . (int)$keys);
+            $query->where('a.id = ' . (int)$keys);
         }
         
         $this->db->setQuery($query);
 
         $result = (array)$this->db->loadAssoc();
 
-        if (!empty($result["params"])) {
-            $params = json_decode($result["params"]);
-            if (!empty($params)) {
-                $result["params"] = $params;
+        if (!empty($result['params'])) {
+            $params = json_decode($result['params']);
+            if ($params !== null) {
+                $result['params'] = $params;
             }
         }
         $this->bind($result);

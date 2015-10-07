@@ -53,11 +53,11 @@ class UserIdeasInstallHelper
     public static function addRow($title, $result, $info)
     {
 
-        $outputType = JArrayHelper::getValue($result, "type", "");
-        $outputText = JArrayHelper::getValue($result, "text", "");
+        $outputType = Joomla\Utilities\ArrayHelper::getValue($result, 'type');
+        $outputText = Joomla\Utilities\ArrayHelper::getValue($result, 'text');
 
-        $output = "";
-        if (!empty($outputType) and !empty($outputText)) {
+        $output = '';
+        if (JString::strlen($outputType) > 0 and JString::strlen($outputText) > 0) {
             $output = '<span class="label label-' . $outputType . '">' . $outputText . '</span>';
         }
 
@@ -73,14 +73,14 @@ class UserIdeasInstallHelper
     {
         // Create image folder
         if (true !== JFolder::create($imagesPath)) {
-            JLog::add(JText::sprintf("COM_USERIDEAS_ERROR_CANNOT_CREATE_FOLDER", $imagesPath));
+            JLog::add(JText::sprintf('COM_USERIDEAS_ERROR_CANNOT_CREATE_FOLDER', $imagesPath));
         } else {
 
             // Copy index.html
-            $indexFile = $imagesPath . DIRECTORY_SEPARATOR . "index.html";
+            $indexFile = JPath::clean($imagesPath . DIRECTORY_SEPARATOR . 'index.html');
             $html      = '<html><body style="background-color: #fff;"></body></html>';
             if (true !== JFile::write($indexFile, $html)) {
-                JLog::add(JText::sprintf("COM_USERIDEAS_ERROR_CANNOT_SAVE_FILE", $indexFile));
+                JLog::add(JText::sprintf('COM_USERIDEAS_ERROR_CANNOT_SAVE_FILE', $indexFile));
             }
 
         }

@@ -30,8 +30,8 @@ class Statuses extends ArrayObject
      *
      * <code>
      * $options = array(
-     *    "limit"          => 10,
-     *    "sort_direction" => "DESC"
+     *    'limit'          => 10,
+     *    'sort_direction' => 'DESC'
      * );
      *
      * $statuses     = UserIdeas\Status\Statuses::getInstance(\JFactory::getDbo(), $options);
@@ -42,9 +42,9 @@ class Statuses extends ArrayObject
      *
      * @return null|Statuses
      */
-    public static function getInstance(\JDatabaseDriver $db, $options = array())
+    public static function getInstance(\JDatabaseDriver $db, array $options = array())
     {
-        if (is_null(self::$instance)) {
+        if (self::$instance === null) {
             $item           = new Statuses($db);
             $item->load($options);
             self::$instance = $item;
@@ -58,8 +58,8 @@ class Statuses extends ArrayObject
      *
      * <code>
      * $options = array(
-     *    "limit"          => 10,
-     *    "sort_direction" => "DESC"
+     *    'limit'          => 10,
+     *    'sort_direction' => 'DESC'
      * );
      *
      * $statuses = new UserIdeas\Status\Statuses(\JFactory::getDbo());
@@ -70,17 +70,17 @@ class Statuses extends ArrayObject
      */
     public function load($options = array())
     {
-        $sortDir = (!isset($options["sort_direction"])) ? "DESC" : $options["sort_direction"];
-        $sortDir = (strcmp("DESC", $sortDir) == 0) ? "DESC" : "ASC";
+        $sortDir = (!array_key_exists('sort_direction', $options)) ? 'DESC' : $options['sort_direction'];
+        $sortDir = (strcmp('DESC', $sortDir) === 0) ? 'DESC' : 'ASC';
 
-        $limit   = (int)(!isset($options["limit"])) ? 0 : $options["limit"];
+        $limit   = (!array_key_exists('limit', $options)) ? 0 : (int)$options['limit'];
 
         // Create a new query object.
         $query = $this->db->getQuery(true);
         $query
-            ->select("a.id, a.name, a.default")
-            ->from($this->db->quoteName("#__uideas_statuses", "a"))
-            ->order("a.name " . $sortDir);
+            ->select('a.id, a.name, a.default')
+            ->from($this->db->quoteName('#__uideas_statuses', 'a'))
+            ->order('a.name ' . $sortDir);
 
         if (!empty($limit)) {
             $this->db->setQuery($query, 0, $limit);
@@ -99,12 +99,12 @@ class Statuses extends ArrayObject
      * $statuses->load($options);
      * </code>
      *
-     * @return null|object
+     * @return null|\stdClass
      */
     public function getDefault()
     {
         foreach ($this->items as $status) {
-            if (!empty($status->default)) {
+            if ((int)$status->default === 1) {
                 return $status;
             }
         }
@@ -130,7 +130,7 @@ class Statuses extends ArrayObject
         $options = array();
 
         foreach ($this->items as $status) {
-            $options[] = array("text" => $status->name, "value" => $status->id);
+            $options[] = array('text' => $status->name, 'value' => $status->id);
         }
 
         return $options;

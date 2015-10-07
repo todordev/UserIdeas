@@ -56,8 +56,8 @@ class Basic
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__uideas_items", "a"));
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__uideas_items', 'a'));
 
         $this->db->setQuery($query);
         $result = $this->db->loadResult();
@@ -85,8 +85,8 @@ class Basic
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("SUM(a.votes)")
-            ->from($this->db->quoteName("#__uideas_items", "a"));
+            ->select('SUM(a.votes)')
+            ->from($this->db->quoteName('#__uideas_items', 'a'));
 
         $this->db->setQuery($query);
         $result = $this->db->loadResult();
@@ -114,8 +114,8 @@ class Basic
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__uideas_comments", "a"));
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__uideas_comments', 'a'));
 
         $this->db->setQuery($query);
         $result = $this->db->loadResult();

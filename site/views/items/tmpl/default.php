@@ -14,10 +14,10 @@ defined('_JEXEC') or die;?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
 
-	<?php if($this->params->get("items_display_button", 1)) {?>
+	<?php if($this->params->get('items_display_button', 1)) {?>
     <a href="<?php echo JRoute::_(UserIdeasHelperRoute::getFormRoute(0));?>" class="btn btn-default">
     	<span class="fa fa-plus"></span>
-        <?php echo JText::_("COM_USERIDEAS_POST_ITEM");?>
+        <?php echo JText::_('COM_USERIDEAS_POST_ITEM');?>
     </a>
     <?php }?>
     
@@ -31,7 +31,7 @@ defined('_JEXEC') or die;?>
     <div class="media ui-item">
     	<div class="ui-vote pull-left">
     		<div class="ui-vote-counter" id="js-ui-vote-counter-<?php echo $item->id; ?>"><?php echo $item->votes; ?></div>
-    		<a class="btn btn-default ui-btn-vote js-ui-btn-vote" href="javascript: void(0);" data-id="<?php echo $item->id; ?>"><?php echo JText::_("COM_USERIDEAS_VOTE"); ?></a>
+    		<a class="btn btn-default ui-btn-vote js-ui-btn-vote" href="javascript: void(0);" data-id="<?php echo $item->id; ?>"><?php echo JText::_('COM_USERIDEAS_VOTE'); ?></a>
     	</div>
         <div class="media-body">
         	<h4 class="media-heading">
@@ -40,8 +40,8 @@ defined('_JEXEC') or die;?>
         	    </a>
     	    </h4>
 
-            <?php if ($this->params->get("items_display_description", 1)) { ?>
-         	<?php echo JHtmlString::truncate($item->description, $this->params->get("items_description_length", 255), true, $this->params->get("items_description_html", 0));?>
+            <?php if ($this->params->get('items_display_description', 1)) { ?>
+         	<?php echo JHtmlString::truncate($item->description, $this->params->get('items_description_length', 255), true, $this->params->get('items_description_html', 0));?>
             <?php } ?>
 
         </div>
@@ -49,34 +49,34 @@ defined('_JEXEC') or die;?>
         <div class="well well-sm clearfix">
         	<div class="pull-left">
             <?php
-            $name = (strcmp("name", $this->params->get("name_type")) == 0) ? $item->name : $item->username;
+            $name = (strcmp('name', $this->params->get('name_type')) === 0) ? $item->name : $item->username;
 
-            $profile = JHtml::_("userideas.profile", $this->socialProfiles, $item->user_id);
+            $profile = JHtml::_('userideas.profile', $this->socialProfiles, $item->user_id);
 
             // Prepare item owner avatar.
             $profileAvatar = null;
-            if ($this->params->get("integration_display_owner_avatar", 0)) {
-                $profileAvatar = JHtml::_("userideas.avatar", $this->socialProfiles, $item->user_id, $this->integrationOptions);
+            if ($this->params->get('integration_display_owner_avatar', 0)) {
+                $profileAvatar = JHtml::_('userideas.avatar', $this->socialProfiles, $item->user_id, $this->integrationOptions);
             }
 
-            echo JHtml::_("userideas.publishedByOn", $name, $item->record_date, $profile, $profileAvatar, $this->integrationOptions);
-            echo JHtml::_("userideas.category", $item->category, $item->catslug);
-            echo JHtml::_("userideas.status", $item->status);
+            echo JHtml::_('userideas.publishedByOn', $name, $item->record_date, $profile, $profileAvatar, $this->integrationOptions);
+            echo JHtml::_('userideas.category', $item->category, $item->catslug);
+            echo JHtml::_('userideas.status', $item->status);
             ?>
             </div>
             <div class="pull-right">
                 <?php if($this->commentsEnabled) { ?>
-            	<a class="btn btn-default btn-sm" href="<?php echo JRoute::_(UserIdeasHelperRoute::getDetailsRoute($item->slug, $item->catid))."#comments";?>" >
+            	<a class="btn btn-default btn-sm" href="<?php echo JRoute::_(UserIdeasHelperRoute::getDetailsRoute($item->slug, $item->catid)).'#comments';?>" >
                     <span class="fa fa-comment"> </span>
-            		<?php echo JText::_("COM_USERIDEAS_COMMENTS");?>
-            		<?php echo "( ".$commentsNumber." )";?>
+            		<?php echo JText::_('COM_USERIDEAS_COMMENTS');?>
+            		<?php echo '( '.$commentsNumber.' )';?>
             	</a> 
             	<?php } ?>
 
             	<?php if (UserIdeasHelper::isValidOwner($this->userId, $item->user_id) and $this->canEdit){?>
             	<a class="btn btn-default btn-sm" href="<?php echo JRoute::_(UserIdeasHelperRoute::getFormRoute($item->id));?>" >
                     <span class="fa fa-edit"> </span>
-            		<?php echo JText::_("COM_USERIDEAS_EDIT");?>
+            		<?php echo JText::_('COM_USERIDEAS_EDIT');?>
             	</a>
             	<?php }?>
             </div>

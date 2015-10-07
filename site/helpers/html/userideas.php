@@ -39,13 +39,13 @@ abstract class JHtmlUserIdeas
      */
     public static function avatar($socialProfiles, $userId, $options = array())
     {
-        $avatarSize = Joomla\Utilities\ArrayHelper::getValue($options, "size", "small");
-        $default    = Joomla\Utilities\ArrayHelper::getValue($options, "default");
+        $avatarSize = Joomla\Utilities\ArrayHelper::getValue($options, 'size', 'small');
+        $default    = Joomla\Utilities\ArrayHelper::getValue($options, 'default');
 
         $link = (!$socialProfiles) ? null : $socialProfiles->getAvatar($userId, $avatarSize);
 
         // Set the link to default picture
-        if (!$link and !empty($default)) {
+        if (!$link and $default !== null) {
             $link = $default;
         }
 
@@ -70,7 +70,7 @@ abstract class JHtmlUserIdeas
         $link = (!$socialProfiles) ? null : $socialProfiles->getLink($userId);
 
         // Set the link to default picture
-        if (!$link and !empty($default)) {
+        if (!$link and $default !== null) {
             $link = $default;
         }
 
@@ -80,35 +80,35 @@ abstract class JHtmlUserIdeas
     public static function publishedBy($name, $link = null)
     {
         if (!empty($link)) {
-            $profile = '<a href="' . $link . '" rel="nofollow">' . htmlspecialchars($name, ENT_QUOTES, "utf-8") . '</a>';
+            $profile = '<a href="' . $link . '" rel="nofollow">' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '</a>';
         } else {
-            $profile = ($name) ?: JText::_("COM_USERIDEAS_ANONYMOUS");
+            $profile = ($name) ?: JText::_('COM_USERIDEAS_ANONYMOUS');
         }
 
-        $html = JText::sprintf("COM_USERIDEAS_PUBLISHED_BY", $profile);
+        $html = JText::sprintf('COM_USERIDEAS_PUBLISHED_BY', $profile);
 
         return $html;
     }
 
-    public static function publishedByOn($name, $date, $link = null, $profileAvatar = null, $options = array())
+    public static function publishedByOn($name, $date, $link = null, $profileAvatar = null, array $options = array())
     {
-        $name = htmlspecialchars($name, ENT_QUOTES, "utf-8");
+        $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
 
         if (!empty($link)) {
             $profile = '<a href="' . $link . '" rel="nofollow">' . $name . '</a>';
         } else {
-            $profile = ($name) ?: JText::_("COM_USERIDEAS_ANONYMOUS");
+            $profile = ($name) ?: JText::_('COM_USERIDEAS_ANONYMOUS');
         }
 
         if (!empty($profileAvatar)) {
-            $width = Joomla\Utilities\ArrayHelper::getValue($options, "width", 24);
-            $height = Joomla\Utilities\ArrayHelper::getValue($options, "height", 24);
+            $width = Joomla\Utilities\ArrayHelper::getValue($options, 'width', 24);
+            $height = Joomla\Utilities\ArrayHelper::getValue($options, 'height', 24);
 
             $profile = '<img src="' . $profileAvatar . '" width="'.$width.'" height="'.$height.'" alt="'.$name.'" /> ' . $profile;
         }
 
         $date = JHTML::_('date', $date, JText::_('DATE_FORMAT_LC3'));
-        $html = JText::sprintf("COM_USERIDEAS_PUBLISHED_BY_ON", $profile, $date);
+        $html = JText::sprintf('COM_USERIDEAS_PUBLISHED_BY_ON', $profile, $date);
 
         return $html;
     }
@@ -116,21 +116,21 @@ abstract class JHtmlUserIdeas
     public static function publishedOn($date)
     {
         $date = JHTML::_('date', $date, JText::_('DATE_FORMAT_LC3'));
-        $html = JText::sprintf("COM_USERIDEAS_PUBLISHED_ON", $date);
+        $html = JText::sprintf('COM_USERIDEAS_PUBLISHED_ON', $date);
 
         return $html;
     }
 
-    public static function category($name, $catSlug = "")
+    public static function category($name, $catSlug = '')
     {
         if (!$name) {
-            return "";
+            return '';
         }
 
         if (!empty($catSlug)) {
-            $html = '<a href="' . UserIdeasHelperRoute::getCategoryRoute($catSlug) . '" class="ui-category-label">' . htmlspecialchars($name, ENT_QUOTES, "utf-8") . '</a>';
+            $html = '<a href="' . UserIdeasHelperRoute::getCategoryRoute($catSlug) . '" class="ui-category-label">' . htmlspecialchars($name, ENT_QUOTES, 'utf-8') . '</a>';
         } else {
-            $html = '<span class="ui-category-label">' . htmlspecialchars($name, ENT_QUOTES, "utf-8") . '</span>';
+            $html = '<span class="ui-category-label">' . htmlspecialchars($name, ENT_QUOTES, 'utf-8') . '</span>';
         }
 
         return $html;
@@ -139,18 +139,18 @@ abstract class JHtmlUserIdeas
     public static function status(UserIdeas\Status\Status $status, $displayLink = true)
     {
         if (!$status->getId()) {
-            return "";
+            return '';
         }
 
-        $styles = $status->getParam("style_class", "");
+        $styles = $status->getParam('style_class', '');
 
-        if (!empty($displayLink)) {
+        if ($displayLink === true) {
             $html = '
             <a href="' . UserIdeasHelperRoute::getItemsRoute($status->getId()) . '" class="ui-status-label">
-            <span class="label' . $styles . '">' . htmlspecialchars($status->getName(), ENT_QUOTES, "utf-8") . '</span>
+            <span class="label' . $styles . '">' . htmlspecialchars($status->getName(), ENT_QUOTES, 'utf-8') . '</span>
             </a>';
         } else {
-            $html = '<span class="label ui-status-label ' . $styles . '">' . htmlspecialchars($status->getName(), ENT_QUOTES, "utf-8") . '</span>';
+            $html = '<span class="label ui-status-label ' . $styles . '">' . htmlspecialchars($status->getName(), ENT_QUOTES, 'utf-8') . '</span>';
         }
 
         return $html;
@@ -159,7 +159,7 @@ abstract class JHtmlUserIdeas
     public static function styleClass($name)
     {
         if (!$name) {
-            return "---";
+            return '---';
         }
 
         return '<div class="label '.$name.'">'.$name.'</div>';

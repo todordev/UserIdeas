@@ -9,8 +9,8 @@
 
 defined('_JEXEC') or die;
 
-// Load router
-jimport("userideas.init");
+jimport('Prism.init');
+jimport('UserIdeas.init');
 
 /**
  * Method to build Route
@@ -43,7 +43,7 @@ function UserIdeasBuildRoute(&$query)
     if (isset($query['view'])) {
         $view = $query['view'];
 
-        if (empty($query['Itemid']) or ($mOption !== "com_userideas")) {
+        if (empty($query['Itemid']) or ($mOption !== 'com_userideas')) {
             $segments[] = $query['view'];
         }
 
@@ -56,9 +56,7 @@ function UserIdeasBuildRoute(&$query)
 
     // are we dealing with a category that is attached to a menu item?
     if (isset($view) and ($mView == $view) and (isset($query['id'])) and ($mId == intval($query['id']))) {
-        unset($query['view']);
-        unset($query['catid']);
-        unset($query['id']);
+        unset($query['view'], $query['catid'], $query['id']);
 
         return $segments;
     }
@@ -68,7 +66,7 @@ function UserIdeasBuildRoute(&$query)
 
         switch ($view) {
 
-            case "details":
+            case 'details':
 
                 if (isset($query['catid'])) {
                     $catId = $query['catid'];
@@ -81,7 +79,7 @@ function UserIdeasBuildRoute(&$query)
 
                 break;
 
-            case "category":
+            case 'category':
                 $segments[] = $query['id'];
                 unset($query['id']);
                 break;
@@ -97,7 +95,7 @@ function UserIdeasBuildRoute(&$query)
                 unset($query['layout']);
             }
         } else {
-            if ($query['layout'] == 'default') {
+            if ($query['layout'] === 'default') {
                 unset($query['layout']);
             }
         }
@@ -127,7 +125,7 @@ function UserIdeasParseRoute($segments)
 
     // Standard routing for item.  If we don't pick up an Itemid then we get the view from the segments
     // the first segment is the view and the last segment is the id of the details, category,...
-    if (!isset($item)) {
+    if ($item === null) {
         $vars['view'] = $segments[0];
         $vars['id']   = $segments[$count - 1];
 
@@ -137,14 +135,19 @@ function UserIdeasParseRoute($segments)
     // COUNT == 1
 
     // Category
-    if ($count == 1) {
+    if ($count === 1) {
+
+        // Remove last segment, if it is "index.php".
+        if (strcmp('index.php', $segments[0]) === 0) {
+            return $vars;
+        }
 
         list($id, $alias) = explode(':', $segments[0], 2);
 
         // first we check if it is a category
         $category = JCategories::getInstance('UserIdeas')->get($id);
 
-        if ($category and (strcmp($category->alias, $alias) == 0)) { // Category
+        if ($category and (strcmp($category->alias, $alias) === 0)) { // Category
 
             $vars['view'] = 'category';
             $vars['id']   = $id;
@@ -154,14 +157,12 @@ function UserIdeasParseRoute($segments)
         } else {
 
             $idea = UserIdeasHelperRoute::getItem($id);
-            if ($idea) {
-                if ($idea->alias == $alias) {
-                    $vars['view']  = 'details';
-                    $vars['catid'] = (int)$idea->catid;
-                    $vars['id']    = (int)$id;
+            if ($idea and ($idea->alias === $alias)) {
+                $vars['view']  = 'details';
+                $vars['catid'] = (int)$idea->catid;
+                $vars['id']    = (int)$id;
 
-                    return $vars;
-                }
+                return $vars;
             }
 
         }

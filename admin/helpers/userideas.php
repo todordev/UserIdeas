@@ -15,7 +15,7 @@ defined('_JEXEC') or die;
  */
 class UserIdeasHelper
 {
-    protected static $extension = "com_userideas";
+    protected static $extension = 'com_userideas';
 
     /**
      * Configure the Linkbar.
@@ -29,43 +29,43 @@ class UserIdeasHelper
         JHtmlSidebar::addEntry(
             JText::_('COM_USERIDEAS_DASHBOARD'),
             'index.php?option=' . self::$extension . '&view=dashboard',
-            $vName == 'dashboard'
+            $vName === 'dashboard'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_USERIDEAS_CATEGORIES'),
             'index.php?option=com_categories&extension=' . self::$extension . '',
-            $vName == 'categories'
+            $vName === 'categories'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_USERIDEAS_ITEMS'),
             'index.php?option=' . self::$extension . '&view=items',
-            $vName == 'items'
+            $vName === 'items'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_USERIDEAS_VOTES'),
             'index.php?option=' . self::$extension . '&view=votes',
-            $vName == 'votes'
+            $vName === 'votes'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_USERIDEAS_COMMENTS'),
             'index.php?option=' . self::$extension . '&view=comments',
-            $vName == 'comments'
+            $vName === 'comments'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_USERIDEAS_STATUSES'),
             'index.php?option=' . self::$extension . '&view=statuses',
-            $vName == 'statuses'
+            $vName === 'statuses'
         );
 
         JHtmlSidebar::addEntry(
             JText::_('COM_USERIDEAS_PLUGINS'),
-            'index.php?option=com_plugins&view=plugins&filter_search=' . rawurlencode("user ideas"),
-            $vName == 'plugins'
+            'index.php?option=com_plugins&view=plugins&filter_search=' . rawurlencode('user ideas'),
+            $vName === 'plugins'
         );
 
     }
@@ -74,26 +74,23 @@ class UserIdeasHelper
     {
         foreach ($items as &$item) {
 
-            if (!empty($item->status_params)) {
+            if (JString::strlen($item->status_params) > 0) {
                 $statusParams = json_decode($item->status_params, true);
-
-                if (!empty($statusParams)) {
-                    $item->status_params = $statusParams;
-                } else {
-                    $item->status_params = null;
-                }
+                $item->status_params = (!is_array($statusParams)) ? null : $statusParams;
             }
 
             $statusData = array(
-                "id"      => $item->status_id,
-                "name"    => $item->status_name,
-                "default" => $item->status_default,
-                "params"  => $item->status_params
+                'id'      => $item->status_id,
+                'name'    => $item->status_name,
+                'default' => $item->status_default,
+                'params'  => $item->status_params
             );
 
             $item->status = new UserIdeas\Status\Status();
             $item->status->bind($statusData);
         }
+
+        unset($item);
 
         return $items;
     }
@@ -108,10 +105,6 @@ class UserIdeasHelper
      */
     public static function isValidOwner($userId, $itemOwnerId)
     {
-        if (!empty($userId) and ($userId == $itemOwnerId)) {
-            return true;
-        }
-
-        return false;
+        return (bool)((int)$userId > 0 and ((int)$userId === (int)$itemOwnerId));
     }
 }

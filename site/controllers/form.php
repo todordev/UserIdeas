@@ -25,7 +25,7 @@ class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return    UserIdeasModelForm    The model.
      * @since    1.5
      */
     public function getModel($name = 'Form', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
@@ -42,20 +42,20 @@ class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
 
         // Get the data from the form POST
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "int");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, 'id', 0, 'int');
 
         $redirectOptions = array(
-            "view" => "form",
-            "id"   => $itemId
+            'view' => 'form',
+            'id'   => $itemId
         );
 
         // Check for valid user
         $user   = JFactory::getUser();
-        $userId = $user->get("id");
+        $userId = $user->get('id');
 
         if (!$this->allowSave($data)) {
             $redirectOptions = array(
-                "force_direction" => "index.php?option=com_users&view=login"
+                'force_direction' => 'index.php?option=com_users&view=login'
             );
             $this->displayNotice(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), $redirectOptions);
 
@@ -63,7 +63,7 @@ class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
         }
 
         // Get params
-        $params = JComponentHelper::getParams("com_userideas");
+        $params = JComponentHelper::getParams('com_userideas');
 
         $model = $this->getModel();
         /** @var $model UserIdeasModelForm */
@@ -72,7 +72,7 @@ class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_('COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED'), 500);
         }
 
         // Test if the data is valid.
@@ -87,11 +87,11 @@ class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
         try {
 
             // Set the user ID.
-            $validData["user_id"]  = (int)$userId;
+            $validData['user_id']  = (int)$userId;
 
             $itemId                = $model->save($validData);
 
-            $redirectOptions["id"] = $itemId;
+            $redirectOptions['id'] = $itemId;
 
         } catch (Exception $e) {
 
@@ -101,7 +101,7 @@ class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
         }
 
         $redirectOptions = array(
-            "force_direction" => (!$userId or (strcmp("list", $params->get("redirect_when_post")) == 0)) ?
+            'force_direction' => (!$userId or (strcmp('list', $params->get('redirect_when_post')) === 0)) ?
                     UserIdeasHelperRoute::getItemsRoute() :
                     UserIdeasHelperRoute::getFormRoute($itemId)
         );
@@ -151,7 +151,7 @@ class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
 
         // Validate item owner.
         $itemId = Joomla\Utilities\ArrayHelper::getValue($data, $key);
-        $userId = $user->get("id");
+        $userId = $user->get('id');
 
         // Validate item owner.
         $itemValidator = new UserIdeas\Validator\Item\Owner(JFactory::getDbo(), $itemId, $userId);

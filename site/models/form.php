@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 class UserIdeasModelForm extends JModelForm
 {
-    protected $item = null;
+    protected $item;
 
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -42,11 +42,11 @@ class UserIdeasModelForm extends JModelForm
         /** @var $app JApplicationSite */
 
         // Get the pk of the record from the request.
-        $value = $app->input->getInt("id", 0);
+        $value = $app->input->getInt('id', 0);
         $this->setState($this->getName() . '.id', $value);
 
         // Get category ID
-        $value = $app->getUserState($this->option . ".items.catid");
+        $value = $app->getUserState($this->option . '.items.catid');
         $this->setState('category_id', $value);
 
         // Load the parameters.
@@ -93,14 +93,14 @@ class UserIdeasModelForm extends JModelForm
         if (!$data) {
 
             $itemId = (int)$this->getState($this->getName() . '.id');
-            if (!empty($itemId)) {
-                $userId = JFactory::getUser()->get("id");
+            if ($itemId > 0) {
+                $userId = JFactory::getUser()->get('id');
                 $data   = $this->getItem($itemId, $userId);
             }
 
-            if (empty($data)) {
+            if (!$data) {
                 $data = array(
-                    "caitid" => $this->getState('category_id')
+                    'caitid' => $this->getState('category_id')
                 );
             }
 
@@ -130,8 +130,8 @@ class UserIdeasModelForm extends JModelForm
         if ($pk > 0 and $userId > 0) {
 
             $keys = array(
-                "id"      => $pk,
-                "user_id" => $userId
+                'id'      => $pk,
+                'user_id' => $userId
             );
 
             // Attempt to load the row.
@@ -155,15 +155,15 @@ class UserIdeasModelForm extends JModelForm
      */
     public function save($data)
     {
-        $id          = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "int");
-        $title       = Joomla\Utilities\ArrayHelper::getValue($data, "title");
-        $description = Joomla\Utilities\ArrayHelper::getValue($data, "description");
-        $categoryId  = Joomla\Utilities\ArrayHelper::getValue($data, "catid", 0, "int");
-        $userId      = Joomla\Utilities\ArrayHelper::getValue($data, "user_id", 0, "int");
+        $id          = Joomla\Utilities\ArrayHelper::getValue($data, 'id', 0, 'int');
+        $title       = Joomla\Utilities\ArrayHelper::getValue($data, 'title');
+        $description = Joomla\Utilities\ArrayHelper::getValue($data, 'description');
+        $categoryId  = Joomla\Utilities\ArrayHelper::getValue($data, 'catid', 0, 'int');
+        $userId      = Joomla\Utilities\ArrayHelper::getValue($data, 'user_id', 0, 'int');
 
         $keys = array(
-            "id"      => $id,
-            "user_id" => $userId
+            'id'      => $id,
+            'user_id' => $userId
         );
 
         // Load a record from the database
@@ -174,34 +174,34 @@ class UserIdeasModelForm extends JModelForm
 
         // If there is an id, the item is not new
         $isNew = true;
-        if ($row->get("id")) {
+        if ($row->get('id')) {
             $isNew = false;
         }
 
-        $row->set("title", $title);
-        $row->set("description", $description);
-        $row->set("catid", $categoryId);
+        $row->set('title', $title);
+        $row->set('description', $description);
+        $row->set('catid', $categoryId);
 
         if ($isNew) {
 
             $recordDate = new JDate();
-            $row->set("record_date", $recordDate->toSql());
-            $row->set("user_id", $userId);
+            $row->set('record_date', $recordDate->toSql());
+            $row->set('user_id', $userId);
 
             // Set status
             $statuses      = UserIdeas\Status\Statuses::getInstance(JFactory::getDbo());
             $defaultStatus = $statuses->getDefault();
 
-            if (!empty($defaultStatus->id)) {
-                $row->set("status_id", (int)$defaultStatus->id);
+            if ($defaultStatus !== null and $defaultStatus->id > 0) {
+                $row->set('status_id', (int)$defaultStatus->id);
             }
 
             // Auto publishing
             $params    = JComponentHelper::getParams($this->option);
             /** @var  $params Joomla\Registry\Registry */
 
-            $published = $params->get("security_item_auto_publish", 0);
-            $row->set("published", $published);
+            $published = $params->get('security_item_auto_publish', 0);
+            $row->set('published', $published);
         }
 
         $this->prepareTable($row);
@@ -212,7 +212,7 @@ class UserIdeasModelForm extends JModelForm
 
         $this->cleanCache();
 
-        return $row->get("id");
+        return $row->get('id');
     }
 
     protected function triggerAfterSaveEvent($row, $isNew)
@@ -226,9 +226,9 @@ class UserIdeasModelForm extends JModelForm
         JPluginHelper::importPlugin('content');
 
         // Trigger the onContentAfterSave event.
-        $results = $dispatcher->trigger("onContentAfterSave", array($context, &$row, $isNew));
+        $results = $dispatcher->trigger('onContentAfterSave', array($context, &$row, $isNew));
         if (in_array(false, $results, true)) {
-            throw new Exception(JText::_("COM_USERIDEAS_ERROR_DURING_ITEM_POSTING_PROCESS"));
+            throw new Exception(JText::_('COM_USERIDEAS_ERROR_DURING_ITEM_POSTING_PROCESS'));
         }
     }
 
@@ -241,34 +241,34 @@ class UserIdeasModelForm extends JModelForm
     protected function prepareTable(&$table)
     {
         // get maximum order number
-        if (!$table->get("id")) {
+        if (!$table->get('id')) {
 
             // Set ordering to the last item if not set
             if (empty($table->ordering)) {
                 $db    = $this->getDbo();
                 $query = $db->getQuery(true);
                 $query
-                    ->select("MAX(a.ordering)")
-                    ->from($db->quoteName("#__uideas_items", "a"));
+                    ->select('MAX(a.ordering)')
+                    ->from($db->quoteName('#__uideas_items', 'a'));
 
                 $db->setQuery($query, 0, 1);
                 $max = $db->loadResult();
 
-                $table->set("ordering", $max + 1);
+                $table->set('ordering', $max + 1);
             }
         }
 
         // Fix magic quotes
         if (get_magic_quotes_gpc()) {
-            $table->set("alias", stripcslashes($table->title));
-            $table->set("description", stripcslashes($table->description));
+            $table->set('alias', stripcslashes($table->title));
+            $table->set('description', stripcslashes($table->description));
         }
 
         // If does not exist alias, I will generate the new one from the title
-        if (!$table->get("alias")) {
-            $table->set("alias", $table->get("title"));
+        if (!$table->get('alias')) {
+            $table->set('alias', $table->get('title'));
         }
-        $table->set("alias", JApplicationHelper::stringURLSafe($table->get("alias")));
+        $table->set('alias', JApplicationHelper::stringURLSafe($table->get('alias')));
     }
 
     /**
@@ -285,7 +285,7 @@ class UserIdeasModelForm extends JModelForm
     {
         $user = JFactory::getUser();
 
-        if (!$user->authorise('core.edit.own', "com_userideas")) {
+        if (!$user->authorise('core.edit.own', 'com_userideas')) {
             return false;
         }
 

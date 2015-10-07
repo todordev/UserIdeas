@@ -12,8 +12,8 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.helper');
 jimport('joomla.plugin.plugin');
-jimport("Prism.init");
-jimport("UserIdeas.init");
+jimport('Prism.init');
+jimport('UserIdeas.init');
 
 /**
  * This plugin initializes the job of the button
@@ -42,7 +42,7 @@ class plgSystemUserIdeasVote extends JPlugin
         /** @var $document JDocumentHTML */
 
         $type = $document->getType();
-        if (strcmp("html", $type) != 0) {
+        if (strcmp('html', $type) !== 0) {
             return;
         }
 
@@ -52,15 +52,15 @@ class plgSystemUserIdeasVote extends JPlugin
         }
 
         // Check for right extension.
-        $option = $app->input->get("option");
-        if (strcmp("com_userideas", $option) != 0) {
+        $option = $app->input->get('option');
+        if (strcmp('com_userideas', $option) !== 0) {
             return null;
         }
 
-        // Check for view. The extensions will work only on view "items"
-        $allowedViews = array("items", "details", "category");
-        $view         = $app->input->getCmd("view");
-        if (!in_array($view, $allowedViews)) {
+        // Check for view. The extensions will work only on view 'items'
+        $allowedViews = array('items', 'details', 'category');
+        $view         = $app->input->getCmd('view');
+        if (!in_array($view, $allowedViews, true)) {
             return;
         }
 

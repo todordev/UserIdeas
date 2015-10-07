@@ -33,40 +33,33 @@ class UserIdeasModelCategory extends JModelList
         parent::__construct($config);
     }
 
-    /**
-     * Method to auto-populate the model state.
-     *
-     * Note. Calling getState in this method will result in recursion.
-     *
-     * @since   1.6
-     */
     protected function populateState($ordering = null, $direction = null)
     {
         // List state information.
         parent::populateState('a.record_date', 'asc');
 
         $app = JFactory::getApplication();
-        /** @var $app JApplicationSite * */
+        /** @var $app JApplicationSite */
 
         // Load the component parameters.
         $params = $app->getParams($this->option);
         $this->setState('params', $params);
 
         // Get category id
-        $value = $app->getUserStateFromRequest($this->context . ".catid", "id", 0, "int");
+        $value = $app->getUserStateFromRequest($this->context . '.catid', 'id', 0, 'int');
         $this->setState('filter.category_id', $value);
 
         // Get status id
-        $value = $app->input->getInt("filter_status");
+        $value = $app->input->getInt('filter_status');
         $this->setState('filter.status_id', $value);
 
         // Ordering
-        $order    = $params->get("items_ordering", 0);
-        $orderDir = $params->get("items_ordering_direction", "ASC");
+        $order    = $params->get('items_ordering', 0);
+        $orderDir = $params->get('items_ordering_direction', 'ASC');
         $this->prepareOrderingState($order, $orderDir);
 
         // Pagination
-        $value = $params->get("items_display_results_number", 0);
+        $value = $params->get('items_display_results_number', 0);
         if (!$value) {
             $value = $app->input->getInt('limit', $app->get('list_limit', 0));
         }
@@ -116,25 +109,25 @@ class UserIdeasModelCategory extends JModelList
             $this->getState(
                 'list.select',
                 'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, ' .
-                $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug, " .
+                $query->concatenate(array('a.id', 'a.alias'), '-') . ' AS slug, ' .
                 'b.name, b.username, ' .
                 'c.title AS category, ' .
-                $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug, " .
+                $query->concatenate(array('c.id', 'c.alias'), '-') . ' AS catslug, ' .
                 'd.name AS status_name, d.params AS status_params, d.default AS status_default'
             )
         );
-        $query->from($db->quoteName('#__uideas_items', "a"));
-        $query->leftJoin($db->quoteName('#__users', "b") . ' ON a.user_id = b.id');
-        $query->leftJoin($db->quoteName('#__categories', "c") . ' ON a.catid = c.id');
-        $query->leftJoin($db->quoteName('#__uideas_statuses', "d") . ' ON a.status_id = d.id');
+        $query->from($db->quoteName('#__uideas_items', 'a'));
+        $query->leftJoin($db->quoteName('#__users', 'b') . ' ON a.user_id = b.id');
+        $query->leftJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id');
+        $query->leftJoin($db->quoteName('#__uideas_statuses', 'd') . ' ON a.status_id = d.id');
 
         // Category filter
-        $categoryId = $this->getState("filter.category_id");
+        $categoryId = $this->getState('filter.category_id');
         $query->where('a.catid = ' . (int)$categoryId);
 
         // Filter by status
-        $statusId = $this->getState("filter.status_id");
-        if (!empty($statusId)) {
+        $statusId = (int)$this->getState('filter.status_id');
+        if ($statusId > 0) {
             $query->where('a.status_id = ' . (int)$statusId);
         }
 
@@ -157,16 +150,16 @@ class UserIdeasModelCategory extends JModelList
     {
         switch ($order) {
             case 1:
-                $orderCol = "a.title";
+                $orderCol = 'a.title';
                 break;
 
             case 2:
-                $orderCol = "a.record_date";
-                $orderDir = "DESC";
+                $orderCol = 'a.record_date';
+                $orderDir = 'DESC';
                 break;
 
             default:
-                $orderCol = "a.ordering";
+                $orderCol = 'a.ordering';
                 break;
         }
 
@@ -174,7 +167,7 @@ class UserIdeasModelCategory extends JModelList
         $this->setState('list.ordering', $orderCol);
 
         // Set the type of ordering
-        if (!in_array(strtoupper($orderDir), array('ASC', 'DESC'))) {
+        if (!in_array(strtoupper($orderDir), array('ASC', 'DESC'), true)) {
             $orderDir = 'ASC';
         }
         $this->setState('list.direction', $orderDir);
@@ -196,12 +189,12 @@ class UserIdeasModelCategory extends JModelList
         $query = $db->getQuery(true);
 
         $query
-            ->select("a.item_id, COUNT(*) AS number")
+            ->select('a.item_id, COUNT(*) AS number')
             ->from($db->quoteName('#__uideas_comments', 'a'))
-            ->group("a.item_id");
+            ->group('a.item_id');
 
         $db->setQuery($query);
-        $results = $db->loadAssocList("item_id", "number");
+        $results = $db->loadAssocList('item_id', 'number');
 
         return $results;
     }

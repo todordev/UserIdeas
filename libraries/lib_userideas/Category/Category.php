@@ -43,27 +43,25 @@ class Category extends TableImmutable
         $query = $this->db->getQuery(true);
         $query
             ->select(
-                "a.title, a.description," .
-                $query->concatenate(array("a.id", "a.alias"), ":") . " AS slug"
+                'a.title, a.description,' .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug'
             )
-            ->from($this->db->quoteName("#__categories", "a"));
+            ->from($this->db->quoteName('#__categories', 'a'));
 
         if (is_array($keys)) {
             foreach ($keys as $key => $value) {
-                $query->where($this->db->quoteName("a.".$key) ." = ". $this->db->quote($value));
+                $query->where($this->db->quoteName('a.'.$key) .' = '. $this->db->quote($value));
             }
         } else {
-            $query->where("a.id = " . (int)$keys);
+            $query->where('a.id = ' . (int)$keys);
         }
 
-        $query->where("a.extension = " . $this->db->quote("com_userideas"));
+        $query->where('a.extension = ' . $this->db->quote('com_userideas'));
 
         $this->db->setQuery($query);
-        $result = $this->db->loadAssoc();
+        $result = (array)$this->db->loadAssoc();
 
-        if (!empty($result)) {
-            $this->bind($result);
-        }
+        $this->bind($result);
     }
 
     /**

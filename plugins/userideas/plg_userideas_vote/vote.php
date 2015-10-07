@@ -49,65 +49,60 @@ class plgUserIdeasVote extends JPlugin
 
         // Check document type
         $docType = $doc->getType();
-        if (strcmp("raw", $docType) != 0) {
+        if (strcmp('raw', $docType) !== 0) {
             return null;
         }
 
-        if (strcmp("com_userideas.beforevote", $context) != 0) {
+        if (strcmp('com_userideas.beforevote', $context) !== 0) {
             return null;
         }
 
-        $numberOfVotes = abs($this->params->get("votes_per_item", 0));
+        $numberOfVotes = abs($this->params->get('votes_per_item', 0));
 
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "int");
-        $userId = Joomla\Utilities\ArrayHelper::getValue($data, "user_id", 0, "int");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, 'id', 0, 'int');
+        $userId = Joomla\Utilities\ArrayHelper::getValue($data, 'user_id', 0, 'int');
 
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($db->quoteName("#__uideas_votes", "a"))
-            ->where("a.item_id = " . (int)$itemId);
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__uideas_votes', 'a'))
+            ->where('a.item_id = ' . (int)$itemId);
 
         // Check if it is anonymous user.
         if (!$userId) {
             $hash = $this->generateHash();
-            $query->where("a.hash = " . $db->quote($hash));
+            $query->where('a.hash = ' . $db->quote($hash));
         } else {
-            $query->where("a.user_id = " . (int)$userId);
+            $query->where('a.user_id = ' . (int)$userId);
         }
 
         $db->setQuery($query, 0, 1);
         $result = $db->loadResult();
 
         $votingAllowed = false;
-        if (!$result or ($numberOfVotes == 0)) {
+        if (!$result or ($numberOfVotes === 0)) {
             $votingAllowed = true;
         }
 
-        if (!empty($numberOfVotes) and ($result < $numberOfVotes)) {
+        if ($numberOfVotes > 0 and ($result < $numberOfVotes)) {
             $votingAllowed = true;
         }
 
         if ($votingAllowed) { // User vote is not recorded. Return true
-
             $result = array(
-                "success" => true
+                'success' => true
             );
-
         } else { // User vote is recorded. Return false.
-
             $this->loadLanguage();
             $result = array(
-                "success" => false,
-                "message" => JText::_("PLG_USERIDEAS_VOTE_YOU_HAVE_VOTED")
+                'success' => false,
+                'message' => JText::_('PLG_USERIDEAS_VOTE_YOU_HAVE_VOTED')
             );
-
         }
-
+        
         return $result;
-
     }
 
     /**
@@ -134,16 +129,16 @@ class plgUserIdeasVote extends JPlugin
         // Check document type
         $docType = $doc->getType();
 
-        if (strcmp("raw", $docType) != 0) {
+        if (strcmp('raw', $docType) !== 0) {
             return;
         }
 
-        if (strcmp("com_userideas.vote", $context) != 0) {
+        if (strcmp('com_userideas.vote', $context) !== 0) {
             return;
         }
 
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id", 0, "int");
-        $userId = Joomla\Utilities\ArrayHelper::getValue($data, "user_id", 0, "int");
+        $itemId = (!empty($data['id'])) ? (int)$data['id'] : 0;
+        $userId = (!empty($data['user_id'])) ? (int)$data['user_id'] : 0;
 
         // Save vote
         $item = new UserIdeas\Item\Item(JFactory::getDbo());
@@ -171,9 +166,9 @@ class plgUserIdeasVote extends JPlugin
             ->store();
 
         // Prepare response data
-        $data["response_data"] = array(
-            "user_votes" => 1,
-            "votes"      => $item->getVotes()
+        $data['response_data'] = array(
+            'user_votes' => 1,
+            'votes'      => $item->getVotes()
         );
     }
 
@@ -183,14 +178,14 @@ class plgUserIdeasVote extends JPlugin
 
             // Get user IP address
             $app = JFactory::getApplication();
-            $app->input->server->get("HTTP_CLIENT_IP");
+            $app->input->server->get('HTTP_CLIENT_IP');
 
-            if ($app->input->server->get("HTTP_CLIENT_IP")) {
-                $ip = $app->input->server->get("HTTP_CLIENT_IP");
-            } elseif ($app->input->server->get("HTTP_X_FORWARDED_FOR")) {
-                $ip = $app->input->server->get("HTTP_X_FORWARDED_FOR");
+            if ($app->input->server->get('HTTP_CLIENT_IP')) {
+                $ip = $app->input->server->get('HTTP_CLIENT_IP');
+            } elseif ($app->input->server->get('HTTP_X_FORWARDED_FOR')) {
+                $ip = $app->input->server->get('HTTP_X_FORWARDED_FOR');
             } else {
-                $ip = ($app->input->server->get("REMOTE_ADDR")) ?: "0.0.0.0";
+                $ip = ($app->input->server->get('REMOTE_ADDR')) ?: '0.0.0.0';
             }
 
             // Validate the IP address.

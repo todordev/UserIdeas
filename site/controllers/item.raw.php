@@ -24,10 +24,10 @@ class UserIdeasControllerItem extends JControllerLegacy
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return    UserIdeasModelItem    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Item', $prefix = '', $config = array('ignore_request' => true))
+    public function getModel($name = 'Item', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
@@ -44,27 +44,27 @@ class UserIdeasControllerItem extends JControllerLegacy
         
         $response = new Prism\Response\Json();
 
-        $params = $app->getParams("com_userideas");
+        $params = $app->getParams('com_userideas');
 
         // Check for disabled payment functionality
-        if ($params->get("debug_item_adding_disabled", 0)) {
-            $error = JText::_("COM_USERIDEAS_ERROR_VOTING_HAS_BEEN_DISABLED");
+        if ($params->get('debug_item_adding_disabled', 0)) {
+            $error = JText::_('COM_USERIDEAS_ERROR_VOTING_HAS_BEEN_DISABLED');
             JLog::add($error);
 
             return null;
         }
 
         $requestMethod = $app->input->getMethod();
-        if ("POST" != $requestMethod) {
-            $error = "COM_USERIDEAS_ERROR_INVALID_REQUEST_METHOD (" . $requestMethod . "):\n";
-            $error .= "INPUT: " . var_export($app->input, true) . "\n";
+        if ('POST' !== $requestMethod) {
+            $error = 'COM_USERIDEAS_ERROR_INVALID_REQUEST_METHOD (' . $requestMethod . '):\n';
+            $error .= 'INPUT: ' . var_export($app->input, true) . '\n';
             JLog::add($error);
 
             return;
         }
 
         $user = JFactory::getUser();
-        $userId = $user->get("id");
+        $userId = $user->get('id');
 
         if (!$user->authorise('userideas.vote', 'com_userideas')) {
             $response
@@ -77,8 +77,8 @@ class UserIdeasControllerItem extends JControllerLegacy
         }
 
         $data = array(
-            "id"      => $app->input->post->getInt("id"),
-            "user_id" => $userId
+            'id'      => $app->input->post->getInt('id'),
+            'user_id' => $userId
         );
 
         // Save data
@@ -93,11 +93,11 @@ class UserIdeasControllerItem extends JControllerLegacy
 
             // Check for error.
             foreach ($results as $result) {
-                $success = Joomla\Utilities\ArrayHelper::getValue($result, "success");
+                $success = Joomla\Utilities\ArrayHelper::getValue($result, 'success');
 
                 if (false === $success) {
 
-                    $message = Joomla\Utilities\ArrayHelper::getValue($result, "message", JText::_('COM_USERIDEAS_VOTED_UNSUCCESSFULLY'));
+                    $message = Joomla\Utilities\ArrayHelper::getValue($result, 'message', JText::_('COM_USERIDEAS_VOTED_UNSUCCESSFULLY'));
 
                     $response
                         ->setTitle(JText::_('COM_USERIDEAS_FAIL'))
@@ -129,12 +129,12 @@ class UserIdeasControllerItem extends JControllerLegacy
 
         }
 
-        $responseData = Joomla\Utilities\ArrayHelper::getValue($data, "response_data", 0);
-        $userVotes    = Joomla\Utilities\ArrayHelper::getValue($responseData, "user_votes", 0);
-        $votes        = Joomla\Utilities\ArrayHelper::getValue($responseData, "votes", 0);
+        $responseData = Joomla\Utilities\ArrayHelper::getValue($data, 'response_data', 0);
+        $userVotes    = Joomla\Utilities\ArrayHelper::getValue($responseData, 'user_votes', 0);
+        $votes        = Joomla\Utilities\ArrayHelper::getValue($responseData, 'votes', 0);
 
         $data = array(
-            "votes" => $votes
+            'votes' => $votes
         );
 
         $response

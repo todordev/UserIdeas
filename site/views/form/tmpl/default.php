@@ -38,7 +38,7 @@ defined('_JEXEC') or die;
             
             <button type="submit" class="btn btn-primary" <?php echo $this->disabledButton;?>>
             	<span class="fa fa-check"></span>
-                <?php echo JText::_("JSUBMIT")?>
+                <?php echo JText::_('JSUBMIT')?>
             </button>
         </form>
     </div>

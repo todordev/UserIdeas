@@ -10,7 +10,7 @@
 // No direct access.
 defined('_JEXEC') or die;
 
-jimport("Prism.init");
+jimport('Prism.init');
 jimport('UserIdeas.init');
 
 $controller = JControllerLegacy::getInstance('UserIdeas');

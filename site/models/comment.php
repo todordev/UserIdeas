@@ -38,14 +38,14 @@ class UserIdeasModelComment extends JModelForm
     {
         parent::populateState();
 
-        $app = JFactory::getApplication("Site");
+        $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
         // Get the pk of the record from the request.
-        $value = $app->input->getInt("id");
+        $value = $app->input->getInt('id');
         $this->setState('item_id', $value);
 
-        $value = $app->input->getInt("comment_id");
+        $value = $app->input->getInt('comment_id');
         $this->setState('comment_id', $value);
 
         // Load the parameters.
@@ -90,13 +90,13 @@ class UserIdeasModelComment extends JModelForm
         $data = $app->getUserState($this->option . '.edit.comment.data', array());
         if (!$data) {
 
-            $commentId = (int)$this->getState("comment_id");
-            $userId    = JFactory::getUser()->id;
+            $commentId = (int)$this->getState('comment_id');
+            $userId    = (int)JFactory::getUser()->get('id');
 
             // Get comment data
             $data = $this->getItem($commentId, $userId);
 
-            $itemId = $this->getState("item_id");
+            $itemId = (int)$this->getState('item_id');
             if (empty($data->item_id)) {
                 $data->item_id = $itemId;
             }
@@ -111,14 +111,14 @@ class UserIdeasModelComment extends JModelForm
      * @param   integer $commentId The id of the primary key.
      * @param   integer $userId    The user Id
      *
-     * @return  object
+     * @return  JObject
      *
      * @throw   Exception
      * @since   11.1
      */
     public function getItem($commentId, $userId)
     {
-        if (!is_null($this->item)) {
+        if ($this->item !== null) {
             return $this->item;
         }
 
@@ -128,13 +128,12 @@ class UserIdeasModelComment extends JModelForm
         if ($commentId > 0 and $userId > 0) {
 
             $keys = array(
-                "id"      => $commentId,
-                "user_id" => $userId
+                'id'      => $commentId,
+                'user_id' => $userId
             );
 
             // Attempt to load the row.
             $table->load($keys);
-
         }
 
         // Convert to the JObject before adding other data.
@@ -154,49 +153,49 @@ class UserIdeasModelComment extends JModelForm
      */
     public function save($data)
     {
-        $id      = Joomla\Utilities\ArrayHelper::getValue($data, "id");
-        $comment = Joomla\Utilities\ArrayHelper::getValue($data, "comment");
-        $itemId  = Joomla\Utilities\ArrayHelper::getValue($data, "item_id");
-        $userId  = JFactory::getUser()->get("id");
+        $id      = Joomla\Utilities\ArrayHelper::getValue($data, 'id', 0, 'int');
+        $comment = Joomla\Utilities\ArrayHelper::getValue($data, 'comment');
+        $itemId  = Joomla\Utilities\ArrayHelper::getValue($data, 'item_id', 0, 'int');
+        $userId  = (int)JFactory::getUser()->get('id');
 
         $isNew = false;
 
         // Load a record from the database
         $row = $this->getTable();
 
-        if (!empty($id)) {
+        if ($id > 0) {
             $keys = array(
-                "id"      => $id,
-                "user_id" => $userId
+                'id'      => $id,
+                'user_id' => $userId
             );
 
             $row->load($keys);
         }
 
-        $row->set("comment", $comment);
+        $row->set('comment', $comment);
 
         // If there is no ID we are adding a new comment
-        if (!$row->get("id")) {
+        if (!$row->get('id')) {
 
             $isNew = true;
 
-            $row->set("record_date", null);
-            $row->set("item_id", $itemId);
-            $row->set("user_id", $userId);
+            $row->set('record_date', null);
+            $row->set('item_id', $itemId);
+            $row->set('user_id', $userId);
 
             $params    = JComponentHelper::getParams($this->option);
             /** @var  $params Joomla\Registry\Registry */
 
-            $published = (!$params->get("security_comment_auto_publish", 0)) ? 0 : 1;
+            $published = (!$params->get('security_comment_auto_publish', 0)) ? 0 : 1;
 
-            $row->set("published", $published);
+            $row->set('published', $published);
         }
 
         $row->store(true);
 
         $this->triggerAfterSaveEvent($row, $isNew);
 
-        return $row->get("id");
+        return $row->get('id');
     }
 
     protected function triggerAfterSaveEvent($row, $isNew)
@@ -209,9 +208,9 @@ class UserIdeasModelComment extends JModelForm
         JPluginHelper::importPlugin('content');
 
         // Trigger the onCommentAfterSave event.
-        $results = $dispatcher->trigger("onCommentAfterSave", array($context, &$row, $isNew));
+        $results = $dispatcher->trigger('onCommentAfterSave', array($context, &$row, $isNew));
         if (in_array(false, $results, true)) {
-            throw new Exception(JText::_("COM_USERIDEAS_ERROR_DURING_ITEM_POSTING_COMMENT"));
+            throw new Exception(JText::_('COM_USERIDEAS_ERROR_DURING_ITEM_POSTING_COMMENT'));
         }
     }
 }

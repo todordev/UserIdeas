@@ -46,54 +46,49 @@ class UserIdeasViewDetails extends JViewLegacy
     protected $option;
 
     protected $pageclass_sfx;
-
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->getCmd("option");
-    }
-
+    
     public function display($tpl = null)
     {
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
-        // Initialise variables
+        $this->option = JFactory::getApplication()->input->getCmd('option');
+        
         $this->state  = $this->get('State');
         $this->item   = $this->get('Item');
-        $this->params = $this->state->get("params");
+        $this->params = $this->state->get('params');
 
         $this->category = new UserIdeas\Category\Category(JFactory::getDbo());
         $this->category->load($this->item->catid);
 
         $user = JFactory::getUser();
-        $this->userId = $user->get("id");
+        $this->userId = $user->get('id');
 
         // Set permission state. Is it possible to be edited items?
         $this->canEdit = $user->authorise('core.edit.own', 'com_userideas');
 
-        $this->commentsEnabled = $this->params->get("comments_enabled", 1);
+        $this->commentsEnabled = $this->params->get('comments_enabled', 1);
         $this->canComment = $user->authorise('userideas.comment.create', 'com_userideas');
         $this->canEditComment = $user->authorise('userideas.comment.edit.own', 'com_userideas');
 
         // Get the model of the comments
         // that I will use to load all comments for this item.
-        $modelComments  = JModelLegacy::getInstance("Comments", "UserIdeasModel");
+        $modelComments  = JModelLegacy::getInstance('Comments', 'UserIdeasModel');
         $this->comments = $modelComments->getItems();
 
         // Get the model of the comment
-        $commentModelForm = JModelLegacy::getInstance("Comment", "UserIdeasModel");
+        $commentModelForm = JModelLegacy::getInstance('Comment', 'UserIdeasModel');
 
         // Validate the owner of the comment,
         // If someone wants to edit it.
-        $commentId = $commentModelForm->getState("comment_id");
+        $commentId = (int)$commentModelForm->getState('comment_id');
 
-        if (!empty($commentId)) {
+        if ($commentId > 0) {
 
             $comment = $commentModelForm->getItem($commentId, $this->userId);
 
             if (!$comment) {
-                $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_INVALID_COMMENT"), "error");
+                $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_INVALID_COMMENT'), 'error');
                 $app->redirect(JRoute::_(UserIdeasHelperRoute::getItemsRoute(), false));
                 return;
             }
@@ -122,10 +117,10 @@ class UserIdeasViewDetails extends JViewLegacy
         $dispatcher->trigger('onContentPrepare', array('com_userideas.details', &$this->item, &$this->params, $offset));
 
         $results                                 = $dispatcher->trigger('onContentBeforeDisplay', array('com_userideas.details', &$this->item, &$this->params, $offset));
-        $this->item->event->beforeDisplayContent = trim(implode("\n", $results));
+        $this->item->event->beforeDisplayContent = trim(implode('\n', $results));
 
         $results                                  = $dispatcher->trigger('onContentAfterDisplay', array('com_userideas.details', &$this->item, &$this->params, $offset));
-        $this->item->event->onContentAfterDisplay = trim(implode("\n", $results));
+        $this->item->event->onContentAfterDisplay = trim(implode('\n', $results));
 
         $this->item->description = $this->item->text;
         unset($this->item->text);
@@ -145,19 +140,19 @@ class UserIdeasViewDetails extends JViewLegacy
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
-        $this->disabledButton = "";
+        $this->disabledButton = '';
 
         // Check for maintenance (debug) state
-        $params = $this->state->get("params");
+        $params = $this->state->get('params');
         /** @var $params Joomla\Registry\Registry */
 
-        $this->debugMode = $params->get("debug_item_adding_disabled", 0);
+        $this->debugMode = $params->get('debug_item_adding_disabled', 0);
         if ($this->debugMode) {
-            $msg = JString::trim($params->get("debug_disabled_functionality_msg"));
+            $msg = JString::trim($params->get('debug_disabled_functionality_msg'));
             if (!$msg) {
-                $msg = JText::_("COM_USERIDEAS_DEBUG_MODE_DEFAULT_MSG");
+                $msg = JText::_('COM_USERIDEAS_DEBUG_MODE_DEFAULT_MSG');
             }
-            $app->enqueueMessage($msg, "notice");
+            $app->enqueueMessage($msg, 'notice');
 
             $this->disabledButton = 'disabled="disabled"';
         }
@@ -184,11 +179,11 @@ class UserIdeasViewDetails extends JViewLegacy
         $this->document->setDescription($this->params->get('menu-meta_description'));
 
         // Meta keywords
-        $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+        $this->document->setMetaData('keywords', $this->params->get('menu-meta_keywords'));
 
         // Add current layout into breadcrumbs
         $pathway = $app->getPathway();
-        $pathway->addItem(JText::_("COM_USERIDEAS_PATHWAY_FORM_TITLE"));
+        $pathway->addItem(JText::_('COM_USERIDEAS_PATHWAY_FORM_TITLE'));
 
         // Scripts
         JHtml::_('behavior.keepalive');
@@ -204,20 +199,20 @@ class UserIdeasViewDetails extends JViewLegacy
 
         // If it is assigned to menu item, params will contains "page_title".
         // If it is not assigned, I will use the title of the item
-        if ($this->params->get("page_title")) {
-            $title = $this->params->get("page_title");
+        if ($this->params->get('page_title')) {
+            $title = $this->params->get('page_title');
         } else {
 
-            $seo = $this->params->get("seo_cat_to_title");
+            $seo = $this->params->get('seo_cat_to_title');
 
             switch ($seo) {
 
-                case "1": // Before page title
-                    $title = $this->category->title . " | " . $this->item->title;
+                case '1': // Before page title
+                    $title = $this->category->title . ' | ' . $this->item->title;
                     break;
 
-                case "2": // After page title
-                    $title = $this->item->title . " | " . $this->category->title;
+                case '2': // After page title
+                    $title = $this->item->title . ' | ' . $this->category->title;
                     break;
 
                 default: // NONE
@@ -229,9 +224,9 @@ class UserIdeasViewDetails extends JViewLegacy
         // Add title before or after Site Name
         if (!$title) {
             $title = $app->get('sitename');
-        } elseif ($app->get('sitename_pagetitles', 0) == 1) {
+        } elseif ((int)$app->get('sitename_pagetitles', 0) === 1) {
             $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-        } elseif ($app->get('sitename_pagetitles', 0) == 2) {
+        } elseif ((int)$app->get('sitename_pagetitles', 0) === 2) {
             $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
         }
 
@@ -266,29 +261,29 @@ class UserIdeasViewDetails extends JViewLegacy
         // Get users IDs
         $usersIds = array();
         foreach ($this->comments as $comment) {
-            if (!empty($comment->user_id)) {
+            if ($comment->user_id > 0) {
                 $usersIds[] = $comment->user_id;
             }
         }
 
         // Add the ID of item owner.
-        if (!empty($this->item->user_id)) {
+        if ($this->item->user_id > 0) {
             $usersIds[] = $this->item->user_id;
         }
         $usersIds = array_filter(array_unique($usersIds));
 
         // If there are no users, do not continue.
-        if (!empty($usersIds)) {
+        if (count($usersIds) > 0) {
 
             $this->integrationOptions = array(
-                "size" => $params->get("integration_avatars_size", "small"),
-                "default" => $params->get("integration_avatars_default", "/media/com_userideas/images/no-profile.png")
+                'size' => $params->get('integration_avatars_size', 'small'),
+                'default' => $params->get('integration_avatars_default', '/media/com_userideas/images/no-profile.png')
             );
 
             $socialProfilesBuilder = new Prism\Integration\Profiles\Builder(
                 array(
-                    "social_platform" => $params->get("integration_social_platform"),
-                    "users_ids"       => $usersIds
+                    'social_platform' => $params->get('integration_social_platform'),
+                    'users_ids'       => $usersIds
                 )
             );
 

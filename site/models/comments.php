@@ -37,7 +37,7 @@ class UserIdeasModelComments extends JModelList
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
-        $value = $app->input->getInt("id");
+        $value = $app->input->getInt('id');
         $this->setState($this->getName() . '.id', $value);
 
         // Load the component parameters.
@@ -90,8 +90,8 @@ class UserIdeasModelComments extends JModelList
                 'b.name AS author'
             )
         );
-        $query->from($db->quoteName('#__uideas_comments', "a"));
-        $query->leftJoin($db->quoteName('#__users', "b") . ' ON a.user_id = b.id');
+        $query->from($db->quoteName('#__uideas_comments', 'a'));
+        $query->leftJoin($db->quoteName('#__users', 'b') . ' ON a.user_id = b.id');
 
         // Filter by item
         $itemId = $this->getState($this->getName() . '.id');

@@ -10,9 +10,9 @@
 // no direct access
 defined('_JEXEC') or die;
 
-jimport("Prism.init");
-jimport("UserIdeas.init");
-jimport("EmailTemplates.init");
+jimport('Prism.init');
+jimport('UserIdeas.init');
+jimport('EmailTemplates.init');
 
 /**
  * This plugin send notification mails to the administrator.
@@ -22,14 +22,6 @@ jimport("EmailTemplates.init");
  */
 class plgContentUserIdeasAdminMail extends JPlugin
 {
-    /**
-     * A JRegistry object holding the parameters for the plugin
-     *
-     * @var    Joomla\Registry\Registry
-     * @since  1.5
-     */
-    public $params = null;
-
     /**
      * This method is executed when someone create an item.
      *
@@ -48,16 +40,16 @@ class plgContentUserIdeasAdminMail extends JPlugin
             return null;
         }
 
-        if (strcmp("com_userideas.form", $context) != 0) {
+        if (strcmp('com_userideas.form', $context) !== 0) {
             return null;
         }
 
-        $emailId = $this->params->get("send_when_post_email_id", 0);
+        $emailId = (int)$this->params->get('send_when_post_email_id', 0);
 
         // Check for enabled option for sending mail
         // when user create a item.
-        if (!empty($emailId) and ($isNew and $row->get("id"))) {
-            $success = $this->sendMail($emailId, $row->get("title"), $row->getSlug(), $row->getCategorySlug());
+        if ($emailId > 0 and ($isNew and $row->get('id'))) {
+            $success = $this->sendMail($emailId, $row->get('title'), $row->getSlug(), $row->getCategorySlug());
             if (!$success) {
                 return false;
             }
@@ -84,18 +76,18 @@ class plgContentUserIdeasAdminMail extends JPlugin
             return null;
         }
 
-        if (strcmp("com_userideas.comment", $context) != 0) {
+        if (strcmp('com_userideas.comment', $context) !== 0) {
             return null;
         }
 
-        $emailId = $this->params->get("post_comment_email_id", 0);
+        $emailId = (int)$this->params->get('post_comment_email_id', 0);
 
         // Check for enabled option for sending mail
         // when user sends a comment.
-        if (!empty($emailId) and ($isNew and !empty($row->id))) {
+        if ($emailId > 0 and ($isNew and $row->id > 0)) {
 
             $item = new UserIdeas\Item\Item(JFactory::getDbo());
-            $item->load($row->get("item_id"));
+            $item->load($row->get('item_id'));
 
             $success = $this->sendMail($emailId, $item->getTitle(), $item->getSlug(), $item->getCategorySlug());
             if (!$success) {
@@ -115,13 +107,13 @@ class plgContentUserIdeasAdminMail extends JPlugin
         /** @var $app JApplicationSite */
 
         $uri     = JUri::getInstance();
-        $website = $uri->toString(array("scheme", "host"));
+        $website = $uri->toString(array('scheme', 'host'));
 
         $data = array(
-            "site_name"  => $app->get("sitename"),
-            "site_url"   => JUri::root(),
-            "item_title" => $title,
-            "item_url"   => $website . JRoute::_(UserIdeasHelperRoute::getDetailsRoute($itemId, $categoryId)),
+            'site_name'  => $app->get('sitename'),
+            'site_url'   => JUri::root(),
+            'item_title' => $title,
+            'item_url'   => $website . JRoute::_(UserIdeasHelperRoute::getDetailsRoute($itemId, $categoryId)),
         );
 
         $email = new EmailTemplates\Email();
@@ -130,33 +122,33 @@ class plgContentUserIdeasAdminMail extends JPlugin
 
         // Set sender name and email.
         if (!$email->getSenderName()) {
-            $email->setSenderName($app->get("fromname"));
+            $email->setSenderName($app->get('fromname'));
         }
         if (!$email->getSenderEmail()) {
-            $email->setSenderEmail($app->get("mailfrom"));
+            $email->setSenderEmail($app->get('mailfrom'));
         }
 
         // Prepare recipient data.
-        $componentParams = JComponentHelper::getParams("com_userideas");
+        $componentParams = JComponentHelper::getParams('com_userideas');
         /** @var  $componentParams Joomla\Registry\Registry */
 
-        $recipientId = $componentParams->get("administrator_id");
-        if (!empty($recipientId)) {
+        $recipientId = (int)$componentParams->get('administrator_id');
+        if ($recipientId > 0) {
             $recipient     = JFactory::getUser($recipientId);
-            $recipientName = $recipient->get("name");
-            $recipientMail = $recipient->get("email");
+            $recipientName = $recipient->get('name');
+            $recipientMail = $recipient->get('email');
         } else {
-            $recipientName = $app->get("fromname");
-            $recipientMail = $app->get("mailfrom");
+            $recipientName = $app->get('fromname');
+            $recipientMail = $app->get('mailfrom');
         }
 
         // Prepare data for parsing
-        $data["sender_name"]     = $email->getSenderName();
-        $data["sender_email"]    = $email->getSenderEmail();
-        $data["recipient_name"]  = $recipientName;
-        $data["recipient_email"] = $recipientMail;
+        $data['sender_name']     = $email->getSenderName();
+        $data['sender_email']    = $email->getSenderEmail();
+        $data['recipient_name']  = $recipientName;
+        $data['recipient_email'] = $recipientMail;
 
-        $emailMode = $this->params->get("email_mode", "plain");
+        $emailMode = $this->params->get('email_mode', 'plain');
 
         // Parse data
         $email->parse($data);
@@ -164,7 +156,7 @@ class plgContentUserIdeasAdminMail extends JPlugin
         $body    = $email->getBody($emailMode);
 
         $mailer = JFactory::getMailer();
-        if (strcmp("html", $emailMode) == 0) { // Send as HTML message
+        if (strcmp('html', $emailMode) === 0) { // Send as HTML message
             $return = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, Prism\Constants::MAIL_MODE_HTML);
         } else { // Send as plain text.
             $return = $mailer->sendMail($email->getSenderEmail(), $email->getSenderName(), $recipientMail, $subject, $body, Prism\Constants::MAIL_MODE_PLAIN);
@@ -172,7 +164,7 @@ class plgContentUserIdeasAdminMail extends JPlugin
 
         // Check for an error.
         if ($return !== true) {
-            $error = JText::_("PLG_CONTENT_USERIDEASADMINMAIL_ERROR_MAIL_SENDING_USER");
+            $error = JText::_('PLG_CONTENT_USERIDEASADMINMAIL_ERROR_MAIL_SENDING_USER');
             JLog::add($error);
             $result = false;
         }

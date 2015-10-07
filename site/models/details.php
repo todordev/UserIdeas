@@ -42,7 +42,7 @@ class UserIdeasModelDetails extends JModelItem
         /** @var $app JApplicationSite */
 
         // Get the pk of the record from the request.
-        $value = $app->input->getInt("id");
+        $value = $app->input->getInt('id');
         $this->setState($this->getName() . '.id', $value);
 
         // Load the parameters.
@@ -68,17 +68,17 @@ class UserIdeasModelDetails extends JModelItem
 
         $query->select(
             'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, ' .
-            $query->concatenate(array("a.id", "a.alias"), "-") . " AS slug, " .
+            $query->concatenate(array('a.id', 'a.alias'), '-') . ' AS slug, ' .
             'b.name, b.username, ' . 'c.title AS category, ' .
-            $query->concatenate(array("c.id", "c.alias"), "-") . " AS catslug, " .
+            $query->concatenate(array('c.id', 'c.alias'), '-') . ' AS catslug, ' .
             'd.name AS status_name, d.params AS status_params, d.default AS status_default'
         );
 
-        $query->from($db->quoteName('#__uideas_items', "a"));
-        $query->leftJoin($db->quoteName('#__users', "b") . ' ON a.user_id = b.id');
-        $query->leftJoin($db->quoteName('#__categories', "c") . ' ON a.catid = c.id');
-        $query->leftJoin($db->quoteName('#__uideas_statuses', "d") . ' ON a.status_id = d.id');
-        $query->where("a.id = " . (int)$id);
+        $query->from($db->quoteName('#__uideas_items', 'a'));
+        $query->leftJoin($db->quoteName('#__users', 'b') . ' ON a.user_id = b.id');
+        $query->leftJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id');
+        $query->leftJoin($db->quoteName('#__uideas_statuses', 'd') . ' ON a.status_id = d.id');
+        $query->where('a.id = ' . (int)$id);
 
         $db->setQuery($query);
 
@@ -94,10 +94,10 @@ class UserIdeasModelDetails extends JModelItem
 
     protected function prepareStatus(&$item)
     {
-        if (!empty($item->status_params)) {
+        if (JString::strlen($item->status_params) > 0) {
             $statusParams = json_decode($item->status_params, true);
 
-            if (!empty($statusParams)) {
+            if (is_array($statusParams)) {
                 $item->status_params = $statusParams;
             } else {
                 $item->status_params = null;
@@ -105,10 +105,10 @@ class UserIdeasModelDetails extends JModelItem
         }
 
         $statusData = array(
-            "id"      => $item->status_id,
-            "name"    => $item->status_name,
-            "default" => $item->status_default,
-            "params"  => $item->status_params
+            'id'      => $item->status_id,
+            'name'    => $item->status_name,
+            'default' => $item->status_default,
+            'params'  => $item->status_params
         );
 
         $item->status = new UserIdeas\Status\Status();
@@ -126,9 +126,9 @@ class UserIdeasModelDetails extends JModelItem
         $query = $db->getQuery(true);
 
         $query
-            ->update($db->quoteName("#__uideas_items"))
-            ->set($db->quoteName("hits") . " = hits + 1")
-            ->where($db->quoteName("id") . "=" . (int)$id);
+            ->update($db->quoteName('#__uideas_items'))
+            ->set($db->quoteName('hits') . ' = hits + 1')
+            ->where($db->quoteName('id') . '=' . (int)$id);
 
         $db->setQuery($query);
         $db->execute();

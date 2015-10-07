@@ -49,19 +49,19 @@ class Vote extends Table
 
         $query
             ->select(
-                "a.id, a.item_id, a.user_id, a.votes, a.record_date, " .
-                "b.title, c.name AS user "
+                'a.id, a.item_id, a.user_id, a.votes, a.record_date, ' .
+                'b.title, c.name AS user '
             )
-            ->from($this->db->quoteName("#__uideas_votes", "a"))
-            ->leftJoin($this->db->quoteName("#__uideas_statuses", "b") . " ON a.item_id = b.id")
-            ->leftJoin($this->db->quoteName("#__users", "c") . " ON a.user_id = c.id");
+            ->from($this->db->quoteName('#__uideas_votes', 'a'))
+            ->leftJoin($this->db->quoteName('#__uideas_statuses', 'b') . ' ON a.item_id = b.id')
+            ->leftJoin($this->db->quoteName('#__users', 'c') . ' ON a.user_id = c.id');
 
         if (is_array($keys)) {
             foreach ($keys as $key => $value) {
-                $query->where($this->db->quoteName("a.".$key) ." = ". $this->db->quote($value));
+                $query->where($this->db->quoteName('a.'.$key) .' = '. $this->db->quote($value));
             }
         } else {
-            $query->where("a.id = " . (int)$keys);
+            $query->where('a.id = ' . (int)$keys);
         }
 
         $this->db->setQuery($query);
@@ -92,17 +92,17 @@ class Vote extends Table
         $query = $this->db->getQuery(true);
 
         $query
-            ->set($this->db->quoteName("item_id") . "=" . $this->db->quote($this->item_id))
-            ->set($this->db->quoteName("user_id") . "=" . $this->db->quote($this->user_id))
-            ->set($this->db->quoteName("hash") . "=" . $this->db->quote($this->hash))
-            ->set($this->db->quoteName("votes") . "=" . $this->db->quote($this->votes));
+            ->set($this->db->quoteName('item_id') . '=' . $this->db->quote($this->item_id))
+            ->set($this->db->quoteName('user_id') . '=' . $this->db->quote($this->user_id))
+            ->set($this->db->quoteName('hash') . '=' . $this->db->quote($this->hash))
+            ->set($this->db->quoteName('votes') . '=' . $this->db->quote($this->votes));
 
         if (!empty($this->id)) { // Update
             $query
-                ->update($this->db->quoteName("#__uideas_votes"))
-                ->where($this->db->quoteName("id") . "=" . (int)$this->id);
+                ->update($this->db->quoteName('#__uideas_votes'))
+                ->where($this->db->quoteName('id') . '=' . (int)$this->id);
         } else {
-            $query->insert($this->db->quoteName("#__uideas_votes"));
+            $query->insert($this->db->quoteName('#__uideas_votes'));
         }
 
         $this->db->setQuery($query);

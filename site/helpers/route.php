@@ -95,7 +95,7 @@ abstract class UserIdeasHelperRoute
         //Create the link
         $link = 'index.php?option=com_userideas&view=form';
 
-        if (!empty($id)) {
+        if ($id > 0) {
             $link .= '&id=' . $id;
         }
 
@@ -187,7 +187,7 @@ abstract class UserIdeasHelperRoute
         }
 
         if (!empty($statusId)) {
-            $link .= "&filter_status=" . (int)$statusId;
+            $link .= '&filter_status=' . (int)$statusId;
         }
 
         return $link;
@@ -215,7 +215,7 @@ abstract class UserIdeasHelperRoute
 
             if ($items) {
                 foreach ($items as $item) {
-                    if (isset($item->query) && isset($item->query['view'])) {
+                    if (isset($item->query) and isset($item->query['view'])) {
                         $view = $item->query['view'];
 
                         if (!isset(self::$lookup[$view])) {
@@ -258,7 +258,7 @@ abstract class UserIdeasHelperRoute
 
     /**
      *
-     * Prepeare categories path to the segments.
+     * Prepare categories path to the segments.
      * We use this method in the router "UserIdeasParseRoute".
      *
      * @param integer $catId Category Id
@@ -278,7 +278,7 @@ abstract class UserIdeasHelperRoute
 
             $array = array();
             foreach ($path as $id) {
-                if ((int)$id == (int)$mId) {
+                if ((int)$id === (int)$mId) {
                     break;
                 }
 
@@ -296,7 +296,7 @@ abstract class UserIdeasHelperRoute
      *
      * @param integer $id
      *
-     * @return array
+     * @return stdClass
      */
     public static function getItem($id)
     {
@@ -305,9 +305,9 @@ abstract class UserIdeasHelperRoute
         $query = $db->getQuery(true);
 
         $query
-            ->select("a.alias, a.catid")
-            ->from($query->quoteName("#__uideas_items", "a"))
-            ->where("a.id = " . (int)$id);
+            ->select('a.alias, a.catid')
+            ->from($query->quoteName('#__uideas_items', 'a'))
+            ->where('a.id = ' . (int)$id);
 
         $db->setQuery($query);
         $result = $db->loadObject();

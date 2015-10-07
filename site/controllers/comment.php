@@ -25,7 +25,7 @@ class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    object    The model.
+     * @return    UserIdeasModelComment    The model.
      * @since    1.5
      */
     public function getModel($name = 'Comment', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
@@ -44,18 +44,18 @@ class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
 
         // Get the data from the form POST
         $data   = $app->input->post->get('jform', array(), 'array');
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "item_id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, 'item_id');
 
         // Prepare response data
         $redirectOptions = array(
-            "view" => "details",
-            "id"   => $itemId,
+            'view' => 'details',
+            'id'   => $itemId,
         );
 
         // Check for valid user id
         if (!$this->allowSave($data)) {
             $redirectOptions = array(
-                "force_direction" => "index.php?option=com_users&view=login"
+                'force_direction' => 'index.php?option=com_users&view=login'
             );
             $this->displayNotice(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), $redirectOptions);
 
@@ -69,7 +69,7 @@ class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_('COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED'), 500);
         }
 
         // Test if the data is valid.
@@ -95,11 +95,11 @@ class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
         }
 
         $redirectOptions = array(
-            "force_direction" => UserIdeasHelperRoute::getDetailsRoute($item->getSlug(), $item->getCategorySlug())
+            'force_direction' => UserIdeasHelperRoute::getDetailsRoute($item->getSlug(), $item->getCategorySlug())
         );
 
         // Redirect to next page
-        $this->displayMessage(JText::_("COM_USERIDEAS_COMMENT_SENT_SUCCESSFULLY"), $redirectOptions);
+        $this->displayMessage(JText::_('COM_USERIDEAS_COMMENT_SENT_SUCCESSFULLY'), $redirectOptions);
 
     }
 
@@ -144,7 +144,7 @@ class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
 
         // Validate item owner.
         $itemId = Joomla\Utilities\ArrayHelper::getValue($data, $key);
-        $userId = $user->get("id");
+        $userId = $user->get('id');
 
         // Validate item owner.
         $itemValidator = new UserIdeas\Validator\Comment\Owner(JFactory::getDbo(), $itemId, $userId);

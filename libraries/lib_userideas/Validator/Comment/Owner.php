@@ -66,10 +66,10 @@ class Owner extends Validator
         $query = $this->db->getQuery(true);
 
         $query
-            ->select("COUNT(*)")
-            ->from($this->db->quoteName("#__uideas_comments", "a"))
-            ->where("a.id = " . (int)$this->itemId)
-            ->where("a.user_id = " . (int)$this->userId);
+            ->select('COUNT(*)')
+            ->from($this->db->quoteName('#__uideas_comments', 'a'))
+            ->where('a.id = ' . (int)$this->itemId)
+            ->where('a.user_id = ' . (int)$this->userId);
 
         $this->db->setQuery($query, 0, 1);
         $result = $this->db->loadResult();

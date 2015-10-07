@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 class UserIdeasController extends JControllerLegacy
 {
-    protected $cacheableViews = array("category", "items");
+    protected $cacheableViews = array('category', 'items');
 
     /**
      * Method to display a view.
@@ -31,10 +31,10 @@ class UserIdeasController extends JControllerLegacy
         $viewName = $this->input->getCmd('view', 'category');
         $this->input->set('view', $viewName);
 
-        JHtml::stylesheet("com_userideas/frontend.style.css", false, true, false);
+        JHtml::stylesheet('com_userideas/frontend.style.css', false, true, false);
 
         // Cache some views.
-        if (in_array($viewName, $this->cacheableViews)) {
+        if (in_array($viewName, $this->cacheableViews, true)) {
             $cachable = true;
         }
 

@@ -36,45 +36,37 @@ class UserIdeasViewForm extends JViewLegacy
     protected $option;
 
     protected $pageclass_sfx;
-
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->getCmd("option");
-    }
-
-    /**
-     * Display the view
-     */
+    
     public function display($tpl = null)
     {
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
-        // Initialise variables
+        $this->option = JFactory::getApplication()->input->getCmd('option');
+        
         $this->state  = $this->get('State');
         $this->form   = $this->get('Form');
-        $this->params = $this->state->get("params");
+        $this->params = $this->state->get('params');
 
         $user   = JFactory::getUser();
-        $userId = $user->get("id");
+        $userId = $user->get('id');
 
         $model = $this->getModel();
 
         if (!$user->authorise('core.create', 'com_userideas')) {
             $returnUrl = UserIdeasHelperRoute::getFormRoute();
 
-            $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION"), "notice");
+            $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), 'notice');
             $app->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($returnUrl), false));
             return;
         }
 
-        $itemId = $this->state->get("form.id");
-        if (!empty($itemId) and !$model->canEditOwn($itemId, $userId)) {
+        $itemId = (int)$this->state->get('form.id');
+        if ($itemId > 0 and !$model->canEditOwn($itemId, $userId)) {
 
             $returnUrl = UserIdeasHelperRoute::getFormRoute();
 
-            $app->enqueueMessage(JText::_("COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION"), "notice");
+            $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), 'notice');
             $app->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($returnUrl), false));
 
             return;
@@ -94,17 +86,17 @@ class UserIdeasViewForm extends JViewLegacy
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
-        $this->disabledButton = "";
+        $this->disabledButton = '';
 
         // Check for maintenance (debug) state
-        $params          = $this->state->get("params");
-        $this->debugMode = $params->get("debug_item_adding_disabled", 0);
+        $params          = $this->state->get('params');
+        $this->debugMode = $params->get('debug_item_adding_disabled', 0);
         if ($this->debugMode) {
-            $msg = JString::trim($params->get("debug_disabled_functionality_msg"));
+            $msg = JString::trim($params->get('debug_disabled_functionality_msg'));
             if (!$msg) {
-                $msg = JText::_("COM_USERIDEAS_DEBUG_MODE_DEFAULT_MSG");
+                $msg = JText::_('COM_USERIDEAS_DEBUG_MODE_DEFAULT_MSG');
             }
-            $app->enqueueMessage($msg, "notice");
+            $app->enqueueMessage($msg, 'notice');
 
             $this->disabledButton = 'disabled="disabled"';
         }
@@ -137,7 +129,7 @@ class UserIdeasViewForm extends JViewLegacy
         $title = $menu->title;
         if (!$title) {
             $title = $app->get('sitename');
-        } elseif ($app->get('sitename_pagetitles', 0)) { // Set site name if it is necessary ( the option 'sitename' = 1 )
+        } elseif ((int)$app->get('sitename_pagetitles', 0)) { // Set site name if it is necessary ( the option 'sitename' = 1 )
             $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
         }
 
@@ -147,17 +139,17 @@ class UserIdeasViewForm extends JViewLegacy
         $this->document->setDescription($this->params->get('menu-meta_description'));
 
         // Meta keywords
-        $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+        $this->document->setMetaData('keywords', $this->params->get('menu-meta_keywords'));
 
         // Add current layout into breadcrumbs
         $pathway = $app->getPathway();
-        $pathway->addItem(JText::_("COM_USERIDEAS_PATHWAY_FORM_TITLE"));
+        $pathway->addItem(JText::_('COM_USERIDEAS_PATHWAY_FORM_TITLE'));
 
         // Scripts
         JHtml::_('bootstrap.framework');
         JHtml::_('bootstrap.tooltip');
 
-        if ($this->params->get("enable_chosen", 0)) {
+        if ($this->params->get('enable_chosen', 0)) {
             JHtml::_('formbehavior.chosen', '.js-uideas-catid-select');
         }
 

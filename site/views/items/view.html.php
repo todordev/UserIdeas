@@ -42,31 +42,27 @@ class UserIdeasViewItems extends JViewLegacy
 
     protected $pageclass_sfx;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
-
     public function display($tpl = null)
     {
+        $this->option     = JFactory::getApplication()->input->get("option");
+        
         $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
 
         $this->params = $this->state->get('params');
 
-        $this->comments = $this->get("Comments");
+        $this->comments = $this->get('Comments');
 
         $user = JFactory::getUser();
-        $this->userId = $user->get("id");
+        $this->userId = $user->get('id');
 
         // Set permission state. Is it possible to be edited items?
         $this->canEdit = $user->authorise('core.edit.own', 'com_userideas');
 
         $this->items = UserIdeasHelper::prepareStatuses($this->items);
 
-        $this->commentsEnabled = $this->params->get("comments_enabled", 1);
+        $this->commentsEnabled = $this->params->get('comments_enabled', 1);
 
         // Prepare integration. Load avatars and profiles.
         $this->prepareIntegration($this->params);
@@ -97,16 +93,16 @@ class UserIdeasViewItems extends JViewLegacy
 
         // Meta keywords
         if ($this->params->get('menu-meta_keywords')) {
-            $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+            $this->document->setMetaData('keywords', $this->params->get('menu-meta_keywords'));
         }
 
         if ($this->params->get('robots')) {
-            $this->document->setMetadata('robots', $this->params->get('robots'));
+            $this->document->setMetaData('robots', $this->params->get('robots'));
         }
 
         // Scripts
         JHtml::_('bootstrap.tooltip');
-        JHtml::_("Prism.ui.pnotify");
+        JHtml::_('Prism.ui.pnotify');
     }
 
     private function preparePageHeading()
@@ -138,9 +134,9 @@ class UserIdeasViewItems extends JViewLegacy
         // Add title before or after Site Name
         if (!$title) {
             $title = $app->get('sitename');
-        } elseif ($app->get('sitename_pagetitles', 0) == 1) {
+        } elseif ((int)$app->get('sitename_pagetitles', 0) === 1) {
             $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-        } elseif ($app->get('sitename_pagetitles', 0) == 2) {
+        } elseif ((int)$app->get('sitename_pagetitles', 0) === 2) {
             $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
         }
 
@@ -157,24 +153,24 @@ class UserIdeasViewItems extends JViewLegacy
         // Get users IDs
         $usersIds = array();
         foreach ($this->items as $item) {
-            if (!empty($item->user_id)) {
+            if ($item->user_id) {
                 $usersIds[] = $item->user_id;
             }
         }
         $usersIds = array_filter(array_unique($usersIds));
 
         // If there are no users, do not continue.
-        if (!empty($usersIds)) {
+        if (count($usersIds) > 0) {
 
             $this->integrationOptions = array(
-                "size" => $params->get("integration_avatars_size", "small"),
-                "default" => $params->get("integration_avatars_default", "/media/com_userideas/images/no-profile.png")
+                'size' => $params->get('integration_avatars_size', 'small'),
+                'default' => $params->get('integration_avatars_default', '/media/com_userideas/images/no-profile.png')
             );
 
             $socialProfilesBuilder = new Prism\Integration\Profiles\Builder(
                 array(
-                    "social_platform" => $params->get("integration_social_platform"),
-                    "users_ids"       => $usersIds
+                    'social_platform' => $params->get('integration_social_platform'),
+                    'users_ids'       => $usersIds
                 )
             );
 

@@ -41,13 +41,13 @@ class Latest extends Items
      */
     public function load($options = array())
     {
-        $limit = (isset($options["limit"])) ? (int)$options["limit"] : 5;
+        $limit = (array_key_exists('limit', $options)) ? (int)$options['limit'] : 5;
 
         $query = $this->getQuery();
 
         $query
-            ->where("a.published = 1")
-            ->order("a.record_date DESC");
+            ->where('a.published = 1')
+            ->order('a.record_date DESC');
 
         $this->db->setQuery($query, 0, (int)$limit);
 
