@@ -64,7 +64,7 @@ class UserIdeasObserverVote extends JTableObserver
     {
         $db = $this->table->getDbo();
 
-        $item = new UserIdeas\Item\Item($db);
+        $item = new Userideas\Item\Item($db);
         $item->load($this->table->item_id);
         $item->decreaseVote($this->table->votes);
     }

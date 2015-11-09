@@ -7,7 +7,7 @@
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
-namespace UserIdeas\Category;
+namespace Userideas\Category;
 
 defined('_JEXEC') or die;
 
@@ -27,7 +27,7 @@ class Categories extends \JCategories
      *     "key" => 'id'
      * );
      *
-     * $categories   = new UserIdeas\Category\Categories($options);
+     * $categories   = new Userideas\Category\Categories($options);
      * </code>
      *
      * @param array $options
@@ -44,7 +44,7 @@ class Categories extends \JCategories
      * This method sets a database driver.
      *
      * <code>
-     * $categories   = new UserIdeas\Category\Categories();
+     * $categories   = new Userideas\Category\Categories();
      * $categories->setDb(\JFactory::getDbo());
      * </code>
      *

@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 jimport('Prism.init');
-jimport('UserIdeas.init');
+jimport('Userideas.init');
 
 /**
  * Method to build Route
@@ -37,7 +37,7 @@ function UserIdeasBuildRoute(&$query)
     $mOption = (empty($menuItem->query['option'])) ? null : $menuItem->query['option'];
     $mView   = (empty($menuItem->query['view'])) ? null : $menuItem->query['view'];
 //	$mCatid	    = (empty($menuItem->query['catid']))  ? null : $menuItem->query['catid'];
-    $mId = (empty($menuItem->query['id'])) ? null : $menuItem->query['id'];
+    $mId     = (empty($menuItem->query['id'])) ? null : (int)$menuItem->query['id'];
 
     // If is set view and Itemid missing, we have to put the view to the segments
     if (isset($query['view'])) {
@@ -48,14 +48,14 @@ function UserIdeasBuildRoute(&$query)
         }
 
         // We need to keep the view for forms since they never have their own menu item
-        if ($view != 'form') {
+        if ($view !== 'form') {
             unset($query['view']);
         }
     };
 
 
     // are we dealing with a category that is attached to a menu item?
-    if (isset($view) and ($mView == $view) and (isset($query['id'])) and ($mId == intval($query['id']))) {
+    if (isset($view) and ($mView === $view) and (isset($query['id'])) and ($mId === (int)$query['id'])) {
         unset($query['view'], $query['catid'], $query['id']);
 
         return $segments;
@@ -80,6 +80,16 @@ function UserIdeasBuildRoute(&$query)
                 break;
 
             case 'category':
+
+                // If slug missing, generate one.
+                if (false === strpos($query['id'], ':')) {
+                    $category = UserIdeasHelperRoute::getCategory((int)$query['id']);
+
+                    if (!empty($category['slug'])) {
+                        $query['id'] = $category['slug'];
+                    }
+                }
+
                 $segments[] = $query['id'];
                 unset($query['id']);
                 break;
@@ -90,8 +100,8 @@ function UserIdeasBuildRoute(&$query)
 
     // Layout
     if (isset($query['layout'])) {
-        if (!empty($query['Itemid']) && isset($menuItem->query['layout'])) {
-            if ($query['layout'] == $menuItem->query['layout']) {
+        if (!empty($query['Itemid']) and isset($menuItem->query['layout'])) {
+            if ($query['layout'] === $menuItem->query['layout']) {
                 unset($query['layout']);
             }
         } else {
@@ -157,9 +167,9 @@ function UserIdeasParseRoute($segments)
         } else {
 
             $idea = UserIdeasHelperRoute::getItem($id);
-            if ($idea and ($idea->alias === $alias)) {
+            if (count($idea) > 0 and ($idea['alias'] === $alias)) {
                 $vars['view']  = 'details';
-                $vars['catid'] = (int)$idea->catid;
+                $vars['catid'] = (int)$idea['catid'];
                 $vars['id']    = (int)$id;
 
                 return $vars;

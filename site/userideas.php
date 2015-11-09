@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 jimport('Prism.init');
-jimport('UserIdeas.init');
+jimport('Userideas.init');
 
 $controller = JControllerLegacy::getInstance('UserIdeas');
 $controller->execute(JFactory::getApplication()->input->getCmd('task'));

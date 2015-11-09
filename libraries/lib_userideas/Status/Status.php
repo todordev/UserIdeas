@@ -7,7 +7,7 @@
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
-namespace UserIdeas\Status;
+namespace Userideas\Status;
 
 use Prism\Database\TableImmutable;
 
@@ -31,7 +31,7 @@ class Status extends TableImmutable
      * <code>
      * $statusId = 1;
      *
-     * $status   = new UserIdeas\Status\Status(\JFactory::getDbo());
+     * $status   = new Userideas\Status\Status(\JFactory::getDbo());
      * $status->load($statusId);
      * </code>
      * 
@@ -73,7 +73,7 @@ class Status extends TableImmutable
      * <code>
      * $statusId = 1;
      *
-     * $status   = new UserIdeas\Status\Status(\JFactory::getDbo());
+     * $status   = new Userideas\Status\Status(\JFactory::getDbo());
      * $status->load($statusId);
      *
      * if (!$status->getId()) {
@@ -94,7 +94,7 @@ class Status extends TableImmutable
      * <code>
      * $statusId = 1;
      *
-     * $status   = new UserIdeas\Status\Status(\JFactory::getDbo());
+     * $status   = new Userideas\Status\Status(\JFactory::getDbo());
      * $status->load($statusId);
      *
      * $name = $status->getName();
@@ -113,7 +113,7 @@ class Status extends TableImmutable
      * <code>
      * $statusId = 1;
      *
-     * $status   = new UserIdeas\Status\Status(\JFactory::getDbo());
+     * $status   = new Userideas\Status\Status(\JFactory::getDbo());
      * $status->load($statusId);
      *
      * if ($status->isDefault()) {

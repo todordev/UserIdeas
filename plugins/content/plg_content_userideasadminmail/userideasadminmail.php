@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 jimport('Prism.init');
-jimport('UserIdeas.init');
+jimport('Userideas.init');
 jimport('EmailTemplates.init');
 
 /**
@@ -86,7 +86,7 @@ class plgContentUserIdeasAdminMail extends JPlugin
         // when user sends a comment.
         if ($emailId > 0 and ($isNew and $row->id > 0)) {
 
-            $item = new UserIdeas\Item\Item(JFactory::getDbo());
+            $item = new Userideas\Item\Item(JFactory::getDbo());
             $item->load($row->get('item_id'));
 
             $success = $this->sendMail($emailId, $item->getTitle(), $item->getSlug(), $item->getCategorySlug());

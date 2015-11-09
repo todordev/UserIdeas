@@ -7,7 +7,7 @@
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
-namespace UserIdeas\Item;
+namespace Userideas\Item;
 
 use Prism\Database\Table;
 
@@ -45,7 +45,7 @@ class Item extends Table
      * <code>
      * $itemId = 1;
      *
-     * $item   = new UserIdeas\Item\Item(\JFactory::getDbo());
+     * $item   = new Userideas\Item\Item(\JFactory::getDbo());
      * $item->load($itemId);
      * </code>
      *
@@ -97,7 +97,7 @@ class Item extends Table
      *      "caitid"        => 1
      * );
      *
-     * $item   = new UserIdeas\Item\Item();
+     * $item   = new Userideas\Item\Item();
      * $item->bind($data);
      * $item->store();
      * </code>
@@ -135,7 +135,7 @@ class Item extends Table
      * <code>
      * $itemId = 1;
      *
-     * $item   = new UserIdeas\Item\Item(\JFactory::getDbo());
+     * $item   = new Userideas\Item\Item(\JFactory::getDbo());
      * $item->load($itemId);
      * $item->vote(1);
      * </code>
@@ -154,7 +154,7 @@ class Item extends Table
      * <code>
      * $itemId = 1;
      *
-     * $item   = new UserIdeas\Item\Item(\JFactory::getDbo());
+     * $item   = new Userideas\Item\Item(\JFactory::getDbo());
      * $item->load($itemId);
      * $item->decreaseVote(1);
      * </code>
@@ -190,7 +190,7 @@ class Item extends Table
      * <code>
      * $itemId = 1;
      *
-     * $item   = new UserIdeas\Item\Item(\JFactory::getDbo());
+     * $item   = new Userideas\Item\Item(\JFactory::getDbo());
      * $item->load($itemId);
      *
      * if (!$item->getId()) {
@@ -211,7 +211,7 @@ class Item extends Table
      * <code>
      * $itemId = 1;
      *
-     * $item   = new UserIdeas\Item\Item(\JFactory::getDbo());
+     * $item   = new Userideas\Item\Item(\JFactory::getDbo());
      * $item->load($itemId);
      *
      * $title  = $item->getTitle();
@@ -230,7 +230,7 @@ class Item extends Table
      * <code>
      * $itemId = 1;
      *
-     * $item   = new UserIdeas\Item\Item(\JFactory::getDbo());
+     * $item   = new Userideas\Item\Item(\JFactory::getDbo());
      * $item->load($itemId);
      *
      * $votes  = $item->getVotes();
@@ -249,7 +249,7 @@ class Item extends Table
      * <code>
      * $itemId = 1;
      *
-     * $item   = new UserIdeas\Item\Item(\JFactory::getDbo());
+     * $item   = new Userideas\Item\Item(\JFactory::getDbo());
      * $item->load($itemId);
      *
      * $slug  = $item->getSlug();
@@ -268,7 +268,7 @@ class Item extends Table
      * <code>
      * $itemId = 1;
      *
-     * $item   = new UserIdeas\Item\Item(\JFactory::getDbo());
+     * $item   = new Userideas\Item\Item(\JFactory::getDbo());
      * $item->load($itemId);
      *
      * $categorySlug  = $item->getCategorySlug();
@@ -287,7 +287,7 @@ class Item extends Table
      * <code>
      * $itemId = 1;
      *
-     * $item   = new UserIdeas\Item\Item(\JFactory::getDbo());
+     * $item   = new Userideas\Item\Item(\JFactory::getDbo());
      * $item->load($itemId);
      *
      * $categoryId  = $item->getCategoryId();
@@ -306,7 +306,7 @@ class Item extends Table
      * <code>
      * $itemId = 1;
      *
-     * $item   = new UserIdeas\Item\Item(\JFactory::getDbo());
+     * $item   = new Userideas\Item\Item(\JFactory::getDbo());
      * $item->load($itemId);
      *
      * $categoryName  = $item->getCategory();
@@ -325,7 +325,7 @@ class Item extends Table
      * <code>
      * $itemId = 1;
      *
-     * $item   = new UserIdeas\Item\Item(\JFactory::getDbo());
+     * $item   = new Userideas\Item\Item(\JFactory::getDbo());
      * $item->load($itemId);
      *
      * $userName  = $item->getUserName();

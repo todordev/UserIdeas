@@ -189,7 +189,7 @@ class UserIdeasModelForm extends JModelForm
             $row->set('user_id', $userId);
 
             // Set status
-            $statuses      = UserIdeas\Status\Statuses::getInstance(JFactory::getDbo());
+            $statuses      = Userideas\Status\Statuses::getInstance(JFactory::getDbo());
             $defaultStatus = $statuses->getDefault();
 
             if ($defaultStatus !== null and $defaultStatus->id > 0) {
@@ -290,7 +290,7 @@ class UserIdeasModelForm extends JModelForm
         }
 
         // Validate item owner.
-        $itemValidator = new UserIdeas\Validator\Item\Owner(JFactory::getDbo(), $itemId, $userId);
+        $itemValidator = new Userideas\Validator\Item\Owner(JFactory::getDbo(), $itemId, $userId);
         if (!$itemValidator->isValid()) {
             return false;
         }

@@ -7,7 +7,7 @@
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
-namespace UserIdeas\Vote;
+namespace Userideas\Vote;
 
 use Prism\Database\Table;
 
@@ -36,7 +36,7 @@ class Vote extends Table
      * <code>
      * $voteId = 1;
      *
-     * $vote   = new UserIdeas\Vote\Vote(\JFactory::getDbo());
+     * $vote   = new Userideas\Vote\Vote(\JFactory::getDbo());
      * $vote->load($voteId);
      * </code>
      *
@@ -82,7 +82,7 @@ class Vote extends Table
      *      "votes"      => 1
      * );
      *
-     * $vote   = new UserIdeas\Vote\Vote(\JFactory::getDbo());
+     * $vote   = new Userideas\Vote\Vote(\JFactory::getDbo());
      * $vote->bind($data);
      * $vote->store();
      * </code>
@@ -115,7 +115,7 @@ class Vote extends Table
      * <code>
      * $voteId = 1;
      *
-     * $vote   = new UserIdeas\Vote\Vote(\JFactory::getDbo());
+     * $vote   = new Userideas\Vote\Vote(\JFactory::getDbo());
      * $vote->load($voteId);
      *
      * echo $vote->getTitle();
@@ -134,7 +134,7 @@ class Vote extends Table
      * <code>
      * $voteId = 1;
      *
-     * $vote   = new UserIdeas\Vote\Vote(\JFactory::getDbo());
+     * $vote   = new Userideas\Vote\Vote(\JFactory::getDbo());
      * $vote->load($voteId);
      *
      * echo $vote->getUser();
@@ -153,7 +153,7 @@ class Vote extends Table
      * <code>
      * $voteId = 1;
      *
-     * $vote   = new UserIdeas\Vote\Vote(\JFactory::getDbo());
+     * $vote   = new Userideas\Vote\Vote(\JFactory::getDbo());
      * $vote->load($voteId);
      *
      * echo $vote->getVotes();
@@ -170,7 +170,7 @@ class Vote extends Table
      * This method sets a number of votes.
      *
      * <code>
-     * $vote   = new UserIdeas\Vote\Vote(\JFactory::getDbo());
+     * $vote   = new Userideas\Vote\Vote(\JFactory::getDbo());
      * $vote->setVotes(5);
      * </code>
      *
@@ -189,7 +189,7 @@ class Vote extends Table
      * This method sets an user ID.
      *
      * <code>
-     * $vote   = new UserIdeas\Vote\Vote(\JFactory::getDbo());
+     * $vote   = new Userideas\Vote\Vote(\JFactory::getDbo());
      * $vote->setUserId(1);
      * </code>
      *
@@ -210,7 +210,7 @@ class Vote extends Table
      * <code>
      * $hash = "HASHHF0HQ30SF09";
      *
-     * $vote   = new UserIdeas\Vote\Vote(\JFactory::getDbo());
+     * $vote   = new Userideas\Vote\Vote(\JFactory::getDbo());
      * $vote->setHash($hash);
      * </code>
      *
@@ -229,7 +229,7 @@ class Vote extends Table
      * This method sets an item ID.
      *
      * <code>
-     * $vote   = new UserIdeas\Vote\Vote(\JFactory::getDbo());
+     * $vote   = new Userideas\Vote\Vote(\JFactory::getDbo());
      * $vote->setItemId(2);
      * </code>
      *

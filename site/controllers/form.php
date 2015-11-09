@@ -154,7 +154,7 @@ class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
         $userId = $user->get('id');
 
         // Validate item owner.
-        $itemValidator = new UserIdeas\Validator\Item\Owner(JFactory::getDbo(), $itemId, $userId);
+        $itemValidator = new Userideas\Validator\Item\Owner(JFactory::getDbo(), $itemId, $userId);
         if (!$itemValidator->isValid()) {
             return false;
         }

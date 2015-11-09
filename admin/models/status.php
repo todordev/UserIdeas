@@ -73,17 +73,13 @@ class UserIdeasModelStatus extends JModelAdmin
      */
     public function save($data)
     {
-        $id      = Joomla\Utilities\ArrayHelper::getValue($data, "id");
-        $name    = Joomla\Utilities\ArrayHelper::getValue($data, "name");
-        $default = Joomla\Utilities\ArrayHelper::getValue($data, "default");
-        $params  = Joomla\Utilities\ArrayHelper::getValue($data, "params");
+        $id      = Joomla\Utilities\ArrayHelper::getValue($data, 'id');
+        $name    = Joomla\Utilities\ArrayHelper::getValue($data, 'name');
+        $default = Joomla\Utilities\ArrayHelper::getValue($data, 'default');
+        $params  = Joomla\Utilities\ArrayHelper::getValue($data, 'params');
 
         // Encode parameters to JSON format.
-        if (!empty($params)) {
-            $params = json_encode($params);
-        } else {
-            $params = null;
-        }
+        $params  = ($params !== null and is_array($params)) ? json_encode($params) : null;
 
         // Load a record from the database
         $row = $this->getTable();
@@ -91,27 +87,27 @@ class UserIdeasModelStatus extends JModelAdmin
 
         $row->load($id);
 
-        $row->set("name", $name);
-        $row->set("default", $default);
-        $row->set("params", $params);
+        $row->set('name', $name);
+        $row->set('default', $default);
+        $row->set('params', $params);
 
         $this->prepareTable($row);
 
         $row->store(true);
 
         // Set the item as default.
-        if ($row->get("default")) {
-            $this->setDefault($row->get("id"));
+        if ($row->get('default')) {
+            $this->setDefault($row->get('id'));
         }
 
-        return $row->get("id");
+        return $row->get('id');
     }
 
     protected function prepareTable($table)
     {
         // Fix magic quotes.
         if (get_magic_quotes_gpc()) {
-            $table->set("name", stripcslashes($table->get("name")));
+            $table->set('name', stripcslashes($table->get('name')));
         }
     }
 
@@ -130,7 +126,7 @@ class UserIdeasModelStatus extends JModelAdmin
 
         $status->load($id);
 
-        if (!$status->get("id")) {
+        if (!$status->get('id')) {
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_INVALID_ITEM'));
         }
 
@@ -139,14 +135,14 @@ class UserIdeasModelStatus extends JModelAdmin
         // Reset the default fields.
         $query = $db->getQuery(true);
         $query
-            ->update($db->quoteName("#__uideas_statuses"))
-            ->set($db->quoteName("default") . " = 0");
+            ->update($db->quoteName('#__uideas_statuses'))
+            ->set($db->quoteName('default') . ' = 0');
 
         $db->setQuery($query);
         $db->execute();
 
         // Set the item as default
-        $status->set("default", 1);
+        $status->set('default', 1);
         $status->store();
     }
 
@@ -165,12 +161,12 @@ class UserIdeasModelStatus extends JModelAdmin
 
         $status->load($id);
 
-        if (!$status->get("id")) {
+        if (!$status->get('id')) {
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_INVALID_ITEM'));
         }
 
         // Set the item as default
-        $status->set("default", 0);
+        $status->set('default', 0);
         $status->store();
     }
 }

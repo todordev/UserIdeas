@@ -113,7 +113,7 @@ class UserIdeasModelItems extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, ' .
+                'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, a.params, a.hits, ' .
                 $query->concatenate(array('a.id', 'a.alias'), '-') . ' AS slug, ' .
                 'b.name, b.username, ' .
                 'c.title AS category, ' .

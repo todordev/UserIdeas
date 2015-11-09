@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.helper');
 jimport('joomla.plugin.plugin');
 jimport('Prism.init');
-jimport('UserIdeas.init');
+jimport('Userideas.init');
 
 /**
  * This plugin initializes the job of the button
@@ -65,6 +65,15 @@ class plgSystemUserIdeasVote extends JPlugin
         }
 
         JHtml::_('Prism.ui.joomlaHelper');
+
+        $document->addScriptDeclaration('
+            var userIdeas = {
+                url: "'.JUri::root().'index.php?option=com_userideas&task=item.vote&format=raw",
+                token: {
+                    "'.JSession::getFormToken().'": 1
+                }
+            };
+        ');
 
         $document->addScript('plugins/system/userideasvote/votebutton.js');
     }

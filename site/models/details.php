@@ -67,7 +67,7 @@ class UserIdeasModelDetails extends JModelItem
         $query = $db->getQuery(true);
 
         $query->select(
-            'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, ' .
+            'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, a.hits, a.params, ' .
             $query->concatenate(array('a.id', 'a.alias'), '-') . ' AS slug, ' .
             'b.name, b.username, ' . 'c.title AS category, ' .
             $query->concatenate(array('c.id', 'c.alias'), '-') . ' AS catslug, ' .
@@ -85,8 +85,15 @@ class UserIdeasModelDetails extends JModelItem
         $this->item = $db->loadObject();
 
         // Prepare status object
-        if (!empty($this->item)) {
+        if ($this->item !== null and (int)$this->item->id > 0) {
             $this->prepareStatus($this->item);
+
+            $tags = new JHelperTags;
+            $this->item->tags = $tags->getItemTags('com_userideas.item', $this->item->id);
+
+            $registry = new Joomla\Registry\Registry;
+            $registry->loadString($this->item->params);
+            $this->item->params = $registry;
         }
 
         return $this->item;
@@ -111,7 +118,7 @@ class UserIdeasModelDetails extends JModelItem
             'params'  => $item->status_params
         );
 
-        $item->status = new UserIdeas\Status\Status();
+        $item->status = new Userideas\Status\Status();
         $item->status->bind($statusData);
     }
 

@@ -32,10 +32,16 @@ defined('_JEXEC') or die;?>
         <td class="center">
 		    <?php echo JHtml::_('jgrid.published', $item->published, $i, "items."); ?>
 		</td>
-		<td>
+		<td class="hasContext">
 			<a href="<?php echo JRoute::_("index.php?option=com_userideas&view=item&layout=edit&id=".$item->id); ?>" ><?php echo $this->escape($item->title); ?></a>
+            <div class="small">
+                <div>
+                    <?php echo JText::sprintf('COM_USERIDEAS_ALIAS_S', $this->escape($item->alias)); ?>
+                </div>
+            </div>
 		</td>
-		<td class="center hidden-phone"><?php echo $item->votes; ?></td>
+		<td class="center hidden-phone"><?php echo (int)$item->votes; ?></td>
+		<td class="center hidden-phone"><?php echo (int)$item->hits; ?></td>
 		<td class="hidden-phone">
             <?php echo JHtml::_('date', $item->record_date, JText::_('DATE_FORMAT_LC3')) ; ?>
         </td>

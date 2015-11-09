@@ -39,6 +39,9 @@ class UserIdeasControllerItem extends JControllerLegacy
      */
     public function vote()
     {
+        // Check for request forgeries.
+        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
         

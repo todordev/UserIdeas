@@ -7,14 +7,14 @@
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
-namespace UserIdeas\Statistic;
+namespace Userideas\Statistic;
 
 defined('JPATH_PLATFORM') or die;
 
 /**
  * This class generates basic statistics.
  *
- * @package         UserIdeas\Statistic
+ * @package         Userideas\Statistic
  * @subpackage      Basic
  */
 class Basic
@@ -30,7 +30,7 @@ class Basic
      * Initialize the object.
      *
      * <code>
-     * $item   = new UserIdeas\Statistics\Items(\JFactory::getDbo());
+     * $item   = new Userideas\Statistics\Items(\JFactory::getDbo());
      * </code>
      *
      * @param \JDatabaseDriver $db
@@ -44,7 +44,7 @@ class Basic
      * This method returns a number of all items.
      *
      * <code>
-     * $item   = new UserIdeas\Statistics\Items(\JFactory::getDbo());
+     * $item   = new Userideas\Statistics\Items(\JFactory::getDbo());
      *
      * $totalItems = $item->getTotalItems();
      * </code>
@@ -73,7 +73,7 @@ class Basic
      * This method returns a number a sum of all votes.
      *
      * <code>
-     * $item   = new UserIdeas\Statistics\Items(\JFactory::getDbo());
+     * $item   = new Userideas\Statistics\Items(\JFactory::getDbo());
      *
      * $totalVotes = $item->getTotalVotes();
      * </code>
@@ -102,7 +102,7 @@ class Basic
      * This method returns a number of all comments.
      *
      * <code>
-     * $item   = new UserIdeas\Statistics\Items(\JFactory::getDbo());
+     * $item   = new Userideas\Statistics\Items(\JFactory::getDbo());
      *
      * $totalComments = $item->getTotalComments();
      * </code>

@@ -81,6 +81,7 @@ class UserIdeasViewItems extends JViewLegacy
             'a.published'   => JText::_('JSTATUS'),
             'a.record_date' => JText::_('COM_USERIDEAS_CREATED'),
             'a.votes'       => JText::_('COM_USERIDEAS_VOTES'),
+            'a.hits'        => JText::_('COM_USERIDEAS_HITS'),
             'b.name'        => JText::_('COM_USERIDEAS_USER'),
             'c.title'       => JText::_('COM_USERIDEAS_CATEGORY'),
             'a.id'          => JText::_('JGRID_HEADING_ID')
@@ -110,7 +111,7 @@ class UserIdeasViewItems extends JViewLegacy
         );
 
         // Item statuses
-        $statuses = UserIdeas\Status\Statuses::getInstance(JFactory::getDbo());
+        $statuses = Userideas\Status\Statuses::getInstance(JFactory::getDbo());
         JHtmlSidebar::addFilter(
             JText::_('COM_USERIDEAS_SELECT_ITEM_STATUS'),
             'filter_status',

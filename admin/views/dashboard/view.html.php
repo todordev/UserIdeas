@@ -41,7 +41,7 @@ class UserIdeasViewDashboard extends JViewLegacy
 
     public function display($tpl = null)
     {
-        $this->version = new UserIdeas\Version();
+        $this->version = new Userideas\Version();
 
         // Load ITPrism library version
         if (!class_exists("Prism\\Version")) {
@@ -55,21 +55,21 @@ class UserIdeasViewDashboard extends JViewLegacy
             }
         }
 
-        $basic               = new UserIdeas\Statistic\Basic(JFactory::getDbo());
+        $basic               = new Userideas\Statistic\Basic(JFactory::getDbo());
         $this->totalItems    = $basic->getTotalItems();
         $this->totalVotes    = $basic->getTotalVotes();
         $this->totalComments = $basic->getTotalComments();
 
         // Get popular items.
-        $this->popular = new UserIdeas\Statistic\Items\Popular(JFactory::getDbo());
+        $this->popular = new Userideas\Statistic\Items\Popular(JFactory::getDbo());
         $this->popular->load(array("limit" => 5));
 
         // Get most voted items.
-        $this->mostVoted = new UserIdeas\Statistic\Items\MostVoted(JFactory::getDbo());
+        $this->mostVoted = new Userideas\Statistic\Items\MostVoted(JFactory::getDbo());
         $this->mostVoted->load(array("limit" => 5));
 
         // Get latest items.
-        $this->latest = new UserIdeas\Statistic\Items\Latest(JFactory::getDbo());
+        $this->latest = new Userideas\Statistic\Items\Latest(JFactory::getDbo());
         $this->latest->load(array("limit" => 5));
 
         $this->addToolbar();

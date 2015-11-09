@@ -19,10 +19,10 @@ if (!defined('USERIDEAS_PATH_COMPONENT_SITE')) {
 }
 
 if (!defined('USERIDEAS_PATH_LIBRARY')) {
-    define('USERIDEAS_PATH_LIBRARY', JPATH_LIBRARIES .'/UserIdeas');
+    define('USERIDEAS_PATH_LIBRARY', JPATH_LIBRARIES .'/Userideas');
 }
 
-JLoader::registerNamespace('UserIdeas', JPATH_LIBRARIES);
+JLoader::registerNamespace('Userideas', JPATH_LIBRARIES);
 
 // Register helpers
 JLoader::register('UserIdeasHelper', USERIDEAS_PATH_COMPONENT_ADMINISTRATOR .'/helpers/userideas.php');
@@ -36,4 +36,4 @@ JObserverMapper::addObserverClassToClass('UserIdeasObserverVote', 'UserIdeasTabl
 JHtml::addIncludePath(USERIDEAS_PATH_COMPONENT_SITE . '/helpers/html');
 
 // Register class aliases.
-JLoader::registerAlias('UserideasCategories', '\\UserIdeas\\Category\\Categories');
+JLoader::registerAlias('UserideasCategories', '\\Userideas\\Category\\Categories');

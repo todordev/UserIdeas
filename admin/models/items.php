@@ -30,6 +30,7 @@ class UserIdeasModelItems extends JModelList
                 'id', 'a.id',
                 'title', 'a.title',
                 'votes', 'a.votes',
+                'hits', 'a.hits',
                 'record_date', 'a.record_date',
                 'ordering', 'a.ordering',
                 'published', 'a.published',
@@ -108,7 +109,7 @@ class UserIdeasModelItems extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.title, a.votes, a.record_date, a.catid, a.ordering, a.published, a.status_id, ' .
+                'a.id, a.title, a.alias, a.votes, a.record_date, a.catid, a.ordering, a.published, a.status_id, a.hits, ' .
                 'b.name AS user, ' .
                 'c.title AS category, ' .
                 'd.name AS status_name, d.params AS status_params, d.default AS status_default '
@@ -121,13 +122,13 @@ class UserIdeasModelItems extends JModelList
 
         // Filter by category
         $categoryId = $this->getState('filter.category');
-        if (!empty($categoryId)) {
+        if ($categoryId > 0) {
             $query->where('a.catid = ' . (int)$categoryId);
         }
 
         // Filter by status
-        $statusId = $this->getState("filter.status");
-        if (!empty($statusId)) {
+        $statusId = (int)$this->getState('filter.status');
+        if ($statusId > 0) {
             $query->where('a.status_id = ' . (int)$statusId);
         }
 
@@ -141,13 +142,13 @@ class UserIdeasModelItems extends JModelList
 
         // Filter by search in title
         $search = $this->getState('filter.search');
-        if (!empty($search)) {
+        if (JString::strlen($search) > 0) {
             if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = ' . (int)substr($search, 3));
             } else {
 
                 $escaped = $db->escape($search, true);
-                $quoted  = $db->quote("%" . $escaped . "%", false);
+                $quoted  = $db->quote('%' . $escaped . '%', false);
                 $query->where('a.title LIKE ' . $quoted);
 
             }
@@ -164,6 +165,10 @@ class UserIdeasModelItems extends JModelList
     {
         $orderCol  = $this->getState('list.ordering');
         $orderDirn = $this->getState('list.direction');
+
+        if ($orderCol === 'a.ordering') {
+            $orderCol = 'a.catid ' . $orderDirn . ', a.ordering';
+        }
 
         return $orderCol . ' ' . $orderDirn;
     }

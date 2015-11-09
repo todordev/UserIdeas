@@ -28,32 +28,28 @@ class UserIdeasTableItem extends JTable
     public function __construct(JDatabaseDriver $db)
     {
         parent::__construct('#__uideas_items', 'id', $db);
+
+        JTableObserverTags::createObserver($this, array('typeAlias' => 'com_userideas.item'));
     }
 
     public function getSlug()
     {
-        return $this->id . ":" . $this->alias;
+        return $this->id . ':' . $this->alias;
     }
 
     public function getCategorySlug()
     {
-        if (!$this->catslug) {
-
+        if ($this->catslug === null) {
             $db    = $this->getDbo();
             $query = $db->getQuery(true);
 
             $query
-                ->select($query->concatenate(array("a.id", "a.alias"), ":") . " AS catslug")
-                ->from($db->quoteName("#__categories", "a"))
-                ->where("a.id = " . (int)$this->catid);
+                ->select($query->concatenate(array('a.id', 'a.alias'), ':') . ' AS catslug')
+                ->from($db->quoteName('#__categories', 'a'))
+                ->where('a.id = ' . (int)$this->catid);
 
             $db->setQuery($query);
-            $result = $db->loadResult();
-
-            if (!empty($result)) {
-                $this->catslug = $result;
-            }
-
+            $this->catslug = (string)$db->loadResult();
         }
 
         return $this->catslug;

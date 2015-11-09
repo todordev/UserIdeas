@@ -86,7 +86,7 @@ class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
 
             $model->save($validData);
 
-            $item = new UserIdeas\Item\Item(JFactory::getDbo());
+            $item = new Userideas\Item\Item(JFactory::getDbo());
             $item->load($itemId);
 
         } catch (Exception $e) {
@@ -147,7 +147,7 @@ class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
         $userId = $user->get('id');
 
         // Validate item owner.
-        $itemValidator = new UserIdeas\Validator\Comment\Owner(JFactory::getDbo(), $itemId, $userId);
+        $itemValidator = new Userideas\Validator\Comment\Owner(JFactory::getDbo(), $itemId, $userId);
         if (!$itemValidator->isValid()) {
             return false;
         }

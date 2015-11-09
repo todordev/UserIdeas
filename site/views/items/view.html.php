@@ -44,7 +44,7 @@ class UserIdeasViewItems extends JViewLegacy
 
     public function display($tpl = null)
     {
-        $this->option     = JFactory::getApplication()->input->get("option");
+        $this->option     = JFactory::getApplication()->input->get('option');
         
         $this->state      = $this->get('State');
         $this->items      = $this->get('Items');

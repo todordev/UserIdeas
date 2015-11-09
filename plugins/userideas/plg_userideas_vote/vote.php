@@ -141,7 +141,7 @@ class plgUserIdeasVote extends JPlugin
         $userId = (!empty($data['user_id'])) ? (int)$data['user_id'] : 0;
 
         // Save vote
-        $item = new UserIdeas\Item\Item(JFactory::getDbo());
+        $item = new Userideas\Item\Item(JFactory::getDbo());
         $item->load($itemId);
 
         if (!$item->getId()) {
@@ -151,7 +151,7 @@ class plgUserIdeasVote extends JPlugin
         $item->vote();
 
         // Add record to history table
-        $history = new UserIdeas\Vote\Vote(JFactory::getDbo());
+        $history = new Userideas\Vote\Vote(JFactory::getDbo());
 
         if (!$userId) {
             $hash = $this->generateHash();

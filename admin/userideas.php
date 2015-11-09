@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 jimport('Prism.init');
-jimport('UserIdeas.init');
+jimport('Userideas.init');
 
 // Get an instance of the controller prefixed by HelloWorld
 $controller = JControllerLegacy::getInstance('UserIdeas');

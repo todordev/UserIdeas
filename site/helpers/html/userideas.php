@@ -31,7 +31,7 @@ abstract class JHtmlUserIdeas
      * $avatar  = JHtml::_("userideas.avatar", $socialProfiles, $userId, $options);
      * </code>
      *
-     * @param object  $socialProfiles Social profiles object.
+     * @param stdClass  $socialProfiles Social profiles object.
      * @param integer $userId         User ID
      * @param array   $options        Options that will be used to integration.
      *
@@ -77,12 +77,21 @@ abstract class JHtmlUserIdeas
         return $link;
     }
 
-    public static function publishedBy($name, $link = null)
+    public static function publishedBy($name, $link = null, $profileAvatar = null, array $options = array())
     {
-        if (!empty($link)) {
-            $profile = '<a href="' . $link . '" rel="nofollow">' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '</a>';
+        $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+
+        if ($link !== null and $link !== '') {
+            $profile = '<a href="' . $link . '" rel="nofollow">' . $name . '</a>';
         } else {
             $profile = ($name) ?: JText::_('COM_USERIDEAS_ANONYMOUS');
+        }
+
+        if ($profileAvatar !== null and $profileAvatar !== '') {
+            $width = Joomla\Utilities\ArrayHelper::getValue($options, 'width', 24);
+            $height = Joomla\Utilities\ArrayHelper::getValue($options, 'height', 24);
+
+            $profile = '<img src="' . $profileAvatar . '" width="'.$width.'" height="'.$height.'" alt="'.$name.'" /> ' . $profile;
         }
 
         $html = JText::sprintf('COM_USERIDEAS_PUBLISHED_BY', $profile);
@@ -94,13 +103,13 @@ abstract class JHtmlUserIdeas
     {
         $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
 
-        if (!empty($link)) {
+        if ($link !== null and $link !== '') {
             $profile = '<a href="' . $link . '" rel="nofollow">' . $name . '</a>';
         } else {
             $profile = ($name) ?: JText::_('COM_USERIDEAS_ANONYMOUS');
         }
 
-        if (!empty($profileAvatar)) {
+        if ($profileAvatar !== null and $profileAvatar !== '') {
             $width = Joomla\Utilities\ArrayHelper::getValue($options, 'width', 24);
             $height = Joomla\Utilities\ArrayHelper::getValue($options, 'height', 24);
 
@@ -136,7 +145,7 @@ abstract class JHtmlUserIdeas
         return $html;
     }
 
-    public static function status(UserIdeas\Status\Status $status, $displayLink = true)
+    public static function status(Userideas\Status\Status $status, $displayLink = true)
     {
         if (!$status->getId()) {
             return '';

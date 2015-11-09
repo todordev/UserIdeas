@@ -15,8 +15,14 @@ defined('_JEXEC') or die; ?>
     <?php } ?>
 
     <?php
-    if ($this->params->get('items_display_description', 0)) {
+    if ($this->params->get('show_cat_description', 0)) {
         echo $this->category->getDescription();
+    }
+
+    if ($this->params->get('show_cat_tags', 0) and count($this->tags) > 0) {
+        $tagLayout = new JLayoutFile('joomla.content.tags');
+        echo $tagLayout->render($this->tags);
+        echo '<br />';
     }
     ?>
 
@@ -28,10 +34,15 @@ defined('_JEXEC') or die; ?>
     <?php } ?>
 
     <?php foreach ($this->items as $item) {
-        if (isset($this->comments[$item->id])) {
+
+        // Load parameters.
+        $registry = new Joomla\Registry\Registry;
+        $registry->loadString($item->params);
+        $item->params = $registry;
+
+        $commentsNumber = 0;
+        if (array_key_exists($item->id, $this->comments)) {
             $commentsNumber = (int)$this->comments[$item->id];
-        } else {
-            $commentsNumber = 0;
         }
         ?>
         <div class="media ui-item">
@@ -40,52 +51,36 @@ defined('_JEXEC') or die; ?>
                 <a class="btn btn-default btn-small ui-btn-vote js-ui-btn-vote" href="javascript: void(0);" data-id="<?php echo $item->id; ?>"><?php echo JText::_('COM_USERIDEAS_VOTE'); ?></a>
             </div>
             <div class="media-body">
+                <?php if ($this->params->get('show_title', $item->params->get('show_title', 1))) {?>
                 <h4 class="media-heading">
                     <a href="<?php echo JRoute::_(UserIdeasHelperRoute::getDetailsRoute($item->slug, $item->catid)); ?>">
                         <?php echo $this->escape($item->title); ?>
                     </a>
                 </h4>
-                <?php if ($this->params->get('items_display_description', 1)) { ?>
+                <?php } ?>
+
+                <?php
+                if ($this->params->get('show_intro', $item->params->get('show_intro', 1))) { ?>
                     <?php echo JHtmlString::truncate($item->description, $this->params->get("items_description_length", 255), true, $this->params->get('items_description_html', 0)); ?>
                 <?php } ?>
             </div>
-            <div class="clearfix"></div>
-            <div class="well well-sm clearfix">
-                <div class="pull-left">
-                    <?php
+            <?php
+            $this->canEditResult = UserIdeasHelper::isValidOwner($this->userId, $item->user_id) and $this->canEdit;
 
-                    $name = (strcmp('name', $this->params->get('name_type')) === 0) ? $item->name : $item->username;
+            if (UserIdeasHelper::shouldDisplayFootbar($item->params, $item->params, false) or $this->canEditResult or $this->commentsEnabled) {
+                echo '<div class="clearfix"></div>';
+                $layoutData = new stdClass;
+                $layoutData->item  = $item;
+                $layoutData->socialProfiles  = $this->socialProfiles;
+                $layoutData->integrationOptions  = $this->integrationOptions;
+                $layoutData->commentsEnabled  = $this->commentsEnabled;
+                $layoutData->canEditResult  = $this->canEditResult;
+                $layoutData->params  = $this->params;
+                $layoutData->commentsNumber  = $commentsNumber;
 
-                    $profile = JHtml::_('userideas.profile', $this->socialProfiles, $item->user_id);
-
-                    // Prepare item owner avatar.
-                    $profileAvatar = null;
-                    if ($this->params->get('integration_display_owner_avatar', 0)) {
-                        $profileAvatar = JHtml::_('userideas.avatar', $this->socialProfiles, $item->user_id, $this->integrationOptions);
-                    }
-
-                    echo JHtml::_('userideas.publishedByOn', $name, $item->record_date, $profile, $profileAvatar, $this->integrationOptions);
-                    echo JHtml::_('userideas.category', $item->category, $item->catslug);
-                    echo JHtml::_('userideas.status', $item->status);
-                    ?>
-                </div>
-                <div class="pull-right">
-                    <?php if ($this->commentsEnabled) { ?>
-                        <a class="btn btn-default btn-small" href="<?php echo JRoute::_(UserIdeasHelperRoute::getDetailsRoute($item->slug, $item->catid)) . '#comments'; ?>'>
-                            <span class="fa fa-comment"></span>
-                            <?php echo JText::_('COM_USERIDEAS_COMMENTS'); ?>
-                            <?php echo '( ' . $commentsNumber . ' )'; ?>
-                        </a>
-                    <?php } ?>
-
-                    <?php if (UserIdeasHelper::isValidOwner($this->userId, $item->user_id) and $this->canEdit) { ?>
-                        <a class="btn btn-default btn-sm" href="<?php echo JRoute::_(UserIdeasHelperRoute::getFormRoute($item->id)); ?>">
-                            <span class="fa fa-edit"></span>
-                            <?php echo JText::_('COM_USERIDEAS_EDIT'); ?>
-                        </a>
-                    <?php } ?>
-                </div>
-            </div>
+                $layout      = new JLayoutFile('footbar');
+                echo $layout->render($layoutData);
+            }?>
         </div>
     <?php } ?>
 

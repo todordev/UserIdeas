@@ -75,7 +75,7 @@ class pkg_userIdeasInstallerScript
         }
 
         jimport('Prism.init');
-        jimport('UserIdeas.init');
+        jimport('Userideas.init');
 
         // Register Component helpers
         JLoader::register('UserIdeasInstallHelper', COM_USERIDEAS_PATH_COMPONENT_ADMINISTRATOR . '/helpers/install.php');
@@ -168,13 +168,16 @@ class pkg_userIdeasInstallerScript
             echo JText::_('COM_USERIDEAS_MESSAGE_INSTALL_PRISM_LIBRARY');
         } else {
 
-            if (class_exists('UserIdeas\\Version')) {
+            if (class_exists('Userideas\\Version')) {
                 $prismVersion     = new Prism\Version();
-                $componentVersion = new UserIdeas\Version();
+                $componentVersion = new Userideas\Version();
                 if (version_compare($prismVersion->getShortVersion(), $componentVersion->requiredPrismVersion, '<')) {
                     echo JText::_('COM_USERIDEAS_MESSAGE_INSTALL_PRISM_LIBRARY');
                 }
             }
         }
+
+        // Create content type for used by tags.
+        UserIdeasInstallHelper::createContentType();
     }
 }

@@ -70,9 +70,16 @@ class UserIdeasHelper
 
     }
 
+    /**
+     * Prepare an array with status data.
+     *
+     * @param $items
+     *
+     * @return Prism\Database\ArrayObject
+     */
     public static function prepareStatuses($items)
     {
-        foreach ($items as &$item) {
+        foreach ($items as $key => $item) {
 
             if (JString::strlen($item->status_params) > 0) {
                 $statusParams = json_decode($item->status_params, true);
@@ -86,11 +93,11 @@ class UserIdeasHelper
                 'params'  => $item->status_params
             );
 
-            $item->status = new UserIdeas\Status\Status();
+            $item->status = new Userideas\Status\Status();
             $item->status->bind($statusData);
-        }
 
-        unset($item);
+            $items[$key] = $item;
+        }
 
         return $items;
     }
@@ -106,5 +113,52 @@ class UserIdeasHelper
     public static function isValidOwner($userId, $itemOwnerId)
     {
         return (bool)((int)$userId > 0 and ((int)$userId === (int)$itemOwnerId));
+    }
+
+    public static function shouldDisplayFootbar(Joomla\Registry\Registry $params, Joomla\Registry\Registry $itemParams, $hasTags)
+    {
+        if ($params->get('show_author', $itemParams->get('show_author'))) {
+            return true;
+        }
+
+        if ($params->get('show_create_date', $itemParams->get('show_create_date'))) {
+            return true;
+        }
+
+        if ($params->get('show_category', $itemParams->get('show_category'))) {
+            return true;
+        }
+
+        if ($params->get('show_hits', $itemParams->get('show_hits'))) {
+            return true;
+        }
+
+        if ($params->get('show_status', $itemParams->get('show_status'))) {
+            return true;
+        }
+
+        return (bool)($params->get('show_tags', $itemParams->get('show_tags')) and $hasTags);
+    }
+
+    public static function countComments($ids)
+    {
+        $result = array();
+
+        if (count($ids) > 0) {
+            $db  = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query
+                ->select('a.item_id, COUNT(*) AS number')
+                ->from($db->quoteName('#__uideas_comments', 'a'))
+                ->where($db->quoteName('a.item_id') . ' IN (' . implode(',', $ids) . ')')
+                ->group('a.item_id');
+
+            $db->setQuery($query);
+
+            $result = (array)$db->loadAssocList('item_id', 'number');
+        }
+
+        return $result;
     }
 }

@@ -37,6 +37,7 @@ class UserIdeasViewCategory extends JViewLegacy
     protected $socialProfiles;
     protected $integrationOptions = array();
     protected $commentsEnabled;
+    protected $tags;
 
     protected $option;
 
@@ -56,9 +57,14 @@ class UserIdeasViewCategory extends JViewLegacy
 
         $categoryId = $this->state->get('filter.category_id');
 
-        $this->category = new UserIdeas\Category\Category(JFactory::getDbo());
+        $this->category = new Userideas\Category\Category(JFactory::getDbo());
         $this->category->load($categoryId);
 
+        if ($this->params->get('show_cat_tags', 0)) {
+            $this->category->setTagsHelper(new JHelperTags);
+            $this->tags = $this->category->getTags();
+        }
+        
         $this->comments = $this->get('Comments');
 
         $user = JFactory::getUser();

@@ -35,7 +35,7 @@ class UserIdeasControllerStatuses extends Prism\Controller\Admin
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
         $pks = $this->input->post->get('cid', array(), 'array');
-        Joomla\Utilities\ArrayHelper::toInteger($pks);
+        $pks = Joomla\Utilities\ArrayHelper::toInteger($pks);
 
         $redirectOptions = array(
             "view" => $this->view_list,

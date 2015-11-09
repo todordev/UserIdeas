@@ -58,7 +58,7 @@ class UserIdeasViewDetails extends JViewLegacy
         $this->item   = $this->get('Item');
         $this->params = $this->state->get('params');
 
-        $this->category = new UserIdeas\Category\Category(JFactory::getDbo());
+        $this->category = new Userideas\Category\Category(JFactory::getDbo());
         $this->category->load($this->item->catid);
 
         $user = JFactory::getUser();
@@ -117,10 +117,10 @@ class UserIdeasViewDetails extends JViewLegacy
         $dispatcher->trigger('onContentPrepare', array('com_userideas.details', &$this->item, &$this->params, $offset));
 
         $results                                 = $dispatcher->trigger('onContentBeforeDisplay', array('com_userideas.details', &$this->item, &$this->params, $offset));
-        $this->item->event->beforeDisplayContent = trim(implode('\n', $results));
+        $this->item->event->beforeDisplayContent = trim(implode("\n", $results));
 
         $results                                  = $dispatcher->trigger('onContentAfterDisplay', array('com_userideas.details', &$this->item, &$this->params, $offset));
-        $this->item->event->onContentAfterDisplay = trim(implode('\n', $results));
+        $this->item->event->onContentAfterDisplay = trim(implode("\n", $results));
 
         $this->item->description = $this->item->text;
         unset($this->item->text);

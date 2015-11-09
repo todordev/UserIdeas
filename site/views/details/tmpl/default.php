@@ -16,57 +16,40 @@ if ($this->item->event->beforeDisplayContent) {
     echo $this->item->event->beforeDisplayContent;
 } ?>
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="media ui-item">
-                <div class="ui-vote pull-left">
-                    <div class="ui-vote-counter"
-                         id="js-ui-vote-counter-<?php echo $this->item->id; ?>"><?php echo $this->item->votes; ?></div>
-                    <a class="btn btn-default ui-btn-vote js-ui-btn-vote" href="javascript: void(0);"
-                       data-id="<?php echo $this->item->id; ?>">
-                        <?php echo JText::_('COM_USERIDEAS_VOTE'); ?>
-                    </a>
-                </div>
-                <div class="media-body">
-                    <h4 class="media-heading">
-                        <?php echo $this->escape($this->item->title); ?>
-                    </h4>
-
-                    <p><?php echo $this->item->description; ?></p>
-                </div>
-                <div class="clearfix"></div>
-                <div class="well well-sm clearfix">
-                    <div class="pull-left">
-                        <?php
-
-                        $name = (strcmp('name', $this->params->get('name_type')) === 0) ? $this->item->name : $this->item->username;
-
-                        $profile = JHtml::_('userideas.profile', $this->socialProfiles, $this->item->user_id);
-
-                        // Prepare item owner avatar.
-                        $profileAvatar = null;
-                        if ($this->params->get('integration_display_owner_avatar', 0)) {
-                            $profileAvatar = JHtml::_('userideas.avatar', $this->socialProfiles, $this->item->user_id, $this->integrationOptions);
-                        }
-
-                        echo JHtml::_('userideas.publishedByOn', $name, $this->item->record_date, $profile, $profileAvatar, $this->integrationOptions);
-                        echo JHtml::_('userideas.category', $this->item->category, $this->item->catslug);
-                        echo JHtml::_('userideas.status', $this->item->status);
-                        ?>
-                    </div>
-                    <div class="pull-right">
-                        <?php if (UserIdeasHelper::isValidOwner($this->userId, $this->item->user_id) and $this->canEdit) { ?>
-                            <a class="btn btn-default btn-sm"
-                               href="<?php echo JRoute::_(UserIdeasHelperRoute::getFormRoute($this->item->id)); ?>">
-                                <span class="fa fa-edit"></span>
-                                <?php echo JText::_('COM_USERIDEAS_EDIT'); ?>
-                            </a>
-                        <?php } ?>
-                    </div>
-                </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="media ui-item">
+            <div class="ui-vote pull-left">
+                <div class="ui-vote-counter"
+                     id="js-ui-vote-counter-<?php echo $this->item->id; ?>"><?php echo $this->item->votes; ?></div>
+                <a class="btn btn-default ui-btn-vote js-ui-btn-vote" href="javascript: void(0);"
+                   data-id="<?php echo $this->item->id; ?>">
+                    <?php echo JText::_('COM_USERIDEAS_VOTE'); ?>
+                </a>
             </div>
+            <div class="media-body">
+                <?php if ($this->params->get('show_title', $this->item->params->get('show_title', 1))) {?>
+                <h4 class="media-heading">
+                    <?php echo $this->escape($this->item->title); ?>
+                </h4>
+                <?php } ?>
+
+                <?php if ($this->params->get('show_intro', $this->item->params->get('show_intro', 1))) {?>
+                <p><?php echo $this->item->description; ?></p>
+                <?php } ?>
+            </div>
+
+            <?php
+            $this->canEditResult = UserIdeasHelper::isValidOwner($this->userId, $this->item->user_id) and $this->canEdit;
+            $hasTags = (bool)($this->item->tags !== null and is_array($this->item->tags) and count($this->item->tags) > 0);
+
+            if (UserIdeasHelper::shouldDisplayFootbar($this->params, $this->item->params, $hasTags) or $this->canEditResult) {
+                echo $this->loadTemplate('footbar');
+            }?>
+
         </div>
     </div>
+</div>
 
 <?php
 if (!empty($this->item->event->onContentAfterDisplay)) {

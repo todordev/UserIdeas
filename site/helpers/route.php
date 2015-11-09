@@ -27,6 +27,8 @@ jimport('joomla.application.categories');
  */
 abstract class UserIdeasHelperRoute
 {
+    protected static $items = array();
+    protected static $categories;
     protected static $lookup;
 
     /**
@@ -147,7 +149,7 @@ abstract class UserIdeasHelperRoute
 
                     $needles = array(
                         'category'   => $catids,
-                        'categories' => $catids
+                        'items'      => array(0)
                     );
 
                     // Looking for menu item (Itemid)
@@ -267,7 +269,6 @@ abstract class UserIdeasHelperRoute
      */
     public static function prepareCategoriesSegments($catId, &$segments, $mId = null)
     {
-
         $categories = JCategories::getInstance('UserIdeas');
         $category   = $categories->get($catId);
 
@@ -290,33 +291,62 @@ abstract class UserIdeasHelperRoute
     }
 
     /**
-     *
-     * Load an object that contains a data about item.
+     * Load data about item.
      * We use this method in the router "UserIdeasParseRoute".
      *
-     * @param integer $id
+     * @param int $id
      *
-     * @return stdClass
+     * @return array
      */
     public static function getItem($id)
     {
+        if (!array_key_exists($id, self::$items)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+            $query
+                ->select(
+                    'a.id, a.alias, a.catid, ' .
+                    $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug'
+                )
+                ->from($query->quoteName('#__uideas_items', 'a'))
+                ->where('a.id = ' . (int)$id);
 
-        $query
-            ->select('a.alias, a.catid')
-            ->from($query->quoteName('#__uideas_items', 'a'))
-            ->where('a.id = ' . (int)$id);
-
-        $db->setQuery($query);
-        $result = $db->loadObject();
-
-        if (!$result) {
-            $result = null;
+            $db->setQuery($query);
+            self::$items[$id] = (array)$db->loadAssoc();
         }
 
-        return $result;
+        return self::$items[$id];
+    }
 
+    /**
+     * Load data about category.
+     * We use this method in the router "UserIdeasParseRoute".
+     *
+     * @param int $id
+     *
+     * @return array
+     */
+    public static function getCategory($id)
+    {
+        // Load all categories.
+        if (self::$categories === null) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query
+                ->select(
+                    'a.id, a.alias, ' .
+                    $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug'
+                )
+                ->from($query->quoteName('#__categories', 'a'))
+                ->where('a.extension = ' . $db->quote('com_userideas'));
+
+            $db->setQuery($query);
+
+            self::$categories = (array)$db->loadAssocList('id');
+        }
+
+        return (!array_key_exists($id, self::$categories)) ? array() : self::$categories[$id];
     }
 }

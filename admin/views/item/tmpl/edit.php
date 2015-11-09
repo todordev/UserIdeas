@@ -10,21 +10,49 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
-<div class="row-fluid">
-    <div class="span12 form-horizontal">
-        <form action="<?php echo JRoute::_('index.php?option=com_userideas'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" >
-            <fieldset>
-                <?php echo $this->form->getControlGroup('title'); ?>
-                <?php echo $this->form->getControlGroup('alias'); ?>
-                <?php echo $this->form->getControlGroup('catid'); ?>
-                <?php echo $this->form->getControlGroup('status_id'); ?>
+<form action="<?php echo JRoute::_('index.php?option=com_userideas'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate" >
+
+    <?php echo JLayoutHelper::render('joomla.edit.title_alias', $this); ?>
+
+    <div class="form-horizontal">
+
+        <?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'general')); ?>
+
+        <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'general', JText::_('COM_USERIDEAS_CONTENT', true)); ?>
+
+        <div class="row-fluid">
+            <div class="span9">
+                <?php echo $this->form->getInput('description'); ?>
+            </div>
+            <div class="span3">
+                <fieldset class="form-vertical">
+                    <?php echo $this->form->getControlGroup('catid'); ?>
+                    <?php echo $this->form->getControlGroup('status_id'); ?>
+                    <?php echo $this->form->getControlGroup('published'); ?>
+                    <?php echo $this->form->getControlGroup('tags'); ?>
+                </fieldset>
+            </div>
+        </div>
+
+        <?php echo JHtml::_('bootstrap.endTab'); ?>
+
+        <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'publishing', JText::_('COM_USERIDEAS_PUBLISHING', true)); ?>
+        <div class="row-fluid form-horizontal-desktop">
+            <div class="span6">
+                <?php echo $this->form->getControlGroup('record_date'); ?>
                 <?php echo $this->form->getControlGroup('user_id'); ?>
-                <?php echo $this->form->getControlGroup('published'); ?>
                 <?php echo $this->form->getControlGroup('id'); ?>
-                <?php echo $this->form->getControlGroup('description'); ?>
-            </fieldset>
-            <input type="hidden" name="task" value="" />
-            <?php echo JHtml::_('form.token'); ?>
-        </form>
+            </div>
+        </div>
+        <?php echo JHtml::_('bootstrap.endTab'); ?>
+
+        <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'options', JText::_('COM_USERIDEAS_OPTIONS', true)); ?>
+        <?php echo $this->loadTemplate('options'); ?>
+        <?php echo JHtml::_('bootstrap.endTab'); ?>
+
+        <?php echo JHtml::_('bootstrap.endTabSet'); ?>
     </div>
-</div>
+
+    <input type="hidden" name="task" value="" />
+    <?php echo JHtml::_('form.token'); ?>
+</form>

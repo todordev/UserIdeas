@@ -20,8 +20,14 @@ class UserIdeasController extends JControllerLegacy
 {
     public function display($cachable = false, $urlparams = array())
     {
+        $document = JFactory::getDocument();
+        /** @var $document JDocumentHtml */
+        
+        // Add component style
+        $document->addStyleSheet('../media/com_userideas/css/backend.style.css');
+        
         $viewName = $this->input->getCmd('view', 'dashboard');
-        $this->input->set("view", $viewName);
+        $this->input->set('view', $viewName);
 
         parent::display();
 

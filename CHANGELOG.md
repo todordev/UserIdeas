@@ -1,6 +1,11 @@
 User Ideas release notes
 ==========================
 
+###v2.2
+* Added tags to the categories and the items.
+* Added options to the items on the form where create an item.
+* Added class Userideas\Item\Items to the library.
+
 ###v2.1
 * Improved code quality.
 * Fixed bug with the library folder name (renamed from /libraries/userideas to /libraries/UserIdeas).

@@ -4,10 +4,10 @@
  * @subpackage      Statuses
  * @author          Todor Iliev
  * @copyright       Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
- * @license         http://www.gnu.org/licenses/gpl-3.0.en.html
+ * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
-namespace UserIdeas\Status;
+namespace Userideas\Status;
 
 use Prism\Database\ArrayObject;
 
@@ -34,7 +34,7 @@ class Statuses extends ArrayObject
      *    'sort_direction' => 'DESC'
      * );
      *
-     * $statuses     = UserIdeas\Status\Statuses::getInstance(\JFactory::getDbo(), $options);
+     * $statuses     = Userideas\Status\Statuses::getInstance(\JFactory::getDbo(), $options);
      * </code>
      *
      * @param \JDatabaseDriver $db
@@ -62,7 +62,7 @@ class Statuses extends ArrayObject
      *    'sort_direction' => 'DESC'
      * );
      *
-     * $statuses = new UserIdeas\Status\Statuses(\JFactory::getDbo());
+     * $statuses = new Userideas\Status\Statuses(\JFactory::getDbo());
      * $statuses->load($options);
      * </code>
      *
@@ -95,7 +95,7 @@ class Statuses extends ArrayObject
      * Return default status.
      *
      * <code>
-     * $statuses = new UserIdeas\Status\Statuses(\JFactory::getDbo());
+     * $statuses = new Userideas\Status\Statuses(\JFactory::getDbo());
      * $statuses->load($options);
      * </code>
      *
@@ -117,7 +117,7 @@ class Statuses extends ArrayObject
      * which can be used as options.
      *
      * <code>
-     * $statuses = new UserIdeas\Status\Statuses(\JFactory::getDbo());
+     * $statuses = new Userideas\Status\Statuses(\JFactory::getDbo());
      * $statuses->load($options);
      *
      * $statusesOptions = $statuses->getStatusesOptions();

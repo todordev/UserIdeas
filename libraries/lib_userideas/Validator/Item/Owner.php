@@ -7,7 +7,7 @@
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
-namespace UserIdeas\Validator\Item;
+namespace Userideas\Validator\Item;
 
 use Prism\Validator\Validator;
 
@@ -16,7 +16,7 @@ defined('JPATH_PLATFORM') or die;
 /**
  * This class provides functionality for validation item owner.
  *
- * @package      UserIdeas\Validators
+ * @package      Userideas\Validators
  * @subpackage   Items
  */
 class Owner extends Validator
@@ -32,7 +32,7 @@ class Owner extends Validator
      * $itemId = 1;
      * $userId = 2;
      *
-     * $owner = new UserIdeas\Validator\Item\Owner(\JFactory::getDbo(), $itemId, $userId);
+     * $owner = new Userideas\Validator\Item\Owner(\JFactory::getDbo(), $itemId, $userId);
      * </code>
      *
      * @param \JDatabaseDriver $db       Database object.
@@ -53,7 +53,7 @@ class Owner extends Validator
      * $itemId = 1;
      * $userId = 2;
      *
-     * $owner = new UserIdeas\Validator\Item\Owner(\JFactory::getDbo(), $itemId, $userId);
+     * $owner = new Userideas\Validator\Item\Owner(\JFactory::getDbo(), $itemId, $userId);
      * if(!$owner->isValid()) {
      * ......
      * }

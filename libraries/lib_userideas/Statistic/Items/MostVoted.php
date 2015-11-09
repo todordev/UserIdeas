@@ -7,16 +7,16 @@
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
-namespace UserIdeas\Statistic\Items;
+namespace Userideas\Statistic\Items;
 
-use UserIdeas\Statistic\Items;
+use Userideas\Statistic\Items;
 
 defined('JPATH_PLATFORM') or die;
 
 /**
  * This class loads most voted items.
  *
- * @package         UserIdeas\Statistic
+ * @package         Userideas\Statistic
  * @subpackage      Items
  */
 class MostVoted extends Items
@@ -26,10 +26,11 @@ class MostVoted extends Items
      *
      * <code>
      * $options = array(
+     *     "type"  => 'array', // array or object
      *     "limit" => 5
      * );
      *
-     * $mostVoted = new UserIdeas\Statistics\Items\MostVoted(\JFactory::getDbo());
+     * $mostVoted = new Userideas\Statistics\Items\MostVoted(\JFactory::getDbo());
      * $mostVoted->load($options);
      * </code>
      *
@@ -37,6 +38,7 @@ class MostVoted extends Items
      */
     public function load($options = array())
     {
+        $type  = (array_key_exists('type', $options)) ? $options['type'] : 'array';
         $limit = (array_key_exists('limit', $options)) ? (int)$options['limit'] : 5;
 
         $query = $this->getQuery();
@@ -47,6 +49,13 @@ class MostVoted extends Items
 
         $this->db->setQuery($query, 0, (int)$limit);
 
-        $this->items = (array)$this->db->loadAssocList();
+        if (strcmp('array', $type) === 0) {
+            $this->items = (array)$this->db->loadAssocList();
+        } else {
+            $this->items = (array)$this->db->loadObjectList();
+        }
+
+        // Prepare params.
+        $this->prepareParams();
     }
 }
