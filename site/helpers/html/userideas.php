@@ -20,6 +20,11 @@ defined('_JEXEC') or die;
 abstract class JHtmlUserIdeas
 {
     /**
+     * @var   array   array containing information for loaded files
+     */
+    protected static $loaded = array();
+
+    /**
      * Generate a link to an user image of a social platform.
      *
      * <code>
@@ -59,7 +64,7 @@ abstract class JHtmlUserIdeas
      * $avatar  = JHtml::_("userideas.profile", $socialProfiles, $userId, "javascript: void(0);");
      * </code>
      *
-     * @param object  $socialProfiles Social profiles object.
+     * @param stdClass  $socialProfiles Social profiles object.
      * @param integer $userId         User ID
      * @param string  $default        A link to default profile.
      *
@@ -172,5 +177,31 @@ abstract class JHtmlUserIdeas
         }
 
         return '<div class="label '.$name.'">'.$name.'</div>';
+    }
+
+    /**
+     * Load the script that initialize vote system.
+     */
+    public static function loadVoteScript()
+    {
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+
+        $document = JFactory::getDocument();
+
+        $document->addScriptDeclaration('
+            var userIdeas = {
+                url: "'.JUri::root().'index.php?option=com_userideas&task=item.vote&format=raw",
+                token: {
+                    "'.JSession::getFormToken().'": 1
+                }
+            };
+        ');
+
+        $document->addScript('plugins/system/userideasvote/votebutton.js');
+
+        self::$loaded[__METHOD__] = true;
     }
 }

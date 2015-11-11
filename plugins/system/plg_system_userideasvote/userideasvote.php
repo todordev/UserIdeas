@@ -47,7 +47,7 @@ class plgSystemUserIdeasVote extends JPlugin
         }
 
         // Check component enabled
-        if (!JComponentHelper::isEnabled('com_userideas', true)) {
+        if (!JComponentHelper::isEnabled('com_userideas')) {
             return;
         }
 
@@ -65,16 +65,7 @@ class plgSystemUserIdeasVote extends JPlugin
         }
 
         JHtml::_('Prism.ui.joomlaHelper');
+        JHtml::_('Userideas.loadVoteScript');
 
-        $document->addScriptDeclaration('
-            var userIdeas = {
-                url: "'.JUri::root().'index.php?option=com_userideas&task=item.vote&format=raw",
-                token: {
-                    "'.JSession::getFormToken().'": 1
-                }
-            };
-        ');
-
-        $document->addScript('plugins/system/userideasvote/votebutton.js');
     }
 }

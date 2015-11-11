@@ -23,9 +23,8 @@ jQuery(document).ready(function() {
                 var $moduleVotes = jQuery("#js-ui-mod-vote-counter-"+id);
                 var $componentVotes = jQuery("#js-ui-vote-counter-"+id);
 
-                console.log($moduleVotes);
-                console.log($componentVotes);
-
+				console.log($moduleVotes);
+				console.log($componentVotes);
                 if ($moduleVotes) {
                     $moduleVotes.html(response.data.votes);
                 }

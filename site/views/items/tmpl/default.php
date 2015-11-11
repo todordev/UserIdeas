@@ -34,7 +34,7 @@ defined('_JEXEC') or die;?>
     ?>
     <div class="media ui-item">
     	<div class="ui-vote pull-left">
-    		<div class="ui-vote-counter" id="js-mod-vote-counter-<?php echo $item->id; ?>"><?php echo $item->votes; ?></div>
+    		<div class="ui-vote-counter" id="js-ui-vote-counter-<?php echo $item->id; ?>"><?php echo $item->votes; ?></div>
     		<a class="btn btn-default ui-btn-vote js-ui-btn-vote" href="javascript: void(0);" data-id="<?php echo $item->id; ?>"><?php echo JText::_('COM_USERIDEAS_VOTE'); ?></a>
     	</div>
         <div class="media-body">

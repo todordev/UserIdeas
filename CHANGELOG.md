@@ -1,6 +1,9 @@
 User Ideas release notes
 ==========================
 
+###v2.2.1
+* Fixed bug with initialization of vote button in the module UserIdeas Items.
+
 ###v2.2
 * Added tags to the categories and the items.
 * Added options to the items on the form where create an item.
