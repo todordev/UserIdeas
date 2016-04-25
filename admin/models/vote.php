@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasModelVote extends JModelAdmin
+class UserideasModelVote extends JModelAdmin
 {
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -22,7 +22,7 @@ class UserIdeasModelVote extends JModelAdmin
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Vote', $prefix = 'UserIdeasTable', $config = array())
+    public function getTable($type = 'Vote', $prefix = 'UserideasTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -57,7 +57,7 @@ class UserIdeasModelVote extends JModelAdmin
     {
         // Check the session for previously entered form data.
         $data = JFactory::getApplication()->getUserState($this->option . '.edit.vote.data', array());
-        if (empty($data)) {
+        if (!$data) {
             $data = $this->getItem();
         }
 

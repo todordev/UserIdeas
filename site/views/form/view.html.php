@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasViewForm extends JViewLegacy
+class UserideasViewForm extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -44,31 +44,36 @@ class UserIdeasViewForm extends JViewLegacy
 
         $this->option = JFactory::getApplication()->input->getCmd('option');
         
-        $this->state  = $this->get('State');
+//        $this->item   = $this->get('Item');
         $this->form   = $this->get('Form');
+        $this->state  = $this->get('State');
+
         $this->params = $this->state->get('params');
 
         $user   = JFactory::getUser();
-        $userId = $user->get('id');
-
-        $model = $this->getModel();
-
         if (!$user->authorise('core.create', 'com_userideas')) {
-            $returnUrl = UserIdeasHelperRoute::getFormRoute();
+            $returnUrl = UserideasHelperRoute::getFormRoute();
 
             $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), 'notice');
             $app->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($returnUrl), false));
             return;
         }
 
-        $itemId = (int)$this->state->get('form.id');
-        if ($itemId > 0 and !$model->canEditOwn($itemId, $userId)) {
+        // Authorize the user to create or edit content.
+        $model       = $this->getModel();
+        $this->item  = $model->getItem();
+        if (!$this->item or !$this->item->id) { // Check if it is new record.
+            $authorised = $user->authorise('core.create', 'com_userideas') || (count($user->getAuthorisedCategories('com_userideas', 'core.create')));
+        } else {
+            $authorised = $this->item->params->get('access-edit');
+        }
 
-            $returnUrl = UserIdeasHelperRoute::getFormRoute();
+        // Redirect the user to login form if he is not authorized.
+        if (!$authorised) {
+            $returnUrl = UserideasHelperRoute::getFormRoute();
 
             $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), 'notice');
             $app->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($returnUrl), false));
-
             return;
         }
 

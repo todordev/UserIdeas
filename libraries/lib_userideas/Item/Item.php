@@ -1,25 +1,25 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Items
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Userideas\Item;
 
-use Prism\Database\Table;
+use Prism\Database;
 
 defined('JPATH_PLATFORM') or die;
 
 /**
  * This class provides functionality for managing an item.
  *
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Items
  */
-class Item extends Table
+class Item extends Database\Table
 {
     protected $id = 0;
     protected $title;
@@ -52,7 +52,7 @@ class Item extends Table
      * @param int|array $keys
      * @param array $options
      */
-    public function load($keys, $options = array())
+    public function load($keys, array $options = array())
     {
         $query = $this->db->getQuery(true);
 

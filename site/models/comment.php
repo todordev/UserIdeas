@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasModelComment extends JModelForm
+class UserideasModelComment extends JModelForm
 {
     protected $item = null;
 
@@ -24,7 +24,7 @@ class UserIdeasModelComment extends JModelForm
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Comment', $prefix = 'UserIdeasTable', $config = array())
+    public function getTable($type = 'Comment', $prefix = 'UserideasTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -59,7 +59,7 @@ class UserIdeasModelComment extends JModelForm
      * The base form is loaded from XML and then an event is fired
      * for users plugins to extend the form with extra fields.
      *
-     * @param    array   $data     An optional array of data for the form to interogate.
+     * @param    array   $data     An optional array of data for the form to interrogate.
      * @param    boolean $loadData True if the form is to load its own data (default case), false if not.
      *
      * @return    JForm    A JForm object on success, false on failure
@@ -89,7 +89,6 @@ class UserIdeasModelComment extends JModelForm
 
         $data = $app->getUserState($this->option . '.edit.comment.data', array());
         if (!$data) {
-
             $commentId = (int)$this->getState('comment_id');
             $userId    = (int)JFactory::getUser()->get('id');
 
@@ -97,7 +96,7 @@ class UserIdeasModelComment extends JModelForm
             $data = $this->getItem($commentId, $userId);
 
             $itemId = (int)$this->getState('item_id');
-            if (empty($data->item_id)) {
+            if (!isset($data->item_id) or !$data->item_id) {
                 $data->item_id = $itemId;
             }
         }
@@ -126,7 +125,6 @@ class UserIdeasModelComment extends JModelForm
         $table = $this->getTable();
 
         if ($commentId > 0 and $userId > 0) {
-
             $keys = array(
                 'id'      => $commentId,
                 'user_id' => $userId
@@ -138,7 +136,7 @@ class UserIdeasModelComment extends JModelForm
 
         // Convert to the JObject before adding other data.
         $properties = $table->getProperties();
-        $this->item = Joomla\Utilities\ArrayHelper::toObject($properties, 'JObject');
+        $this->item = Joomla\Utilities\ArrayHelper::toObject($properties);
 
         return $this->item;
     }
@@ -176,7 +174,6 @@ class UserIdeasModelComment extends JModelForm
 
         // If there is no ID we are adding a new comment
         if (!$row->get('id')) {
-
             $isNew = true;
 
             $row->set('record_date', null);
@@ -186,7 +183,7 @@ class UserIdeasModelComment extends JModelForm
             $params    = JComponentHelper::getParams($this->option);
             /** @var  $params Joomla\Registry\Registry */
 
-            $published = (!$params->get('security_comment_auto_publish', 0)) ? 0 : 1;
+            $published = (!$params->get('security_comment_auto_publish', 0)) ? Prism\Constants::UNPUBLISHED : Prism\Constants::PUBLISHED;
 
             $row->set('published', $published);
         }

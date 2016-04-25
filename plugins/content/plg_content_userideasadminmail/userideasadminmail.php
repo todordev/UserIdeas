@@ -1,9 +1,9 @@
 <?php
 /**
- * @package         UserIdeas
+ * @package         Userideas
  * @subpackage      Plugins
  * @author          Todor Iliev
- * @copyright       Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright       Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license         http://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
@@ -12,21 +12,21 @@ defined('_JEXEC') or die;
 
 jimport('Prism.init');
 jimport('Userideas.init');
-jimport('EmailTemplates.init');
+jimport('Emailtemplates.init');
 
 /**
  * This plugin send notification mails to the administrator.
  *
- * @package        UserIdeas
+ * @package        Userideas
  * @subpackage     Plugins
  */
-class plgContentUserIdeasAdminMail extends JPlugin
+class plgContentUserideasAdminMail extends JPlugin
 {
     /**
      * This method is executed when someone create an item.
      *
      * @param string             $context
-     * @param UserIdeasTableItem $row
+     * @param UserideasTableItem $row
      * @param boolean            $isNew
      *
      * @return void|boolean
@@ -62,7 +62,7 @@ class plgContentUserIdeasAdminMail extends JPlugin
      * This method is executed when someone sends a comment.
      *
      * @param string             $context
-     * @param UserIdeasTableItem $row
+     * @param UserideasTableItem $row
      * @param boolean            $isNew
      *
      * @return null|boolean
@@ -85,7 +85,6 @@ class plgContentUserIdeasAdminMail extends JPlugin
         // Check for enabled option for sending mail
         // when user sends a comment.
         if ($emailId > 0 and ($isNew and $row->id > 0)) {
-
             $item = new Userideas\Item\Item(JFactory::getDbo());
             $item->load($row->get('item_id'));
 
@@ -113,10 +112,10 @@ class plgContentUserIdeasAdminMail extends JPlugin
             'site_name'  => $app->get('sitename'),
             'site_url'   => JUri::root(),
             'item_title' => $title,
-            'item_url'   => $website . JRoute::_(UserIdeasHelperRoute::getDetailsRoute($itemId, $categoryId)),
+            'item_url'   => $website . JRoute::_(UserideasHelperRoute::getDetailsRoute($itemId, $categoryId)),
         );
 
-        $email = new EmailTemplates\Email();
+        $email = new Emailtemplates\Email();
         $email->setDb(JFactory::getDbo());
         $email->load($emailId);
 

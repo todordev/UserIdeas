@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasViewCategory extends JViewLegacy
+class UserideasViewCategory extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -31,7 +31,7 @@ class UserIdeasViewCategory extends JViewLegacy
     protected $pagination;
 
     protected $category;
-    protected $canEdit;
+    protected $canCreate;
     protected $comments;
     protected $userId;
     protected $socialProfiles;
@@ -53,44 +53,48 @@ class UserIdeasViewCategory extends JViewLegacy
         $this->state      = $this->get('State');
         $this->pagination = $this->get('Pagination');
 
-        $this->params = $this->state->get('params');
-
-        $categoryId = $this->state->get('filter.category_id');
+        $this->params     = $this->state->get('params');
 
         $this->category = new Userideas\Category\Category(JFactory::getDbo());
-        $this->category->load($categoryId);
+        $this->category->load($this->state->get('filter.category_id'));
 
         if ($this->params->get('show_cat_tags', 0)) {
             $this->category->setTagsHelper(new JHelperTags);
             $this->tags = $this->category->getTags();
         }
-        
-        $this->comments = $this->get('Comments');
 
         $user = JFactory::getUser();
         $this->userId = $user->get('id');
 
         // Set permission state. Is it possible to be edited items?
-        $this->canEdit = $user->authorise('core.edit.own', 'com_userideas');
+        $this->canCreate = $user->authorise('core.create', 'com_userideas') || (count($user->getAuthorisedCategories('com_userideas', 'core.create')));
 
-        if (empty($this->category)) {
-
+        if (!$this->category->getId()) {
             $app = JFactory::getApplication();
             /** @var $app JApplicationSite */
 
             $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_INVALID_CATEGORY'), 'notice');
             $app->redirect(JRoute::_('index.php', false));
-
             return;
         }
 
-        $this->items = UserIdeasHelper::prepareStatuses($this->items);
+        $helpersOptions = array();
+        $helperBus      = new Prism\Helper\HelperBus($this->items);
+        $helperBus->addCommand(new Userideas\Helper\PrepareParams());
+        $helperBus->addCommand(new Userideas\Helper\PrepareStatuses());
+        $helperBus->addCommand(new Userideas\Helper\PrepareAccess(JFactory::getUser()));
 
-        $this->commentsEnabled = $this->params->get('comments_enabled', 1);
+        // Set helper command that prepares tags.
+        if ($this->params->get('show_tags')) {
+            $helpersOptions['content_type']  = 'com_userideas.item';
+            $helpersOptions['access_groups'] = \JFactory::getUser()->getAuthorisedViewLevels();
 
-        // Prepare integration. Load avatars and profiles.
+            $helperBus->addCommand(new Userideas\Helper\PrepareTags());
+        }
+        $helperBus->handle($helpersOptions);
+
+        $this->prepareComments();
         $this->prepareIntegration($this->params);
-
         $this->prepareDocument();
 
         parent::display($tpl);
@@ -185,7 +189,6 @@ class UserIdeasViewCategory extends JViewLegacy
 
         // If there are no users, do not continue.
         if (count($usersIds) > 0) {
-
             $this->integrationOptions = array(
                 'size' => $params->get('integration_avatars_size', 'small'),
                 'default' => $params->get('integration_avatars_default', '/media/com_userideas/images/no-profile.png')
@@ -201,6 +204,24 @@ class UserIdeasViewCategory extends JViewLegacy
             $socialProfilesBuilder->build();
 
             $this->socialProfiles = $socialProfilesBuilder->getProfiles();
+        }
+    }
+
+    /**
+     * Prepare comments.
+     */
+    protected function prepareComments()
+    {
+        if ($this->params->get('comments_enabled') and $this->params->get('show_button_comments')) {
+            $itemsIds = array();
+            foreach ($this->items as $item) {
+                $itemsIds[] = $item->id;
+            }
+
+            $this->commentsEnabled = true;
+
+            $comments = new Userideas\Comment\Comments(JFactory::getDbo());
+            $this->comments = $comments->advancedCount(array('items_ids' => $itemsIds));
         }
     }
 }

@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -11,13 +11,13 @@
 defined('_JEXEC') or die;
 
 /**
- * UserIdeas Html Helper
+ * Userideas Html Helper
  *
  * @package        ITPrism Components
- * @subpackage     UserIdeas
+ * @subpackage     Userideas
  * @since          1.6
  */
-abstract class JHtmlUserIdeas
+abstract class JHtmlUserideas
 {
     /**
      * @var   array   array containing information for loaded files
@@ -142,9 +142,20 @@ abstract class JHtmlUserIdeas
         }
 
         if (!empty($catSlug)) {
-            $html = '<a href="' . UserIdeasHelperRoute::getCategoryRoute($catSlug) . '" class="ui-category-label">' . htmlspecialchars($name, ENT_QUOTES, 'utf-8') . '</a>';
+            $html = '<a href="' . UserideasHelperRoute::getCategoryRoute($catSlug) . '" class="ui-category-label">' . htmlspecialchars($name, ENT_QUOTES, 'utf-8') . '</a>';
         } else {
             $html = '<span class="ui-category-label">' . htmlspecialchars($name, ENT_QUOTES, 'utf-8') . '</span>';
+        }
+
+        return $html;
+    }
+
+    public static function categoryFilter($category, $categoryId)
+    {
+        $html = '--';
+
+        if ($category !== '' and $categoryId > 0) {
+            $html = JText::sprintf('COM_USERIDEAS_CATEGORY_S', '<a href="' . JRoute::_('index.php?option=com_userideas&view=items&filter_search=id:'.(int)$categoryId). '">' . $category . '</a>');
         }
 
         return $html;
@@ -160,7 +171,7 @@ abstract class JHtmlUserIdeas
 
         if ($displayLink === true) {
             $html = '
-            <a href="' . UserIdeasHelperRoute::getItemsRoute($status->getId()) . '" class="ui-status-label">
+            <a href="' . UserideasHelperRoute::getItemsRoute($status->getId()) . '" class="ui-status-label">
             <span class="label' . $styles . '">' . htmlspecialchars($status->getName(), ENT_QUOTES, 'utf-8') . '</span>
             </a>';
         } else {

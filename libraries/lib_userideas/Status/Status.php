@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Statuses
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -16,7 +16,7 @@ defined('JPATH_PLATFORM') or die;
 /**
  * This class provides functionality for managing a status.
  *
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Statuses
  */
 class Status extends TableImmutable
@@ -34,11 +34,11 @@ class Status extends TableImmutable
      * $status   = new Userideas\Status\Status(\JFactory::getDbo());
      * $status->load($statusId);
      * </code>
-     * 
+     *
      * @param int|array $keys
      * @param array $options
      */
-    public function load($keys, $options = array())
+    public function load($keys, array $options = array())
     {
         $query = $this->db->getQuery(true);
 
@@ -85,7 +85,7 @@ class Status extends TableImmutable
      */
     public function getId()
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**

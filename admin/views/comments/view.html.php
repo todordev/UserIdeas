@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasViewComments extends JViewLegacy
+class UserideasViewComments extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -33,16 +33,16 @@ class UserIdeasViewComments extends JViewLegacy
     protected $saveOrderingUrl;
     protected $sortFields;
 
-    protected $sidebar;
+    public $activeFilters;
+    public $filterForm;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
+    protected $sidebar;
+    protected $canDo;
 
     public function display($tpl = null)
     {
+        $this->option = JFactory::getApplication()->input->get('option');
+        
         $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
@@ -66,16 +66,10 @@ class UserIdeasViewComments extends JViewLegacy
         // Prepare filters
         $this->listOrder = $this->escape($this->state->get('list.ordering'));
         $this->listDirn  = $this->escape($this->state->get('list.direction'));
-        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
+        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') === 0);
 
-        $this->sortFields = array(
-            'a.title'       => JText::_('COM_USERIDEAS_TITLE'),
-            'a.published'   => JText::_('JSTATUS'),
-            'a.record_date' => JText::_('JDATE'),
-            'b.title'       => JText::_('COM_USERIDEAS_ITEM_TITLE'),
-            'a.id'          => JText::_('JGRID_HEADING_ID')
-        );
-
+        $this->filterForm    = $this->get('FilterForm');
+        $this->activeFilters = $this->get('ActiveFilters');
     }
 
     /**
@@ -83,14 +77,14 @@ class UserIdeasViewComments extends JViewLegacy
      */
     protected function addSidebar()
     {
-        UserIdeasHelper::addSubmenu($this->getName());
+        UserideasHelper::addSubmenu($this->getName());
 
         JHtmlSidebar::setAction('index.php?option=' . $this->option . '&view=' . $this->getName());
 
         JHtmlSidebar::addFilter(
             JText::_('JOPTION_SELECT_PUBLISHED'),
             'filter_state',
-            JHtml::_('select.options', JHtml::_('jgrid.publishedOptions', array("archived" => false, "trash" => false)), 'value', 'text', $this->state->get('filter.state'), true)
+            JHtml::_('select.options', JHtml::_('jgrid.publishedOptions', array('archived' => false, 'trash' => false)), 'value', 'text', $this->state->get('filter.state'), true)
         );
 
         $this->sidebar = JHtmlSidebar::render();
@@ -104,16 +98,24 @@ class UserIdeasViewComments extends JViewLegacy
      */
     protected function addToolbar()
     {
+        $this->canDo = JHelperContent::getActions('com_userideas');
+
         // Set toolbar items for the page
         JToolbarHelper::title(JText::_('COM_USERIDEAS_COMMENTS_MANAGER'));
-        JToolbarHelper::editList('comment.edit');
-        JToolbarHelper::divider();
-        JToolbarHelper::publishList("comments.publish");
-        JToolbarHelper::unpublishList("comments.unpublish");
-        JToolbarHelper::divider();
-        JToolbarHelper::deleteList(JText::_("COM_USERIDEAS_DELETE_ITEMS_QUESTION"), "comments.delete");
-        JToolbarHelper::divider();
-        JToolbarHelper::custom('comments.backToDashboard', "dashboard", "", JText::_("COM_USERIDEAS_DASHBOARD"), false);
+
+        if ($this->canDo->get('core.edit')) {
+            JToolbarHelper::editList('comment.edit');
+        }
+        if ($this->canDo->get('core.edit.state')) {
+            JToolbarHelper::publishList('comments.publish');
+            JToolbarHelper::unpublishList('comments.unpublish');
+        }
+
+        if ($this->canDo->get('core.delete')) {
+            JToolbarHelper::deleteList(JText::_('COM_USERIDEAS_DELETE_ITEMS_QUESTION'), 'comments.delete');
+        }
+
+        JToolbarHelper::custom('comments.backToDashboard', 'dashboard', '', JText::_('COM_USERIDEAS_DASHBOARD'), false);
     }
 
     /**
@@ -130,7 +132,5 @@ class UserIdeasViewComments extends JViewLegacy
         JHtml::_('bootstrap.tooltip');
 
         JHtml::_('formbehavior.chosen', 'select');
-
-        JHtml::_('Prism.ui.joomlaList');
     }
 }

@@ -1,5 +1,11 @@
-User Ideas release notes
+User Ideas changelog
 ==========================
+
+###v2.3
+* It was fixed compatibility issue with Prism Library 1.10.
+* Added options in component global configuration.
+* Added access options.
+* It was implemented ACL functionality.
 
 ###v2.2.1
 * Fixed bug with initialization of vote button in the module UserIdeas Items.

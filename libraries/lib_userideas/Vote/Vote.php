@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Votes
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -16,7 +16,7 @@ defined('JPATH_PLATFORM') or die;
 /**
  * This class provides functionality for managing votes.
  *
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Votes
  */
 class Vote extends Table
@@ -43,7 +43,7 @@ class Vote extends Table
      * @param int|array $keys
      * @param array $options
      */
-    public function load($keys, $options = array())
+    public function load($keys, array $options = array())
     {
         $query = $this->db->getQuery(true);
 
@@ -78,7 +78,7 @@ class Vote extends Table
      * $data = array(
      *      "item_id"    => 1,
      *      "user_id"    => 2,
-     *      "hash"    => "HASH1JD92J09",
+     *      "hash"       => "HASH1JD92J09",
      *      "votes"      => 1
      * );
      *
@@ -107,6 +107,25 @@ class Vote extends Table
 
         $this->db->setQuery($query);
         $this->db->execute();
+    }
+
+    /**
+     * Return the ID of the vote.
+     *
+     * <code>
+     * $vote   = new Userideas\Vote\Vote(\JFactory::getDbo());
+     * $vote->load(array('hash' => 'HASH1234'));
+     *
+     * if (!$vote->getId()) {
+     * ...
+     * }
+     * </code>
+     *
+     * @return string
+     */
+    public function getId()
+    {
+        return (int)$this->id;
     }
 
     /**
@@ -164,6 +183,44 @@ class Vote extends Table
     public function getVotes()
     {
         return $this->votes;
+    }
+
+    /**
+     * Return user ID.
+     *
+     * <code>
+     * $voteId = 1;
+     *
+     * $vote   = new Userideas\Vote\Vote(\JFactory::getDbo());
+     * $vote->load($voteId);
+     *
+     * echo $vote->getUserId();
+     * </code>
+     *
+     * @return string
+     */
+    public function getUserId()
+    {
+        return (int)$this->user_id;
+    }
+
+    /**
+     * Return item ID.
+     *
+     * <code>
+     * $voteId = 1;
+     *
+     * $vote   = new Userideas\Vote\Vote(\JFactory::getDbo());
+     * $vote->load($voteId);
+     *
+     * echo $vote->getItemId();
+     * </code>
+     *
+     * @return string
+     */
+    public function getItemId()
+    {
+        return (int)$this->item_id;
     }
 
     /**

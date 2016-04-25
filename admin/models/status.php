@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasModelStatus extends JModelAdmin
+class UserideasModelStatus extends JModelAdmin
 {
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -22,7 +22,7 @@ class UserIdeasModelStatus extends JModelAdmin
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Status', $prefix = 'UserIdeasTable', $config = array())
+    public function getTable($type = 'Status', $prefix = 'UserideasTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -40,8 +40,25 @@ class UserIdeasModelStatus extends JModelAdmin
     {
         // Get the form.
         $form = $this->loadForm($this->option . '.status', 'status', array('control' => 'jform', 'load_data' => $loadData));
-        if (empty($form)) {
+        if (!$form) {
             return false;
+        }
+
+        $canDo  = JHelperContent::getActions('com_userideas');
+
+        $id   = (int)$this->getState('status.id');
+
+        // Check for existing article.
+        // Modify the form based on Edit State access controls.
+        if (($id !== 0 and !$canDo->get('core.edit')) or ($id === 0 and !$canDo->get('core.edit.state'))) {
+            // Disable fields for display.
+            $form->setFieldAttribute('default', 'disabled', 'true');
+            $form->setFieldAttribute('params.basic.style_class', 'disabled', 'true');
+
+            // Disable fields while saving.
+            // The controller has already verified this is an article you can edit.
+            $form->setFieldAttribute('default', 'filter', 'unset');
+            $form->setFieldAttribute('style_class', 'filter', 'unset');
         }
 
         return $form;
@@ -83,15 +100,13 @@ class UserIdeasModelStatus extends JModelAdmin
 
         // Load a record from the database
         $row = $this->getTable();
-        /** @var $row UserIdeasTableStatus */
+        /** @var $row UserideasTableStatus */
 
         $row->load($id);
 
         $row->set('name', $name);
         $row->set('default', $default);
         $row->set('params', $params);
-
-        $this->prepareTable($row);
 
         $row->store(true);
 
@@ -101,14 +116,6 @@ class UserIdeasModelStatus extends JModelAdmin
         }
 
         return $row->get('id');
-    }
-
-    protected function prepareTable($table)
-    {
-        // Fix magic quotes.
-        if (get_magic_quotes_gpc()) {
-            $table->set('name', stripcslashes($table->get('name')));
-        }
     }
 
     /**
@@ -122,7 +129,7 @@ class UserIdeasModelStatus extends JModelAdmin
     public function setDefault($id)
     {
         $status = $this->getTable();
-        /** @var $status UserIdeasTableStatus */
+        /** @var $status UserideasTableStatus */
 
         $status->load($id);
 
@@ -157,7 +164,7 @@ class UserIdeasModelStatus extends JModelAdmin
     public function unsetDefault($id)
     {
         $status = $this->getTable();
-        /** @var $status UserIdeasTableStatus */
+        /** @var $status UserideasTableStatus */
 
         $status->load($id);
 

@@ -1,9 +1,9 @@
 <?php
 /**
- * @package         UserIdeas
+ * @package         Userideas
  * @subpackage      Plugins
  * @author          Todor Iliev
- * @copyright       Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright       Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license         http://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
@@ -11,12 +11,12 @@
 defined('_JEXEC') or die;
 
 /**
- * UserIdeas Vote Plugin
+ * Userideas Vote Plugin
  *
- * @package        UserIdeas
+ * @package        Userideas
  * @subpackage     Plugins
  */
-class plgUserIdeasVote extends JPlugin
+class plgUserideasVote extends JPlugin
 {
     /**
      * Hash used to recognize anonymous users.
@@ -27,7 +27,7 @@ class plgUserIdeasVote extends JPlugin
 
     /**
      *
-     * This method is triggered bofore user vote be stored.
+     * This method is triggered before user vote be stored.
      *
      * @param string                   $context
      * @param array                    $data
@@ -175,7 +175,6 @@ class plgUserIdeasVote extends JPlugin
     protected function generateHash()
     {
         if (!$this->hash) {
-
             // Get user IP address
             $app = JFactory::getApplication();
             $app->input->server->get('HTTP_CLIENT_IP');

@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasModelItem extends JModelAdmin
+class UserideasModelItem extends JModelAdmin
 {
     /**
      * The type alias for this content type (for example, 'com_content.article').
@@ -19,6 +19,61 @@ class UserIdeasModelItem extends JModelAdmin
      * @since    3.2
      */
     public $typeAlias = 'com_userideas.item';
+
+    /**
+     * The context used for the associations table
+     *
+     * @var      string
+     * @since    3.4.4
+     */
+    protected $associationsContext = 'com_userideas.item';
+
+    /**
+     * Method to test whether a record can be deleted.
+     *
+     * @param   stdClass  $record  A record object.
+     *
+     * @return  boolean  True if allowed to delete the record. Defaults to the permission set in the component.
+     *
+     * @since   1.6
+     */
+    protected function canDelete($record)
+    {
+        if ((int)$record->id > 0) {
+            if ((int)$record->published !== -2) {
+                return false;
+            }
+
+            $user = JFactory::getUser();
+
+            return $user->authorise('core.delete', $this->option.'.item.' . (int)$record->id);
+        }
+
+        return false;
+    }
+
+    /**
+     * Method to test whether a record can have its state edited.
+     *
+     * @param   stdClass $record A record object.
+     *
+     * @return  boolean  True if allowed to change the state of the record. Defaults to the permission set in the component.
+     *
+     * @since   1.6
+     */
+    protected function canEditState($record)
+    {
+        $user = JFactory::getUser();
+
+        // Check for existing article.
+        if ((int)$record->id > 0) {
+            return $user->authorise('core.edit.state', $this->option . '.item.' . (int)$record->id);
+        } elseif ((int)$record->catid > 0) { // New article, so check against the category.
+            return $user->authorise('core.edit.state', $this->option . '.category.' . (int)$record->catid);
+        } else { // Default to component settings if neither article nor category known.
+            return parent::canEditState($this->option);
+        }
+    }
 
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -30,7 +85,7 @@ class UserIdeasModelItem extends JModelAdmin
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Item', $prefix = 'UserIdeasTable', $config = array())
+    public function getTable($type = 'Item', $prefix = 'UserideasTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -48,8 +103,37 @@ class UserIdeasModelItem extends JModelAdmin
     {
         // Get the form.
         $form = $this->loadForm($this->option . '.item', 'item', array('control' => 'jform', 'load_data' => $loadData));
-        if (empty($form)) {
+        if (!$form) {
             return false;
+        }
+
+        $user = JFactory::getUser();
+        $id   = (int)$this->getState('item.id');
+
+        if ($id) {
+            // Existing record. Can only edit in selected categories.
+            $form->setFieldAttribute('catid', 'action', 'core.edit');
+
+            // Existing record. Can only edit own articles in selected categories.
+            $form->setFieldAttribute('catid', 'action', 'core.edit.own');
+        } else {
+            // New record. Can only create in selected categories.
+            $form->setFieldAttribute('catid', 'action', 'core.create');
+        }
+
+        // Check for existing article.
+        // Modify the form based on Edit State access controls.
+        if ($id !== 0 and (!$user->authorise('core.edit.state', 'com_userideas.item.' . (int)$id)) or ($id === 0 && !$user->authorise('core.edit.state', 'com_userideas'))) {
+            // Disable fields for display.
+            $form->setFieldAttribute('published', 'disabled', 'true');
+            $form->setFieldAttribute('status_id', 'disabled', 'true');
+            $form->setFieldAttribute('access', 'disabled', 'true');
+
+            // Disable fields while saving.
+            // The controller has already verified this is an article you can edit.
+            $form->setFieldAttribute('published', 'filter', 'unset');
+            $form->setFieldAttribute('status_id', 'filter', 'unset');
+            $form->setFieldAttribute('access', 'filter', 'unset');
         }
 
         return $form;
@@ -64,10 +148,20 @@ class UserIdeasModelItem extends JModelAdmin
     protected function loadFormData()
     {
         // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState($this->option . '.edit.item.data', array());
+        $app  = JFactory::getApplication();
+        $data = $app->getUserState($this->option . '.edit.item.data', array());
 
-        if (empty($data)) {
+        if (!$data) {
             $data = $this->getItem();
+
+            $filters = (array) $app->getUserState('com_userideas.items.filter');
+
+            $state = (isset($filters['state']) and $filters['state'] !== '') ? $filters['state'] : null;
+            $data->published = $app->input->getInt('published', $state);
+
+            $data->catid = $app->input->getInt('catid', (!empty($filters['category']) ? $filters['category'] : null));
+            $data->access = $app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access')));
+            $data->status_id = $app->input->getInt('status', (!empty($filters['status']) ? $filters['status'] : null));
         }
 
         return $data;
@@ -88,17 +182,24 @@ class UserIdeasModelItem extends JModelAdmin
         $description = Joomla\Utilities\ArrayHelper::getValue($data, 'description');
         $statusId    = Joomla\Utilities\ArrayHelper::getValue($data, 'status_id', 0, 'int');
         $catId       = Joomla\Utilities\ArrayHelper::getValue($data, 'catid', 0, 'int');
-        $userId      = Joomla\Utilities\ArrayHelper::getValue($data, 'user_id', 0, 'int');
         $published   = Joomla\Utilities\ArrayHelper::getValue($data, 'published');
         $created     = Joomla\Utilities\ArrayHelper::getValue($data, 'record_date');
         $params      = Joomla\Utilities\ArrayHelper::getValue($data, 'params');
+        $rules       = Joomla\Utilities\ArrayHelper::getValue($data, 'rules', array(), 'array');
+        $userId      = Joomla\Utilities\ArrayHelper::getValue($data, 'user_id', JFactory::getUser()->get('id'), 'int');
+
+        // Get value of access option.
+        $app           = JFactory::getApplication();
+        $filters       = (array)$app->getUserState($this->option.'.items.filter');
+        $defaultAccess = (!empty($filters['access']) ? $filters['access'] : $app->get('access'));
+        $access        = Joomla\Utilities\ArrayHelper::getValue($data, 'access', $defaultAccess, 'int');
 
         // Encode parameters to JSON format.
-        $params  = ($params !== null and is_array($params)) ? json_encode($params) : null;
+        $params        = ($params !== null and is_array($params)) ? json_encode($params) : null;
 
         // Load a record from the database
         $row = $this->getTable();
-        /** @var $row UserIdeasTableItem */
+        /** @var $row UserideasTableItem */
 
         $row->load($id);
 
@@ -106,20 +207,26 @@ class UserIdeasModelItem extends JModelAdmin
         $row->set('alias', $alias);
         $row->set('description', $description);
         $row->set('status_id', $statusId);
-        $row->set('catid', $catId);
         $row->set('user_id', $userId);
+        $row->set('catid', $catId);
         $row->set('published', $published);
         $row->set('record_date', $created);
         $row->set('params', $params);
+        $row->set('access', $access);
+
+        // Set the rules.
+        $row->setRules($rules);
 
         // Set the tags.
         if (array_key_exists('tags', $data) and is_array($data['tags']) and count($data['tags']) > 0) {
             $row->set('newTags', $data['tags']);
         }
-        
+
         $this->prepareTable($row);
 
         $row->store();
+
+        $this->cleanCache();
 
         return $row->get('id');
     }
@@ -127,22 +234,29 @@ class UserIdeasModelItem extends JModelAdmin
     /**
      * Prepare and sanitise the table prior to saving.
      *
-     * @param UserIdeasTableItem $table
+     * @param UserideasTableItem $table
      *
      * @since    1.6
      */
     protected function prepareTable($table)
     {
+        if (!$table->get('params')) {
+            $table->get('params', null);
+        }
+
+        if (!$table->get('description')) {
+            $table->get('description', null);
+        }
+
         // get maximum order number
         if (!$table->get('id') and !$table->get('ordering')) {
-
             // Set ordering to the last item if not set
             $db    = JFactory::getDbo();
             $query = $db->getQuery(true);
             $query
                 ->select('MAX(a.ordering)')
                 ->from($db->quoteName('#__uideas_items', 'a'))
-                ->where('a.catid = ' .(int)$table->catid);
+                ->where('a.catid = ' . (int)$table->catid);
 
             $db->setQuery($query, 0, 1);
             $max = (int)$db->loadResult();
@@ -150,23 +264,21 @@ class UserIdeasModelItem extends JModelAdmin
             $table->set('ordering', $max + 1);
         }
 
-        // Fix magic quotes.
-        if (get_magic_quotes_gpc()) {
-            $table->set('title', stripcslashes($table->get('title')));
-            $table->set('description', stripcslashes($table->get('description')));
-        }
-
         // If does not exist alias, I will generate the new one from the title
         if (!$table->get('alias')) {
-            $table->set('alias', $table->get('title'));
+            if ((int)JFactory::getConfig()->get('unicodeslugs') === 1) {
+                $alias = JFilterOutput::stringURLUnicodeSlug($table->get('title'));
+            } else {
+                $alias = JFilterOutput::stringURLSafe($table->get('title'));
+            }
+            $table->set('alias', $alias);
         }
-        $table->set('alias', JApplicationHelper::stringURLSafe($table->get('alias')));
     }
 
     /**
      * A protected method to get a set of ordering conditions.
      *
-     * @param    UserIdeasTableItem $table
+     * @param    UserideasTableItem $table
      *
      * @return    array    An array of conditions to add to add to ordering queries.
      * @since    1.6
@@ -205,7 +317,7 @@ class UserIdeasModelItem extends JModelAdmin
 
         // Convert to the JObject before adding other data.
         $properties = $table->getProperties(1);
-        $item       = Joomla\Utilities\ArrayHelper::toObject($properties, 'JObject');
+        $item       = Joomla\Utilities\ArrayHelper::toObject($properties);
 
         if (property_exists($item, 'params')) {
             $registry = new Joomla\Registry\Registry;
@@ -217,5 +329,21 @@ class UserIdeasModelItem extends JModelAdmin
         $item->tags->getTagIds($item->id, 'com_userideas.item');
 
         return $item;
+    }
+
+    /**
+     * Custom clean the cache of com_content and content modules
+     *
+     * @param   string   $group      The cache group
+     * @param   integer  $client_id  The ID of the client
+     *
+     * @return  void
+     *
+     * @since   1.6
+     */
+    protected function cleanCache($group = null, $client_id = 0)
+    {
+        parent::cleanCache('com_userideas');
+        parent::cleanCache('mod_userideasitems');
     }
 }

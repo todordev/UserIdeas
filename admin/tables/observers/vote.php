@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 defined('JPATH_PLATFORM') or die;
@@ -15,12 +15,12 @@ defined('JPATH_PLATFORM') or die;
  * The classes extending this class should not be instanciated directly, as they
  * are automatically instanciated by the JObserverMapper
  *
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @link         http://docs.joomla.org/JTableObserver
  * @since        3.1.2
  */
-class UserIdeasObserverVote extends JTableObserver
+class UserideasObserverVote extends JTableObserver
 {
     /**
      * The pattern for this table's TypeAlias
@@ -37,7 +37,7 @@ class UserIdeasObserverVote extends JTableObserver
      * @param   JObservableInterface $observableObject The subject object to be observed
      * @param   array                $params           ( 'typeAlias' => $typeAlias )
      *
-     * @return  UserIdeasObserverVote
+     * @return  UserideasObserverVote
      *
      * @since   3.1.2
      */

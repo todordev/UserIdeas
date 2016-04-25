@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasModelComments extends JModelList
+class UserideasModelComments extends JModelList
 {
     /**
      * Constructor.
@@ -78,7 +78,7 @@ class UserIdeasModelComments extends JModelList
     {
         // Create a new query object.
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi */
+        /** @var $db JDatabaseDriver */
 
         $query = $db->getQuery(true);
 
@@ -87,7 +87,7 @@ class UserIdeasModelComments extends JModelList
             $this->getState(
                 'list.select',
                 'a.id, a.comment, a.record_date, a.user_id, a.published, ' .
-                'b.name AS author'
+                'b.name AS author, b.username AS author_username'
             )
         );
         $query->from($db->quoteName('#__uideas_comments', 'a'));
@@ -98,7 +98,7 @@ class UserIdeasModelComments extends JModelList
         $query->where('a.item_id = ' . (int)$itemId);
 
         // Filter by published
-        $query->where('a.published = 1');
+        $query->where('a.published = ' . Prism\Constants::PUBLISHED);
 
         // Add the list ordering clause.
         $orderString = $this->getOrderString();

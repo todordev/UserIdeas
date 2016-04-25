@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -15,20 +15,17 @@ defined('_JEXEC') or die;
 if ($this->item->event->beforeDisplayContent) {
     echo $this->item->event->beforeDisplayContent;
 } ?>
-
 <div class="row">
     <div class="col-md-12">
         <div class="media ui-item">
             <div class="ui-vote pull-left">
-                <div class="ui-vote-counter"
-                     id="js-ui-vote-counter-<?php echo $this->item->id; ?>"><?php echo $this->item->votes; ?></div>
-                <a class="btn btn-default ui-btn-vote js-ui-btn-vote" href="javascript: void(0);"
-                   data-id="<?php echo $this->item->id; ?>">
+                <div class="ui-vote-counter" id="js-ui-vote-counter-<?php echo $this->item->id; ?>"><?php echo $this->item->votes; ?></div>
+                <a class="btn btn-default ui-btn-vote js-ui-btn-vote" href="javascript: void(0);" data-id="<?php echo $this->item->id; ?>">
                     <?php echo JText::_('COM_USERIDEAS_VOTE'); ?>
                 </a>
             </div>
             <div class="media-body">
-                <?php if ($this->params->get('show_title', $this->item->params->get('show_title', 1))) {?>
+                <?php if ($this->params->get('show_title', $this->item->params->get('show_title'))) {?>
                 <h4 class="media-heading">
                     <?php echo $this->escape($this->item->title); ?>
                 </h4>
@@ -40,11 +37,19 @@ if ($this->item->event->beforeDisplayContent) {
             </div>
 
             <?php
-            $this->canEditResult = UserIdeasHelper::isValidOwner($this->userId, $this->item->user_id) and $this->canEdit;
-            $hasTags = (bool)($this->item->tags !== null and is_array($this->item->tags) and count($this->item->tags) > 0);
+            $hasTags = (bool)(isset($this->item->tags) and is_array($this->item->tags) and count($this->item->tags) > 0);
+            if (UserideasHelper::shouldDisplayFootbar($this->params, $this->item->params, $hasTags)) {
 
-            if (UserIdeasHelper::shouldDisplayFootbar($this->params, $this->item->params, $hasTags) or $this->canEditResult) {
-                echo $this->loadTemplate('footbar');
+                $layoutData = new stdClass;
+                $layoutData->item                = $this->item;
+                $layoutData->socialProfiles      = $this->socialProfiles;
+                $layoutData->integrationOptions  = $this->integrationOptions;
+                $layoutData->commentsEnabled     = $this->commentsEnabled;
+                $layoutData->params              = $this->params;
+                $layoutData->commentsNumber      = count($this->comments);
+
+                $layout      = new JLayoutFile('footbar');
+                echo $layout->render($layoutData);
             }?>
 
         </div>
@@ -67,12 +72,13 @@ if (!empty($this->item->event->onContentAfterDisplay)) {
                     <?php
 
                     // Get the profile and avatar.
-                    $profile = JHtml::_('userideas.profile', $this->socialProfiles, $comment->user_id, 'javascript: void(0);');
-                    $avatar  = JHtml::_('userideas.avatar', $this->socialProfiles, $comment->user_id, $this->integrationOptions);
+                    $profileLink = JHtml::_('userideas.profile', $this->socialProfiles, $comment->user_id, 'javascript: void(0);');
+                    $avatar      = JHtml::_('userideas.avatar', $this->socialProfiles, $comment->user_id, $this->integrationOptions);
+                    $name        = (strcmp('name', $this->params->get('integration_name_type', 'name')) === 0) ? $comment->author : $comment->author_username;
 
                     if (!empty($avatar)) { ?>
                     <div class="media-left">
-                        <a href="<?php echo $profile; ?>" rel="nofollow">
+                        <a href="<?php echo $profileLink; ?>" rel="nofollow">
                             <img class="media-object" src="<?php echo $avatar; ?>"/>
                         </a>
                     </div>
@@ -84,14 +90,11 @@ if (!empty($this->item->event->onContentAfterDisplay)) {
                     <div class="clearfix"></div>
                     <div class="well well-sm clearfix">
                         <div class="pull-left">
-                            <?php
-                            $profile = JHtml::_('userideas.profile', $this->socialProfiles, $comment->user_id);
-                            echo JHtml::_('userideas.publishedByOn', $comment->author, $comment->record_date, $profile);
-                            ?>
+                            <?php echo JHtml::_('userideas.publishedByOn', $name, $comment->record_date, $profileLink); ?>
                         </div>
                         <div class="pull-right">
-                            <?php if (UserIdeasHelper::isValidOwner($this->userId, $comment->user_id) and $this->canEditComment) { ?>
-                                <a class="btn btn-default btn-sm" href="<?php echo JRoute::_(UserIdeasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catid) . '&comment_id=' . (int)$comment->id); ?>#ui-comment-form">
+                            <?php if (((int)$this->userId === (int)$comment->user_id) and $this->canEditComment) { ?>
+                                <a class="btn btn-default btn-sm" href="<?php echo JRoute::_(UserideasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catid) . '&comment_id=' . (int)$comment->id); ?>#ui-comment-form">
                                     <span class="fa fa-edit"></span>
                                     <?php echo JText::_('COM_USERIDEAS_EDIT'); ?>
                                 </a>

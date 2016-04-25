@@ -1,15 +1,15 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
 
-class UserIdeasTableItem extends JTable
+class UserideasTableItem extends JTable
 {
     public $id;
     public $title;
@@ -53,5 +53,44 @@ class UserIdeasTableItem extends JTable
         }
 
         return $this->catslug;
+    }
+
+    /**
+     * Method to compute the default name of the asset.
+     * The default name is in the form table_name.id
+     * where id is the value of the primary key of the table.
+     *
+     * @return  string
+     *
+     * @since   11.1
+     */
+    protected function _getAssetName()
+    {
+        return 'com_userideas.item.' .(int)$this->id;
+    }
+
+    /**
+     * Method to get the parent asset under which to register this one.
+     * By default, all assets are registered to the ROOT node with ID,
+     * which will default to 1 if none exists.
+     * The extended class can define a table and id to lookup.  If the
+     * asset does not exist it will be created.
+     *
+     * @param   JTable  $table A JTable object for the asset parent.
+     * @param   integer $id    Id to look up
+     *
+     * @return  integer
+     *
+     * @since   11.1
+     */
+    protected function _getAssetParentId(JTable $table = null, $id = null)
+    {
+        // For simple cases, parent to the asset root.
+        $assets = self::getInstance('Asset', 'JTable', array('dbo' => $this->getDbo()));
+        /** @var JTableAsset $assets */
+
+        $assets->loadByName('com_userideas');
+
+        return (int)$assets->id;
     }
 }

@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -11,15 +11,24 @@
 defined('_JEXEC') or die;
 
 /**
- * UserIdeas items controller class.
+ * Userideas items controller class.
  *
- * @package        UserIdeas
+ * @package        Userideas
  * @subpackage     Component
  * @since          1.6
  */
-class UserIdeasControllerItems extends JControllerAdmin
+class UserideasControllerItems extends JControllerAdmin
 {
-    public function getModel($name = 'Item', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
+    /**
+     * Method to get a model object, loading it if required.
+     *
+     * @param string $name
+     * @param string $prefix
+     * @param array  $config
+     *
+     * @return UserideasModelItem
+     */
+    public function getModel($name = 'Item', $prefix = 'UserideasModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
         return $model;
@@ -51,7 +60,7 @@ class UserIdeasControllerItems extends JControllerAdmin
         try {
             $model->saveorder($pks, $order);
         } catch (Exception $e) {
-            JLog::add($e->getMessage());
+            JLog::add($e->getMessage(), JLog::ERROR, $this->option);
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
 

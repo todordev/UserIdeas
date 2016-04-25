@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="filter">
+		<field
+			name="search"
+			type="text"
+			label="COM_USERIDEAS_SEARCH_IN_COMMENTS"
+			description="COM_USERIDEAS_SEARCH_IN_COMMENTS_TOOLTIP"
+			hint="COM_USERIDEAS_SEARCH_IN_COMMENTS"
+		/>
+		<field
+			name="state"
+			type="status"
+			label="COM_USERIDEAS_FILTER_PUBLISHED"
+			description="COM_USERIDEAS_FILTER_PUBLISHED_DESC"
+			onchange="this.form.submit();"
+			filter="0,1,*"
+			>
+			<option value="">JOPTION_SELECT_PUBLISHED</option>
+		</field>
+	</fields>
+	<fields name="list">
+		<field
+			name="fullordering"
+			type="list"
+			label="COM_USERIDEAS_LIST_FULL_ORDERING"
+			description="COM_USERIDEAS_LIST_FULL_ORDERING_DESC"
+			onchange="this.form.submit();"
+			default="a.id DESC"
+			>
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="a.published ASC">JSTATUS_ASC</option>
+			<option value="a.published DESC">JSTATUS_DESC</option>
+			<option value="c.name ASC">JAUTHOR_ASC</option>
+			<option value="c.name DESC">JAUTHOR_DESC</option>
+			<option value="a.record_date ASC">JDATE_ASC</option>
+			<option value="a.record_date DESC">JDATE_DESC</option>
+			<option value="a.id ASC">JGRID_HEADING_ID_ASC</option>
+			<option value="a.id DESC">JGRID_HEADING_ID_DESC</option>
+			<option value="b.title ASC">COM_USERIDEAS_ITEM_TITLE_ASC</option>
+			<option value="b.title DESC">COM_USERIDEAS_ITEM_TITLE_DESC</option>
+		</field>
+		<field
+			name="limit"
+			type="limitbox"
+			class="input-mini"
+			default="25"
+			label="COM_USERIDEAS_LIST_LIMIT"
+			description="COM_USERIDEAS_LIST_LIMIT_DESC"
+			onchange="this.form.submit();"
+		/>
+	</fields>
+</form>

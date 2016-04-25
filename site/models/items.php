@@ -1,21 +1,21 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasModelItems extends JModelList
+class UserideasModelItems extends JModelList
 {
     /**
      * Constructor.
      *
-     * @param   array $config  An optional associative array of configuration settings.
+     * @param   array $config An optional associative array of configuration settings.
      *
      * @see     JController
      * @since   1.6
@@ -24,9 +24,12 @@ class UserIdeasModelItems extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'filter_status', 'a.status_id',
-                'filter_category', 'a.catid',
-                'filter_search', 'a.title',
+                'title', 'a.title',
+                'category', 'c.title',
+                'author', 'b.name',
+                'ordering', 'a.ordering',
+                'hits', 'a.hits',
+                'votes', 'a.votes'
             );
         }
 
@@ -35,14 +38,11 @@ class UserIdeasModelItems extends JModelList
 
     protected function populateState($ordering = null, $direction = null)
     {
-        // List state information.
-        parent::populateState('a.record_date', 'asc');
-
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
         // Load the component parameters.
-        $params = $app->getParams($this->option);
+        $params = $app->getParams();
         $this->setState('params', $params);
 
         // Get category id
@@ -58,19 +58,27 @@ class UserIdeasModelItems extends JModelList
         $this->setState('filter.status_id', $value);
 
         // Ordering
-        $order    = $params->get('items_ordering', 0);
-        $orderDir = $params->get('items_ordering_direction', 'ASC');
-        $this->prepareOrderingState($order, $orderDir);
+        $itemId   = $app->input->get('Itemid', 0, 'int');
+        $orderCol = $app->getUserStateFromRequest($this->context . '.list.' . $itemId . '.filter_order', 'filter_order', '', 'string');
+        if (!in_array($orderCol, $this->filter_fields, true)) {
+            $orderCol = '';
+        }
+        $this->setState('list.ordering', $orderCol);
+
+        $listOrder = $app->getUserStateFromRequest($this->context . '.list.' . $itemId . '.filter_order_Dir', 'filter_order_Dir', '', 'cmd');
+        if (!in_array(strtoupper($listOrder), array('ASC', 'DESC', ''), true)) {
+            $listOrder = 'ASC';
+        }
+        $this->setState('list.direction', $listOrder);
 
         // Pagination
-        $value = $params->get('items_display_results_number', 0);
+        $value = $app->getUserStateFromRequest($this->context . '.list.' . $itemId . '.limit', 'limit', $params->get('items_limit'), 'uint');
         if (!$value) {
-            $value = $app->input->getInt('limit', $app->get('list_limit', 0));
+            $value = $app->input->getInt('limit', $app->get('list_limit', 20));
         }
         $this->setState('list.limit', $value);
 
-        $value = $app->input->getInt('limitstart', 0);
-        $this->setState('list.start', $value);
+        $this->setState('list.start', $app->input->getInt('limitstart', 0));
     }
 
     /**
@@ -103,9 +111,8 @@ class UserIdeasModelItems extends JModelList
      */
     protected function getListQuery()
     {
-        // Create a new query object.
         $db = $this->getDbo();
-        /** @var $db JDatabaseMySQLi */
+        /** @var $db JDatabaseDriver */
 
         $query = $db->getQuery(true);
 
@@ -113,11 +120,11 @@ class UserIdeasModelItems extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, a.params, a.hits, ' .
-                $query->concatenate(array('a.id', 'a.alias'), '-') . ' AS slug, ' .
-                'b.name, b.username, ' .
-                'c.title AS category, ' .
-                $query->concatenate(array('c.id', 'c.alias'), '-') . ' AS catslug, ' .
+                'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, a.params, a.hits, a.access, ' .
+                $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
+                'b.name AS author, b.username, ' .
+                'c.title AS category, c.access AS category_access, ' .
+                $query->concatenate(array('c.id', 'c.alias'), ':') . ' AS catslug, ' .
                 'd.name AS status_name, d.params AS status_params, d.default AS status_default'
             )
         );
@@ -138,15 +145,23 @@ class UserIdeasModelItems extends JModelList
             $query->where('a.status_id = ' . (int)$statusId);
         }
 
-        // Filter by search in title
-        $search = $this->getState('filter.search');
-        if (JString::strlen($search) > 0) {
+        // Filter by state.
+        $query->where('a.published = ' . (int)Prism\Constants::PUBLISHED);
+
+        // Filter by access level.
+        $user   = JFactory::getUser();
+        $groups = implode(',', $user->getAuthorisedViewLevels());
+        $query
+            ->where('a.access IN (' . $groups . ')')
+            ->where('c.access IN (' . $groups . ')');
+
+        // Filter by string in title.
+        $search = (string)$this->getState('filter.search');
+        if ($search !== '') {
             $escaped = $db->escape($search, true);
             $quoted  = $db->quote('%' . $escaped . '%', false);
             $query->where('a.title LIKE ' . $quoted);
         }
-
-        $query->where('a.published = 1');
 
         // Add the list ordering clause.
         $orderString = $this->getOrderString();
@@ -156,66 +171,98 @@ class UserIdeasModelItems extends JModelList
     }
 
     /**
-     *
      * Prepare a string used for ordering results.
      *
-     * @param integer $order
-     * @param integer $orderDir
+     * @param string $order
+     *
+     * @return string
      */
-    protected function prepareOrderingState($order, $orderDir)
+    protected function prepareOrderBySecondary($order)
     {
         switch ($order) {
-            case 1:
-                $orderCol = 'a.title';
+            case 'date':
+                $orderBy = 'a.record_date';
                 break;
 
-            case 2:
-                $orderCol  = 'a.record_date';
-                $orderDir  = 'DESC';
+            case 'rdate':
+                $orderBy = 'a.record_date DESC';
                 break;
 
-            case 3:
-                $orderCol  = 'a.votes';
+            case 'alpha':
+                $orderBy = 'a.title';
+                break;
+
+            case 'ralpha':
+                $orderBy = 'a.title DESC';
+                break;
+
+            case 'hits':
+                $orderBy = 'a.hits DESC';
+                break;
+
+            case 'rhits':
+                $orderBy = 'a.hits';
+                break;
+
+            case 'order':
+                $orderBy = 'a.ordering';
+                break;
+
+            case 'author':
+                $orderBy = 'author';
+                break;
+
+            case 'rauthor':
+                $orderBy = 'author DESC';
+                break;
+
+            case 'random':
+                $query   = $this->getDbo()->getQuery(true);
+                $orderBy = $query->Rand();
+                break;
+
+            case 'votes':
+                $orderBy = 'a.votes DESC';
+                break;
+
+            case 'rvotes':
+                $orderBy = 'a.votes';
                 break;
 
             default:
-                $orderCol = 'a.ordering';
+                $orderBy = 'a.ordering';
                 break;
         }
 
-        // Set the column using for ordering
-        $this->setState('list.ordering', $orderCol);
-
-        // Set the type of ordering
-        if (!in_array(JString::strtoupper($orderDir), array('ASC', 'DESC'), true)) {
-            $orderDir = 'ASC';
-        }
-        $this->setState('list.direction', $orderDir);
+        return $orderBy;
     }
 
     protected function getOrderString()
     {
+        $db = $this->getDbo();
+
+        $orderBy   = array();
         $orderCol  = $this->getState('list.ordering');
         $orderDirn = $this->getState('list.direction');
+        $params    = $this->getState('params');
 
-        return $orderCol . ' ' . $orderDirn;
-    }
+        if ($orderCol) {
+            $orderBy[]   = (!$orderDirn) ? $db->escape($orderCol) : $db->escape($orderCol) . ' ' . $db->escape($orderDirn);
+        }
 
-    public function getComments()
-    {
-        $db = $this->getDbo();
-        /** @var $db JDatabaseDriver */
+        $itemOrderBy     = $params->get('orderby_sec', Prism\Constants::ORDER_MOST_RECENT_FIRST);
+        $categoryOrderBy = $params->def('orderby_pri', '');
+        $primary         = Prism\Utilities\QueryHelper::orderbyPrimary($categoryOrderBy);
+        $secondary       = $this->prepareOrderBySecondary($itemOrderBy);
 
-        $query = $db->getQuery(true);
+        if ($primary !== '') {
+            $orderBy[] = $primary;
+        }
 
-        $query
-            ->select('a.item_id, COUNT(*) AS number')
-            ->from($db->quoteName('#__uideas_comments', 'a'))
-            ->group('a.item_id');
+        if ($orderCol !== $secondary) {
+            $orderBy[] = $secondary;
+        }
 
-        $db->setQuery($query);
-        $results = $db->loadAssocList('item_id', 'number');
-
-        return $results;
+        return implode(', ', $orderBy);
     }
 }

@@ -1,0 +1,6 @@
+cfg.name=userideas
+cfg.version=v2.3
+cfg.joomlaVersion=J3.5
+cfg.buildDir=packages
+cfg.sourceDir=/...PATH.../userideas
+cfg.pkgDir=/...PATH.../pkg_userideas

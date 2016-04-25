@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasViewDetails extends JViewLegacy
+class UserideasViewDetails extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -64,35 +64,43 @@ class UserIdeasViewDetails extends JViewLegacy
         $user = JFactory::getUser();
         $this->userId = $user->get('id');
 
+        $helperBus     = new Prism\Helper\HelperBus($this->item);
+        $helperBus->addCommand(new Userideas\Helper\PrepareItemParams());
+        $helperBus->addCommand(new Userideas\Helper\PrepareItemStatus());
+        $helperBus->addCommand(new Userideas\Helper\PrepareItemAccess(JFactory::getUser()));
+
+        if ($this->params->get('show_tags')) {
+            $helperBus->addCommand(new Userideas\Helper\PrepareItemTags());
+        }
+
+        $helperBus->handle();
+
         // Set permission state. Is it possible to be edited items?
-        $this->canEdit = $user->authorise('core.edit.own', 'com_userideas');
+        $this->canEdit         = $user->authorise('core.edit.own', 'com_userideas');
 
         $this->commentsEnabled = $this->params->get('comments_enabled', 1);
-        $this->canComment = $user->authorise('userideas.comment.create', 'com_userideas');
-        $this->canEditComment = $user->authorise('userideas.comment.edit.own', 'com_userideas');
+        $this->canComment      = $user->authorise('userideas.comment.create', 'com_userideas');
+        $this->canEditComment  = $user->authorise('userideas.comment.edit.own', 'com_userideas');
 
         // Get the model of the comments
         // that I will use to load all comments for this item.
-        $modelComments  = JModelLegacy::getInstance('Comments', 'UserIdeasModel');
+        $modelComments  = JModelLegacy::getInstance('Comments', 'UserideasModel');
         $this->comments = $modelComments->getItems();
 
         // Get the model of the comment
-        $commentModelForm = JModelLegacy::getInstance('Comment', 'UserIdeasModel');
+        $commentModelForm = JModelLegacy::getInstance('Comment', 'UserideasModel');
 
         // Validate the owner of the comment,
         // If someone wants to edit it.
         $commentId = (int)$commentModelForm->getState('comment_id');
-
         if ($commentId > 0) {
-
             $comment = $commentModelForm->getItem($commentId, $this->userId);
 
             if (!$comment) {
                 $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_INVALID_COMMENT'), 'error');
-                $app->redirect(JRoute::_(UserIdeasHelperRoute::getItemsRoute(), false));
+                $app->redirect(JRoute::_(UserideasHelperRoute::getItemsRoute(), false));
                 return;
             }
-
         }
 
         // Get comment form
@@ -102,7 +110,7 @@ class UserIdeasViewDetails extends JViewLegacy
         $this->prepareIntegration($this->params);
 
         // Prepare the link to the details page.
-        $this->item->link = UserIdeasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug);
+        $this->item->link = UserideasHelperRoute::getDetailsRoute($this->item->slug, $this->item->catslug);
         $this->item->text = $this->item->description;
 
         $this->prepareDebugMode();
@@ -202,11 +210,9 @@ class UserIdeasViewDetails extends JViewLegacy
         if ($this->params->get('page_title')) {
             $title = $this->params->get('page_title');
         } else {
-
-            $seo = $this->params->get('seo_cat_to_title');
+            $seo = $this->params->get('category_in_title');
 
             switch ($seo) {
-
                 case '1': // Before page title
                     $title = $this->category->title . ' | ' . $this->item->title;
                     break;
@@ -274,7 +280,6 @@ class UserIdeasViewDetails extends JViewLegacy
 
         // If there are no users, do not continue.
         if (count($usersIds) > 0) {
-
             $this->integrationOptions = array(
                 'size' => $params->get('integration_avatars_size', 'small'),
                 'default' => $params->get('integration_avatars_default', '/media/com_userideas/images/no-profile.png')

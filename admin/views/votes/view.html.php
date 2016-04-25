@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasViewVotes extends JViewLegacy
+class UserideasViewVotes extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -34,15 +34,12 @@ class UserIdeasViewVotes extends JViewLegacy
     protected $sortFields;
 
     protected $sidebar;
-
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
+    protected $canDo;
 
     public function display($tpl = null)
     {
+        $this->option = JFactory::getApplication()->input->get('option');
+        
         $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
@@ -66,7 +63,7 @@ class UserIdeasViewVotes extends JViewLegacy
         // Prepare filters
         $this->listOrder = $this->escape($this->state->get('list.ordering'));
         $this->listDirn  = $this->escape($this->state->get('list.direction'));
-        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
+        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') === 0);
 
         if ($this->saveOrder) {
             $this->saveOrderingUrl = 'index.php?option=' . $this->option . '&task=' . $this->getName() . '.saveOrderAjax&format=raw';
@@ -86,7 +83,7 @@ class UserIdeasViewVotes extends JViewLegacy
      */
     protected function addSidebar()
     {
-        UserIdeasHelper::addSubmenu($this->getName());
+        UserideasHelper::addSubmenu($this->getName());
 
         $this->sidebar = JHtmlSidebar::render();
     }
@@ -97,11 +94,16 @@ class UserIdeasViewVotes extends JViewLegacy
      */
     protected function addToolbar()
     {
+        $this->canDo = JHelperContent::getActions('com_userideas');
+
         // Set toolbar items for the page
         JToolbarHelper::title(JText::_('COM_USERIDEAS_VOTES_MANAGER'));
-        JToolbarHelper::deleteList(JText::_("COM_USERIDEAS_DELETE_ITEMS_QUESTION"), "votes.delete");
-        JToolbarHelper::divider();
-        JToolbarHelper::custom('votes.backToDashboard', "dashboard", "", JText::_("COM_USERIDEAS_DASHBOARD"), false);
+
+        if ($this->canDo->get('core.delete')) {
+            JToolbarHelper::deleteList(JText::_('COM_USERIDEAS_DELETE_ITEMS_QUESTION'), 'votes.delete');
+        }
+
+        JToolbarHelper::custom('votes.backToDashboard', 'dashboard', '', JText::_('COM_USERIDEAS_DASHBOARD'), false);
     }
 
     /**

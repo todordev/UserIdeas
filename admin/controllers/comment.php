@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -11,34 +11,34 @@
 defined('_JEXEC') or die;
 
 /**
- * UserIdeas comment controller class.
+ * Userideas comment controller class.
  *
- * @package        UserIdeas
+ * @package        Userideas
  * @subpackage     Component
  * @since          1.6
  */
-class UserIdeasControllerComment extends Prism\Controller\Form\Backend
+class UserideasControllerComment extends Prism\Controller\Form\Backend
 {
     public function save($key = null, $urlVar = null)
     {
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
         $data   = $this->input->post->get('jform', array(), 'array');
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, "id");
+        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, 'id');
 
         $responseOptions = array(
-            "task" => $this->getTask(),
-            "id"   => $itemId
+            'task' => $this->getTask(),
+            'id'   => $itemId
         );
 
         $model = $this->getModel();
-        /** @var $model UserIdeasModelComment */
+        /** @var $model UserideasModelComment */
 
         $form = $model->getForm($data, false);
-        /** @var $form JForm * */
+        /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_("COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED"), 500);
+            throw new Exception(JText::_('COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED'));
         }
 
         // Validate the form data
@@ -53,7 +53,7 @@ class UserIdeasControllerComment extends Prism\Controller\Form\Backend
         try {
             $model->save($validData);
         } catch (Exception $e) {
-            JLog::add($e->getMessage());
+            JLog::add($e->getMessage(), JLog::ERROR, $this->option);
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
 

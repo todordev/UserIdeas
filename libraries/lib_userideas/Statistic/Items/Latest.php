@@ -1,15 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Statistic\Items
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Userideas\Statistic\Items;
 
 use Userideas\Statistic\Items;
+use Prism\Constants;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -30,8 +31,8 @@ class Latest extends Items
      *
      * <code>
      * $options = array(
-     *     "type"  => 'array', // array or object
-     *     "limit" => 5
+     *     "limit" => 5,
+     *     "state" => Prism\Constants::PUBLISHED
      * );
      *
      * $latest = new Userideas\Statistics\Items\Latest(\JFactory::getDbo());
@@ -40,26 +41,30 @@ class Latest extends Items
      *
      * @param array $options
      */
-    public function load($options = array())
+    public function load(array $options = array())
     {
-        $type  = (array_key_exists('type', $options)) ? $options['type'] : 'array';
-        $limit = (array_key_exists('limit', $options)) ? (int)$options['limit'] : 5;
-
         $query = $this->getQuery();
 
-        $query
-            ->where('a.published = 1')
-            ->order('a.record_date DESC');
-
-        $this->db->setQuery($query, 0, (int)$limit);
-
-        if (strcmp('array', $type) === 0) {
-            $this->items = (array)$this->db->loadAssocList();
-        } else {
-            $this->items = (array)$this->db->loadObjectList();
+        // Filter by state.
+        $state  = $this->getOptionState($options);
+        if ($state !== null) {
+            $query->where('a.published = ' . (int)$state);
         }
 
-        // Prepare params.
-        $this->prepareParams();
+        // Filter by access level.
+        $groups  = $this->getOptionAccessGroups($options);
+        if (is_array($groups) and count($groups) > 0) {
+            $groups = implode(',', $groups);
+            $query
+                ->where('a.access IN (' . $groups . ')')
+                ->where('c.access IN (' . $groups . ')');
+        }
+
+        $query->order('a.record_date DESC');
+
+        $limit = $this->getOptionLimit($options);
+        $this->db->setQuery($query, 0, (int)$limit);
+
+        $this->items = (array)$this->db->loadObjectList();
     }
 }

@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasViewItems extends JViewLegacy
+class UserideasViewItems extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -31,24 +31,23 @@ class UserIdeasViewItems extends JViewLegacy
     protected $listDirn;
     protected $saveOrder;
     protected $saveOrderingUrl;
-    protected $sortFields;
+
+    public $activeFilters;
+    public $filterForm;
 
     protected $sidebar;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
-
-
     public function display($tpl = null)
     {
+        $this->option     = JFactory::getApplication()->input->get('option');
+        
         $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
 
-        $this->items = UserIdeasHelper::prepareStatuses($this->items);
+        $helperBus     = new Prism\Helper\HelperBus($this->items);
+        $helperBus->addCommand(new Userideas\Helper\PrepareStatuses());
+        $helperBus->handle();
 
         // Prepare sorting data
         $this->prepareSorting();
@@ -69,24 +68,15 @@ class UserIdeasViewItems extends JViewLegacy
         // Prepare filters
         $this->listOrder = $this->escape($this->state->get('list.ordering'));
         $this->listDirn  = $this->escape($this->state->get('list.direction'));
-        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') != 0) ? false : true;
+        $this->saveOrder = (strcmp($this->listOrder, 'a.ordering') === 0);
 
         if ($this->saveOrder) {
             $this->saveOrderingUrl = 'index.php?option=' . $this->option . '&task=' . $this->getName() . '.saveOrderAjax&format=raw';
             JHtml::_('sortablelist.sortable', $this->getName() . 'List', 'adminForm', strtolower($this->listDirn), $this->saveOrderingUrl);
         }
 
-        $this->sortFields = array(
-            'a.title'       => JText::_('COM_USERIDEAS_TITLE'),
-            'a.published'   => JText::_('JSTATUS'),
-            'a.record_date' => JText::_('COM_USERIDEAS_CREATED'),
-            'a.votes'       => JText::_('COM_USERIDEAS_VOTES'),
-            'a.hits'        => JText::_('COM_USERIDEAS_HITS'),
-            'b.name'        => JText::_('COM_USERIDEAS_USER'),
-            'c.title'       => JText::_('COM_USERIDEAS_CATEGORY'),
-            'a.id'          => JText::_('JGRID_HEADING_ID')
-        );
-
+        $this->filterForm    = $this->get('FilterForm');
+        $this->activeFilters = $this->get('ActiveFilters');
     }
 
     /**
@@ -94,29 +84,7 @@ class UserIdeasViewItems extends JViewLegacy
      */
     protected function addSidebar()
     {
-        UserIdeasHelper::addSubmenu($this->getName());
-
-        JHtmlSidebar::setAction('index.php?option=' . $this->option . '&view=' . $this->getName());
-
-        JHtmlSidebar::addFilter(
-            JText::_('JOPTION_SELECT_PUBLISHED'),
-            'filter_state',
-            JHtml::_('select.options', JHtml::_('jgrid.publishedOptions', array("archived" => false, "trash" => false)), 'value', 'text', $this->state->get('filter.state'), true)
-        );
-
-        JHtmlSidebar::addFilter(
-            JText::_('JOPTION_SELECT_CATEGORY'),
-            'filter_category',
-            JHtml::_('select.options', JHtml::_('category.options', 'com_userideas'), 'value', 'text', $this->state->get('filter.category'), true)
-        );
-
-        // Item statuses
-        $statuses = Userideas\Status\Statuses::getInstance(JFactory::getDbo());
-        JHtmlSidebar::addFilter(
-            JText::_('COM_USERIDEAS_SELECT_ITEM_STATUS'),
-            'filter_status',
-            JHtml::_('select.options', $statuses->getStatusesOptions(), 'value', 'text', $this->state->get('filter.status'), true)
-        );
+        UserideasHelper::addSubmenu($this->getName());
 
         $this->sidebar = JHtmlSidebar::render();
     }
@@ -128,17 +96,33 @@ class UserIdeasViewItems extends JViewLegacy
      */
     protected function addToolbar()
     {
+        $canDo = JHelperContent::getActions('com_userideas', 'category', $this->state->get('filter.category'));
+        $user  = JFactory::getUser();
+
         // Set toolbar items for the page
         JToolbarHelper::title(JText::_('COM_USERIDEAS_ITEMS_MANAGER'), 'items');
-        JToolbarHelper::addNew('item.add');
-        JToolbarHelper::editList('item.edit');
+
+        if ($canDo->get('core.create') or (count($user->getAuthorisedCategories('com_userideas', 'core.create'))) > 0) {
+            JToolbarHelper::addNew('item.add');
+        }
+
+        if ($canDo->get('core.edit') or $canDo->get('core.edit.own')) {
+            JToolbarHelper::editList('item.edit');
+        }
+
+        if ($canDo->get('core.edit.state')) {
+            JToolbarHelper::publishList('items.publish');
+            JToolbarHelper::unpublishList('items.unpublish');
+        }
+
+        if ((int)$this->state->get('filter.state') === -2 and $canDo->get('core.delete')) {
+            JToolbarHelper::deleteList(JText::_('COM_USERIDEAS_DELETE_ITEMS_QUESTION'), 'items.delete', 'JTOOLBAR_EMPTY_TRASH');
+        } elseif ($canDo->get('core.edit.state')) {
+            JToolbarHelper::trash('items.trash');
+        }
+
         JToolbarHelper::divider();
-        JToolbarHelper::publishList("items.publish");
-        JToolbarHelper::unpublishList("items.unpublish");
-        JToolbarHelper::divider();
-        JToolbarHelper::deleteList(JText::_("COM_USERIDEAS_DELETE_ITEMS_QUESTION"), "items.delete");
-        JToolbarHelper::divider();
-        JToolbarHelper::custom('items.backToDashboard', "dashboard", "", JText::_("COM_USERIDEAS_DASHBOARD"), false);
+        JToolbarHelper::custom('items.backToDashboard', 'dashboard', '', JText::_('COM_USERIDEAS_DASHBOARD'), false);
     }
 
     /**
@@ -155,7 +139,5 @@ class UserIdeasViewItems extends JViewLegacy
         JHtml::_('behavior.multiselect');
 
         JHtml::_('formbehavior.chosen', 'select');
-
-        JHtml::_('Prism.ui.joomlaList');
     }
 }

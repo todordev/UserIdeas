@@ -19,12 +19,15 @@ CREATE TABLE IF NOT EXISTS `#__uideas_items` (
   `hits` mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   `record_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ordering` smallint(5) UNSIGNED NOT NULL DEFAULT '0',
-  `published` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
+  `published` tinyint(1) NOT NULL DEFAULT '0',
   `params` varchar(2048) DEFAULT NULL,
   `status_id` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
   `catid` int(10) UNSIGNED NOT NULL,
   `user_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  `asset_id` int(10) NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table.',
+  `access` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_uiitems_access` (`access`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__uideas_statuses` (
@@ -46,4 +49,3 @@ CREATE TABLE IF NOT EXISTS `#__uideas_votes` (
   KEY `idx_ui_history_record_date` (`record_date`),
   KEY `idx_ui_history_item_user` (`item_id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-

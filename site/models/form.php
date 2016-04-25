@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasModelForm extends JModelForm
+class UserideasModelForm extends JModelForm
 {
     protected $item;
 
@@ -24,7 +24,7 @@ class UserIdeasModelForm extends JModelForm
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Item', $prefix = 'UserIdeasTable', $config = array())
+    public function getTable($type = 'Item', $prefix = 'UserideasTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -43,16 +43,15 @@ class UserIdeasModelForm extends JModelForm
 
         // Get the pk of the record from the request.
         $value = $app->input->getInt('id', 0);
-        $this->setState($this->getName() . '.id', $value);
+        $this->setState('item.id', $value);
 
         // Get category ID
         $value = $app->getUserState($this->option . '.items.catid');
-        $this->setState('category_id', $value);
+        $this->setState('item.catid', $value);
 
         // Load the parameters.
         $value = $app->getParams($this->option);
         $this->setState('params', $value);
-
     }
 
     /**
@@ -71,7 +70,7 @@ class UserIdeasModelForm extends JModelForm
     {
         // Get the form.
         $form = $this->loadForm($this->option . '.form', 'form', array('control' => 'jform', 'load_data' => $loadData));
-        if (empty($form)) {
+        if (!$form) {
             return false;
         }
 
@@ -91,19 +90,11 @@ class UserIdeasModelForm extends JModelForm
 
         $data = $app->getUserState($this->option . '.edit.form.data', array());
         if (!$data) {
-
-            $itemId = (int)$this->getState($this->getName() . '.id');
+            $itemId = (int)$this->getState('item.id');
             if ($itemId > 0) {
                 $userId = JFactory::getUser()->get('id');
                 $data   = $this->getItem($itemId, $userId);
             }
-
-            if (!$data) {
-                $data = array(
-                    'caitid' => $this->getState('category_id')
-                );
-            }
-
         }
 
         return $data;
@@ -112,34 +103,62 @@ class UserIdeasModelForm extends JModelForm
     /**
      * Method to get a single record.
      *
-     * @param   integer $pk     The id of the primary key.
-     * @param   integer $userId The user Id
+     * @param   int $pk     The id of the primary key.
+     * @param   int $userId The user Id
      *
-     * @return  object
+     * @return  stdClass
      * @since   11.1
      */
-    public function getItem($pk, $userId)
+    public function getItem($pk = 0, $userId = 0)
     {
-        if ($this->item) {
-            return $this->item;
-        }
+        if (!$this->item) {
+            if (!$pk or !$userId) {
+                return null;
+            }
 
-        // Initialise variables.
-        $table = $this->getTable();
+            $db = $this->getDbo();
+            /** @var $db JDatabaseDriver */
 
-        if ($pk > 0 and $userId > 0) {
+            $query = $db->getQuery(true);
 
-            $keys = array(
-                'id'      => $pk,
-                'user_id' => $userId
+            // Select the required fields from the table.
+            $query->select(
+                $this->getState(
+                    'item.select',
+                    'a.id, a.title, a.description, a.catid, a.user_id, a.params, a.access, ' .
+                    'c.access AS category_access'
+                )
             );
+            $query->from($db->quoteName('#__uideas_items', 'a'));
+            $query->leftJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id');
 
-            // Attempt to load the row.
-            $table->load($keys);
+            // Filter by item ID.
+            if ((int)$pk > 0) {
+                $query->where('a.id = ' . (int)$pk);
+            }
 
-            // Convert to the JObject before adding other data.
-            $this->item = $table->getProperties();
+            // Filter by user ID.
+            if ($userId > 0) {
+                $query->where('a.user_id = ' . (int)$userId);
+            }
 
+            $db->setQuery($query);
+            $this->item = $db->loadObject();
+
+            if ($this->item !== null) {
+                if ($this->item->params === null) {
+                    $this->item->params = '{}';
+                }
+
+                if ($this->item->params !== '') {
+                    $params = new \Joomla\Registry\Registry();
+                    $params->loadString($this->item->params);
+
+                    $this->item->params = $params;
+                }
+
+                $this->prepareAccess($this->item);
+            }
         }
 
         return $this->item;
@@ -168,7 +187,7 @@ class UserIdeasModelForm extends JModelForm
 
         // Load a record from the database
         $row = $this->getTable();
-        /** @var $row UserIdeasTableItem */
+        /** @var $row UserideasTableItem */
 
         $row->load($keys);
 
@@ -183,7 +202,6 @@ class UserIdeasModelForm extends JModelForm
         $row->set('catid', $categoryId);
 
         if ($isNew) {
-
             $recordDate = new JDate();
             $row->set('record_date', $recordDate->toSql());
             $row->set('user_id', $userId);
@@ -197,11 +215,14 @@ class UserIdeasModelForm extends JModelForm
             }
 
             // Auto publishing
-            $params    = JComponentHelper::getParams($this->option);
+            $params = JComponentHelper::getParams('com_userideas');
             /** @var  $params Joomla\Registry\Registry */
 
             $published = $params->get('security_item_auto_publish', 0);
             $row->set('published', $published);
+
+            $access = $params->get('default_access', JFactory::getApplication()->get('access'));
+            $row->set('access', $access);
         }
 
         $this->prepareTable($row);
@@ -235,66 +256,78 @@ class UserIdeasModelForm extends JModelForm
     /**
      * Prepare and sanitise the table prior to saving.
      *
-     * @param UserIdeasTableItem $table
+     * @param UserideasTableItem $table
+     *
      * @since    1.6
      */
     protected function prepareTable(&$table)
     {
         // get maximum order number
-        if (!$table->get('id')) {
-
+        if (!$table->get('id') and !$table->get('ordering')) {
             // Set ordering to the last item if not set
-            if (empty($table->ordering)) {
-                $db    = $this->getDbo();
-                $query = $db->getQuery(true);
-                $query
-                    ->select('MAX(a.ordering)')
-                    ->from($db->quoteName('#__uideas_items', 'a'));
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true);
+            $query
+                ->select('MAX(a.ordering)')
+                ->from($db->quoteName('#__uideas_items', 'a'));
 
-                $db->setQuery($query, 0, 1);
-                $max = $db->loadResult();
+            $db->setQuery($query, 0, 1);
+            $max = $db->loadResult();
 
-                $table->set('ordering', $max + 1);
-            }
-        }
-
-        // Fix magic quotes
-        if (get_magic_quotes_gpc()) {
-            $table->set('alias', stripcslashes($table->title));
-            $table->set('description', stripcslashes($table->description));
+            $table->set('ordering', $max + 1);
         }
 
         // If does not exist alias, I will generate the new one from the title
         if (!$table->get('alias')) {
-            $table->set('alias', $table->get('title'));
+            if ((int)JFactory::getConfig()->get('unicodeslugs') === 1) {
+                $alias = JFilterOutput::stringURLUnicodeSlug($table->get('title'));
+            } else {
+                $alias = JFilterOutput::stringURLSafe($table->get('title'));
+            }
+            $table->set('alias', $alias);
         }
-        $table->set('alias', JApplicationHelper::stringURLSafe($table->get('alias')));
     }
 
     /**
-     * Method to test whether a record can be created or edited.
+     * Method to prepare access data.
      *
-     * @param   int  $itemId  Item ID/
-     * @param   int  $userId  User ID.
-     *
-     * @return  boolean  True if allowed to change the state of the record. Defaults to the permission for the component.
-     *
-     * @since   12.2
+     * @param   stdClass $item
      */
-    public function canEditOwn($itemId, $userId)
+    public function prepareAccess($item)
     {
-        $user = JFactory::getUser();
+        // Compute selected asset permissions.
+        $user   = JFactory::getUser();
+        $userId = (int)$user->get('id');
+        $itemId = (int)$item->id;
+        $asset  = 'com_userideas.item.' . $itemId;
 
-        if (!$user->authorise('core.edit.own', 'com_userideas')) {
-            return false;
+        // Check general edit permission first.
+        if ($user->authorise('core.edit', $asset)) {
+            $item->params->set('access-edit', true);
+
+        // Now check if edit.own is available.
+        } elseif ($userId > 0 and $user->authorise('core.edit.own', $asset)) {
+            // Check for a valid user and that they are the owner.
+            if ($userId === (int)$item->user_id) {
+                $item->params->set('access-edit', true);
+            }
         }
 
-        // Validate item owner.
-        $itemValidator = new Userideas\Validator\Item\Owner(JFactory::getDbo(), $itemId, $userId);
-        if (!$itemValidator->isValid()) {
-            return false;
-        }
+        // Check edit state permission.
+        if ($itemId > 0) {
+            // Existing item
+            $item->params->set('access-change', $user->authorise('core.edit.state', $asset));
+        } else {
+            // New item.
+            $catId         = (int)$this->getState('item.catid');
 
-        return true;
+            // Set the new category if it is selected and there is enough permissions to be selected.
+            if ($catId) {
+                $item->params->set('access-change', $user->authorise('core.edit.state', 'com_userideas.category.' . $catId));
+                $item->catid = $catId;
+            } else {
+                $item->params->set('access-change', $user->authorise('core.edit.state', 'com_userideas'));
+            }
+        }
     }
 }

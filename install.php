@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -78,13 +78,13 @@ class pkg_userIdeasInstallerScript
         jimport('Userideas.init');
 
         // Register Component helpers
-        JLoader::register('UserIdeasInstallHelper', COM_USERIDEAS_PATH_COMPONENT_ADMINISTRATOR . '/helpers/install.php');
+        JLoader::register('UserideasInstallHelper', COM_USERIDEAS_PATH_COMPONENT_ADMINISTRATOR . '/helpers/install.php');
         
         // Start table with the information
-        UserIdeasInstallHelper::startTable();
+        UserideasInstallHelper::startTable();
 
         // Requirements
-        UserIdeasInstallHelper::addRowHeading(JText::_('COM_USERIDEAS_MINIMUM_REQUIREMENTS'));
+        UserideasInstallHelper::addRowHeading(JText::_('COM_USERIDEAS_MINIMUM_REQUIREMENTS'));
 
         // Display result about verification for GD library
         $title = JText::_('COM_USERIDEAS_GD_LIBRARY');
@@ -94,7 +94,7 @@ class pkg_userIdeasInstallerScript
         } else {
             $result = array('type' => 'success', 'text' => JText::_('JON'));
         }
-        UserIdeasInstallHelper::addRow($title, $result, $info);
+        UserideasInstallHelper::addRow($title, $result, $info);
 
         // Display result about verification for cURL library
         $title = JText::_('COM_USERIDEAS_CURL_LIBRARY');
@@ -105,7 +105,7 @@ class pkg_userIdeasInstallerScript
         } else {
             $result = array('type' => 'success', 'text' => JText::_('JON'));
         }
-        UserIdeasInstallHelper::addRow($title, $result, $info);
+        UserideasInstallHelper::addRow($title, $result, $info);
 
         // Display result about verification Magic Quotes
         $title = JText::_('COM_USERIDEAS_MAGIC_QUOTES');
@@ -116,58 +116,83 @@ class pkg_userIdeasInstallerScript
         } else {
             $result = array('type' => 'success', 'text' => JText::_('JOFF'));
         }
-        UserIdeasInstallHelper::addRow($title, $result, $info);
+        UserideasInstallHelper::addRow($title, $result, $info);
 
         // Display result about PHP version.
         $title = JText::_('COM_USERIDEAS_PHP_VERSION');
         $info  = '';
-        if (version_compare(PHP_VERSION, '5.3.0') < 0) {
+        if (version_compare(PHP_VERSION, '5.5.0') < 0) {
             $result = array('type' => 'important', 'text' => JText::_('COM_USERIDEAS_WARNING'));
         } else {
             $result = array('type' => 'success', 'text' => JText::_('JYES'));
         }
-        UserIdeasInstallHelper::addRow($title, $result, $info);
+        UserideasInstallHelper::addRow($title, $result, $info);
 
-        // Display result about verification of installed Prism Library
-        $title = JText::_('COM_USERIDEAS_PRISM_LIBRARY');
+        // Display result about MySQL Version.
+        $title = JText::_('COM_USERIDEAS_MYSQL_VERSION');
         $info  = '';
-        if (!class_exists('Prism\\Version')) {
-            $info   = JText::_('COM_USERIDEAS_PRISM_LIBRARY_DOWNLOAD');
-            $result = array('type' => 'important', 'text' => JText::_('JNO'));
+        $dbVersion = JFactory::getDbo()->getVersion();
+        if (version_compare($dbVersion, '5.5.3', '<')) {
+            $result = array('type' => 'important', 'text' => JText::_('COM_USERIDEAS_WARNING'));
         } else {
             $result = array('type' => 'success', 'text' => JText::_('JYES'));
         }
-        UserIdeasInstallHelper::addRow($title, $result, $info);
+        UserideasInstallHelper::addRow($title, $result, $info);
+
+        // Display result about verification of installed Prism Library
+        $info  = '';
+        if (!class_exists('Prism\\Version')) {
+            $title  = JText::_('COM_USERIDEAS_PRISM_LIBRARY');
+            $info   = JText::_('COM_USERIDEAS_PRISM_LIBRARY_DOWNLOAD');
+            $result = array('type' => 'important', 'text' => JText::_('JNO'));
+        } else {
+            $prismVersion   = new Prism\Version();
+            $text           = JText::sprintf('COM_USERIDEAS_CURRENT_V_S', $prismVersion->getShortVersion());
+
+            if (class_exists('Userideas\\Version')) {
+                $componentVersion = new Userideas\Version();
+                $title            = JText::sprintf('COM_USERIDEAS_PRISM_LIBRARY_S', $componentVersion->requiredPrismVersion);
+
+                if (version_compare($prismVersion->getShortVersion(), $componentVersion->requiredPrismVersion, '<')) {
+                    $info   = JText::_('COM_USERIDEAS_PRISM_LIBRARY_DOWNLOAD');
+                    $result = array('type' => 'warning', 'text' => $text);
+                }
+
+            } else {
+                $title  = JText::_('COM_USERIDEAS_PRISM_LIBRARY');
+                $result = array('type' => 'success', 'text' => $text);
+            }
+        }
+        UserideasInstallHelper::addRow($title, $result, $info);
 
         // Installed extensions
 
-        UserIdeasInstallHelper::addRowHeading(JText::_('COM_USERIDEAS_INSTALLED_EXTENSIONS'));
+        UserideasInstallHelper::addRowHeading(JText::_('COM_USERIDEAS_INSTALLED_EXTENSIONS'));
 
-        // UserIdeas Library
+        // Userideas Library
         $result = array('type' => 'success', 'text' => JText::_('COM_USERIDEAS_INSTALLED'));
-        UserIdeasInstallHelper::addRow(JText::_('COM_USERIDEAS_USERIDEAS_LIBRARY'), $result, JText::_('COM_USERIDEAS_LIBRARY'));
+        UserideasInstallHelper::addRow(JText::_('COM_USERIDEAS_USERIDEAS_LIBRARY'), $result, JText::_('COM_USERIDEAS_LIBRARY'));
 
-        // System - UserIdeasVote
+        // System - UserideasVote
         $result = array('type' => 'success', 'text' => JText::_('COM_USERIDEAS_INSTALLED'));
-        UserIdeasInstallHelper::addRow(JText::_('COM_USERIDEAS_SYSTEM_USERIDEASVOTE'), $result, JText::_('COM_USERIDEAS_PLUGIN'));
+        UserideasInstallHelper::addRow(JText::_('COM_USERIDEAS_SYSTEM_USERIDEASVOTE'), $result, JText::_('COM_USERIDEAS_PLUGIN'));
 
-        // UserIdeas - Vote
+        // Userideas - Vote
         $result = array('type' => 'success', 'text' => JText::_('COM_USERIDEAS_INSTALLED'));
-        UserIdeasInstallHelper::addRow(JText::_('COM_USERIDEAS_USERIDEAS_VOTE'), $result, JText::_('COM_USERIDEAS_PLUGIN'));
+        UserideasInstallHelper::addRow(JText::_('COM_USERIDEAS_USERIDEAS_VOTE'), $result, JText::_('COM_USERIDEAS_PLUGIN'));
 
         // Content - User Ideas - Admin Mail
         $result = array('type' => 'success', 'text' => JText::_('COM_USERIDEAS_INSTALLED'));
-        UserIdeasInstallHelper::addRow(JText::_('COM_USERIDEAS_USERIDEAS_ADMIN_MAIL'), $result, JText::_('COM_USERIDEAS_PLUGIN'));
+        UserideasInstallHelper::addRow(JText::_('COM_USERIDEAS_USERIDEAS_ADMIN_MAIL'), $result, JText::_('COM_USERIDEAS_PLUGIN'));
 
         // End table
-        UserIdeasInstallHelper::endTable();
+        UserideasInstallHelper::endTable();
 
         echo JText::sprintf('COM_USERIDEAS_MESSAGE_REVIEW_SAVE_SETTINGS', JRoute::_('index.php?option=com_userideas'));
 
         if (!class_exists('Prism\\Version')) {
             echo JText::_('COM_USERIDEAS_MESSAGE_INSTALL_PRISM_LIBRARY');
         } else {
-
             if (class_exists('Userideas\\Version')) {
                 $prismVersion     = new Prism\Version();
                 $componentVersion = new Userideas\Version();
@@ -178,6 +203,6 @@ class pkg_userIdeasInstallerScript
         }
 
         // Create content type for used by tags.
-        UserIdeasInstallHelper::createContentType();
+        UserideasInstallHelper::createContentType();
     }
 }

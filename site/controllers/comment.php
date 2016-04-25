@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -11,12 +11,12 @@
 defined('_JEXEC') or die;
 
 /**
- * UserIdeas comment controller
+ * Userideas comment controller
  *
  * @package     ITPrism Components
- * @subpackage  UserIdeas
+ * @subpackage  Userideas
  */
-class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
+class UserideasControllerComment extends Prism\Controller\Form\Frontend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -25,10 +25,10 @@ class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    UserIdeasModelComment    The model.
+     * @return    UserideasModelComment    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Comment', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Comment', $prefix = 'UserideasModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
         return $model;
@@ -63,13 +63,13 @@ class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
         }
 
         $model = $this->getModel();
-        /** @var $model UserIdeasModelComment */
+        /** @var $model UserideasModelComment */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_('COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED'), 500);
+            throw new Exception(JText::_('COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED'));
         }
 
         // Test if the data is valid.
@@ -78,12 +78,10 @@ class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
         // Check for validation errors.
         if ($validData === false) {
             $this->displayNotice($form->getErrors(), $redirectOptions);
-
             return;
         }
 
         try {
-
             $model->save($validData);
 
             $item = new Userideas\Item\Item(JFactory::getDbo());
@@ -95,12 +93,11 @@ class UserIdeasControllerComment extends Prism\Controller\Form\Frontend
         }
 
         $redirectOptions = array(
-            'force_direction' => UserIdeasHelperRoute::getDetailsRoute($item->getSlug(), $item->getCategorySlug())
+            'force_direction' => UserideasHelperRoute::getDetailsRoute($item->getSlug(), $item->getCategorySlug())
         );
 
         // Redirect to next page
         $this->displayMessage(JText::_('COM_USERIDEAS_COMMENT_SENT_SUCCESSFULLY'), $redirectOptions);
-
     }
 
     /**

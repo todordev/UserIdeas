@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasModelComment extends JModelAdmin
+class UserideasModelComment extends JModelAdmin
 {
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -22,7 +22,7 @@ class UserIdeasModelComment extends JModelAdmin
      * @return  JTable  A database object
      * @since   1.6
      */
-    public function getTable($type = 'Comment', $prefix = 'UserIdeasTable', $config = array())
+    public function getTable($type = 'Comment', $prefix = 'UserideasTable', $config = array())
     {
         return JTable::getInstance($type, $prefix, $config);
     }
@@ -40,8 +40,25 @@ class UserIdeasModelComment extends JModelAdmin
     {
         // Get the form.
         $form = $this->loadForm($this->option . '.comment', 'comment', array('control' => 'jform', 'load_data' => $loadData));
-        if (empty($form)) {
+        if (!$form) {
             return false;
+        }
+
+        $canDo  = JHelperContent::getActions('com_userideas');
+
+        $id     = (int)$this->getState('comment.id');
+
+        // Check for existing article.
+        // Modify the form based on Edit State access controls.
+        if (($id !== 0 and !$canDo->get('core.edit')) or ($id === 0 and !$canDo->get('core.edit.state'))) {
+            // Disable fields for display.
+            $form->setFieldAttribute('comment', 'disabled', 'true');
+            $form->setFieldAttribute('published', 'disabled', 'true');
+
+            // Disable fields while saving.
+            // The controller has already verified this is an article you can edit.
+            $form->setFieldAttribute('comment', 'filter', 'unset');
+            $form->setFieldAttribute('published', 'filter', 'unset');
         }
 
         return $form;
@@ -73,21 +90,21 @@ class UserIdeasModelComment extends JModelAdmin
      */
     public function save($data)
     {
-        $id        = Joomla\Utilities\ArrayHelper::getValue($data, "id");
-        $comment   = Joomla\Utilities\ArrayHelper::getValue($data, "comment");
-        $published = Joomla\Utilities\ArrayHelper::getValue($data, "published");
+        $id        = Joomla\Utilities\ArrayHelper::getValue($data, 'id');
+        $comment   = Joomla\Utilities\ArrayHelper::getValue($data, 'comment');
+        $published = Joomla\Utilities\ArrayHelper::getValue($data, 'published');
 
         // Load a record from the database
         $row = $this->getTable();
-        /** @var $row UserIdeasTableComment */
+        /** @var $row UserideasTableComment */
 
         $row->load($id);
 
-        $row->set("comment", $comment);
-        $row->set("published", $published);
+        $row->set('comment', $comment);
+        $row->set('published', $published);
 
         $row->store();
 
-        return $row->get("id");
+        return $row->get('id');
     }
 }

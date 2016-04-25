@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasModelItem extends JModelItem
+class UserideasModelItem extends JModelItem
 {
     protected $item;
 
@@ -25,7 +25,6 @@ class UserIdeasModelItem extends JModelItem
         // Load the component parameters.
         $params = $app->getParams($this->option);
         $this->setState('params', $params);
-
     }
 
     /**
@@ -38,24 +37,22 @@ class UserIdeasModelItem extends JModelItem
     public function getItem($id = null)
     {
         if ($this->item === null) {
-
             if ($id === null) {
                 $id = $this->getState($this->getName() . '.id');
             }
 
             // Get a level row instance.
-            $table = JTable::getInstance('Item', 'UserIdeasTable');
+            $table = JTable::getInstance('Item', 'UserideasTable');
 
             // Attempt to load the row.
             if ($table->load($id)) {
-
                 if (!$table->get('published')) {
                     return $this->item;
                 }
 
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(true);
-                $this->item = Joomla\Utilities\ArrayHelper::toObject($properties, 'JObject');
+                $this->item = Joomla\Utilities\ArrayHelper::toObject($properties);
             }
         }
 

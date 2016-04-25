@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -11,14 +11,23 @@
 defined('_JEXEC') or die;
 
 /**
- * UserIdeas votes controller
+ * Userideas votes controller
  *
- * @package     UserIdeas
+ * @package     Userideas
  * @subpackage  Components
  */
-class UserIdeasControllerVotes extends Prism\Controller\Admin
+class UserideasControllerVotes extends Prism\Controller\Admin
 {
-    public function getModel($name = 'Vote', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
+    /**
+     * Method to get a model object, loading it if required.
+     *
+     * @param string $name
+     * @param string $prefix
+     * @param array  $config
+     *
+     * @return UserideasModelVote
+     */
+    public function getModel($name = 'Vote', $prefix = 'UserideasModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
         return $model;

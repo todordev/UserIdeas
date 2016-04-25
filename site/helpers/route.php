@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -22,10 +22,10 @@ jimport('joomla.application.categories');
  *
  * @static
  * @package        ITPrism Components
- * @subpackage     UserIdeas
+ * @subpackage     Userideas
  * @since          1.5
  */
-abstract class UserIdeasHelperRoute
+abstract class UserideasHelperRoute
 {
     protected static $items = array();
     protected static $categories;
@@ -125,7 +125,7 @@ abstract class UserIdeasHelperRoute
             $category = $catid;
         } else {
             $id       = (int)$catid;
-            $category = JCategories::getInstance('UserIdeas')->get($id);
+            $category = JCategories::getInstance('Userideas')->get($id);
         }
 
         if ($id < 1) {
@@ -261,7 +261,7 @@ abstract class UserIdeasHelperRoute
     /**
      *
      * Prepare categories path to the segments.
-     * We use this method in the router "UserIdeasParseRoute".
+     * We use this method in the router "UserideasParseRoute".
      *
      * @param integer $catId Category Id
      * @param array   $segments
@@ -269,7 +269,7 @@ abstract class UserIdeasHelperRoute
      */
     public static function prepareCategoriesSegments($catId, &$segments, $mId = null)
     {
-        $categories = JCategories::getInstance('UserIdeas');
+        $categories = JCategories::getInstance('Userideas');
         $category   = $categories->get($catId);
 
         if ($category) {
@@ -292,7 +292,7 @@ abstract class UserIdeasHelperRoute
 
     /**
      * Load data about item.
-     * We use this method in the router "UserIdeasParseRoute".
+     * We use this method in the router "UserideasParseRoute".
      *
      * @param int $id
      *
@@ -321,7 +321,7 @@ abstract class UserIdeasHelperRoute
 
     /**
      * Load data about category.
-     * We use this method in the router "UserIdeasParseRoute".
+     * We use this method in the router "UserideasParseRoute".
      *
      * @param int $id
      *

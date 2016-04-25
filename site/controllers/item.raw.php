@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -11,11 +11,11 @@
 defined('_JEXEC') or die;
 
 /**
- * @package        UserIdeas
+ * @package        Userideas
  * @subpackage     Component
  * @since          2.5
  */
-class UserIdeasControllerItem extends JControllerLegacy
+class UserideasControllerItem extends JControllerLegacy
 {
     /**
      * Method to get a model object, loading it if required.
@@ -24,10 +24,10 @@ class UserIdeasControllerItem extends JControllerLegacy
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    UserIdeasModelItem    The model.
+     * @return    UserideasModelItem    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Item', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Item', $prefix = 'UserideasModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
@@ -59,10 +59,9 @@ class UserIdeasControllerItem extends JControllerLegacy
 
         $requestMethod = $app->input->getMethod();
         if ('POST' !== $requestMethod) {
-            $error = 'COM_USERIDEAS_ERROR_INVALID_REQUEST_METHOD (' . $requestMethod . '):\n';
-            $error .= 'INPUT: ' . var_export($app->input, true) . '\n';
+            $error = 'COM_USERIDEAS_ERROR_INVALID_REQUEST_METHOD (' . $requestMethod . '):' ."\n";
+            $error .= 'INPUT: ' . var_export($app->input, true) . "\n";
             JLog::add($error);
-
             return;
         }
 
@@ -86,7 +85,6 @@ class UserIdeasControllerItem extends JControllerLegacy
 
         // Save data
         try {
-
             // Events
             $dispatcher = JEventDispatcher::getInstance();
 
@@ -96,10 +94,9 @@ class UserIdeasControllerItem extends JControllerLegacy
 
             // Check for error.
             foreach ($results as $result) {
-                $success = Joomla\Utilities\ArrayHelper::getValue($result, 'success');
+                $success = Joomla\Utilities\ArrayHelper::getValue($result, 'success', false, 'bool');
 
                 if (false === $success) {
-
                     $message = Joomla\Utilities\ArrayHelper::getValue($result, 'message', JText::_('COM_USERIDEAS_VOTED_UNSUCCESSFULLY'));
 
                     $response
@@ -119,7 +116,6 @@ class UserIdeasControllerItem extends JControllerLegacy
             $dispatcher->trigger('onAfterVote', array('com_userideas.aftervote', &$data, $params));
 
         } catch (Exception $e) {
-
             JLog::add($e->getMessage());
 
             $response

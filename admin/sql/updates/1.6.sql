@@ -1,1 +1,0 @@
-ALTER TABLE `#__uideas_votes` ADD `hash` VARCHAR( 32 ) NULL DEFAULT NULL COMMENT 'Anonymous users hash.' AFTER `user_id` ;

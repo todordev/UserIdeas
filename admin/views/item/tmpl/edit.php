@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -26,10 +26,11 @@ defined('_JEXEC') or die;
             </div>
             <div class="span3">
                 <fieldset class="form-vertical">
-                    <?php echo $this->form->getControlGroup('catid'); ?>
-                    <?php echo $this->form->getControlGroup('status_id'); ?>
-                    <?php echo $this->form->getControlGroup('published'); ?>
-                    <?php echo $this->form->getControlGroup('tags'); ?>
+                    <?php echo $this->form->renderField('catid'); ?>
+                    <?php echo $this->form->renderField('status_id'); ?>
+                    <?php echo $this->form->renderField('access'); ?>
+                    <?php echo $this->form->renderField('published'); ?>
+                    <?php echo $this->form->renderField('tags'); ?>
                 </fieldset>
             </div>
         </div>
@@ -39,9 +40,9 @@ defined('_JEXEC') or die;
         <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'publishing', JText::_('COM_USERIDEAS_PUBLISHING', true)); ?>
         <div class="row-fluid form-horizontal-desktop">
             <div class="span6">
-                <?php echo $this->form->getControlGroup('record_date'); ?>
-                <?php echo $this->form->getControlGroup('user_id'); ?>
-                <?php echo $this->form->getControlGroup('id'); ?>
+                <?php echo $this->form->renderField('record_date'); ?>
+                <?php echo $this->form->renderField('user_id'); ?>
+                <?php echo $this->form->renderField('id'); ?>
             </div>
         </div>
         <?php echo JHtml::_('bootstrap.endTab'); ?>
@@ -49,6 +50,12 @@ defined('_JEXEC') or die;
         <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'options', JText::_('COM_USERIDEAS_OPTIONS', true)); ?>
         <?php echo $this->loadTemplate('options'); ?>
         <?php echo JHtml::_('bootstrap.endTab'); ?>
+
+        <?php if ($this->canDo->get('core.admin')) : ?>
+            <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'permissions', JText::_('COM_USERIDEAS_FIELDSET_RULES')); ?>
+            <?php echo $this->form->getInput('rules'); ?>
+            <?php echo JHtml::_('bootstrap.endTab'); ?>
+        <?php endif; ?>
 
         <?php echo JHtml::_('bootstrap.endTabSet'); ?>
     </div>

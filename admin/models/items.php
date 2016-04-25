@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 /**
  * Get a list of items
  */
-class UserIdeasModelItems extends JModelList
+class UserideasModelItems extends JModelList
 {
     /**
      * Constructor.
@@ -35,7 +35,9 @@ class UserIdeasModelItems extends JModelList
                 'ordering', 'a.ordering',
                 'published', 'a.published',
                 'user', 'b.name',
-                'category', 'c.title'
+                'category', 'c.title',
+                'access_title', 'ag.title',
+                'status_name', 'd.name'
             );
         }
 
@@ -60,12 +62,20 @@ class UserIdeasModelItems extends JModelList
         $value = $this->getUserStateFromRequest($this->context . '.filter.status', 'filter_status', '', 'string');
         $this->setState('filter.status', $value);
 
+        // Get filter author
+        $value = $this->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', null);
+        $this->setState('filter.author', $value);
+
+        // Get filter author
+        $value = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
+        $this->setState('filter.access', $value);
+
         // Load the component parameters.
         $params = JComponentHelper::getParams($this->option);
         $this->setState('params', $params);
 
         // List state information.
-        parent::populateState('a.title', 'asc');
+        parent::populateState('a.record_date', 'desc');
     }
 
     /**
@@ -82,11 +92,12 @@ class UserIdeasModelItems extends JModelList
      */
     protected function getStoreId($id = '')
     {
-        // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
         $id .= ':' . $this->getState('filter.category');
         $id .= ':' . $this->getState('filter.status');
         $id .= ':' . $this->getState('filter.state');
+        $id .= ':' . $this->getState('filter.author');
+        $id .= ':' . $this->getState('filter.access');
 
         return parent::getStoreId($id);
     }
@@ -109,16 +120,21 @@ class UserIdeasModelItems extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.title, a.alias, a.votes, a.record_date, a.catid, a.ordering, a.published, a.status_id, a.hits, ' .
+                'a.id, a.title, a.alias, a.votes, a.record_date, a.catid, ' .
+                'a.ordering, a.published, a.status_id, a.hits, a.user_id, ' .
                 'b.name AS user, ' .
                 'c.title AS category, ' .
-                'd.name AS status_name, d.params AS status_params, d.default AS status_default '
+                'd.name AS status_name, d.params AS status_params, d.default AS status_default,' .
+                'ag.title AS access_level'
             )
         );
         $query->from($db->quoteName('#__uideas_items', 'a'));
         $query->leftJoin($db->quoteName('#__users', 'b') . ' ON a.user_id = b.id');
         $query->leftJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id');
         $query->leftJoin($db->quoteName('#__uideas_statuses', 'd') . ' ON a.status_id = d.id');
+
+        // Join over the asset groups.
+        $query->leftJoin($db->quoteName('#__viewlevels', 'ag') .' ON ag.id = a.access');
 
         // Filter by category
         $categoryId = $this->getState('filter.category');
@@ -140,17 +156,34 @@ class UserIdeasModelItems extends JModelList
             $query->where('(a.published IN (0, 1))');
         }
 
+        // Filter by author
+        $author = $this->getState('filter.author');
+        if ($author !== null and is_numeric($author)) {
+            $query->where('a.user_id = ' . (int)$author);
+        }
+
+        // Filter by access level.
+        $access = (int)$this->getState('filter.access');
+        if ($access > 0) {
+            $query->where('a.access = ' . (int)$access);
+        }
+
+        // Implement View Level Access
+        $user = JFactory::getUser();
+        if (!$user->authorise('core.admin')) {
+            $groups = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('a.access IN (' . $groups . ')');
+        }
+
         // Filter by search in title
-        $search = $this->getState('filter.search');
-        if (JString::strlen($search) > 0) {
+        $search = (string)$this->getState('filter.search');
+        if ($search !== '') {
             if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = ' . (int)substr($search, 3));
             } else {
-
                 $escaped = $db->escape($search, true);
                 $quoted  = $db->quote('%' . $escaped . '%', false);
                 $query->where('a.title LIKE ' . $quoted);
-
             }
         }
 

@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -14,32 +14,41 @@ defined('_JEXEC') or die; ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php } ?>
 
-    <?php
-    if ($this->params->get('show_cat_description', 0)) {
-        echo $this->category->getDescription();
-    }
+    <?php if ($this->params->get('show_category_title', 1) or $this->params->get('page_subheading')) { ?>
+        <h2><?php echo $this->escape($this->params->get('page_subheading')); ?>
+            <?php if ($this->params->get('show_category_title')) { ?>
+                <span class="subheading-category"><?php echo $this->escape($this->category->getTitle()); ?></span>
+            <?php } ?>
+        </h2>
+    <?php } ?>
 
-    if ($this->params->get('show_cat_tags', 0) and count($this->tags) > 0) {
+    <?php
+    if ($this->params->get('show_category_description', 0) or $this->params->def('show_category_image', 0)) {?>
+    <div class="category-desc clearfix">
+        <?php if ($this->params->get('show_category_image') and $this->category->getParam('image')) { ?>
+            <img src="<?php echo $this->category->getParam('image'); ?>" alt="<?php echo htmlspecialchars($this->category->getParam('image_alt')); ?>"/>
+        <?php } ?>
+        <?php if ($this->params->get('show_category_description') and $this->category->getDescription()) {
+            echo $this->category->getDescription();
+        }?>
+    </div>
+    <?php } ?>
+
+    <?php if ($this->params->get('show_cat_tags', 0) and count($this->tags) > 0) {
         $tagLayout = new JLayoutFile('joomla.content.tags');
         echo $tagLayout->render($this->tags);
         echo '<br />';
-    }
-    ?>
+    }?>
 
-    <?php if ($this->params->get('items_display_button', 1)) { ?>
-        <a href="<?php echo JRoute::_(UserIdeasHelperRoute::getFormRoute(0)); ?>" class="btn btn-default">
+    <?php if ($this->params->get('show_post_button') and $this->canCreate) { ?>
+        <a href="<?php echo JRoute::_(UserideasHelperRoute::getFormRoute(0)); ?>" class="btn btn-default">
             <span class="fa fa-plus"></span>
             <?php echo JText::_('COM_USERIDEAS_POST_ITEM'); ?>
         </a>
     <?php } ?>
 
-    <?php foreach ($this->items as $item) {
-
-        // Load parameters.
-        $registry = new Joomla\Registry\Registry;
-        $registry->loadString($item->params);
-        $item->params = $registry;
-
+    <?php
+    foreach ($this->items as $item) {
         $commentsNumber = 0;
         if (array_key_exists($item->id, $this->comments)) {
             $commentsNumber = (int)$this->comments[$item->id];
@@ -53,7 +62,7 @@ defined('_JEXEC') or die; ?>
             <div class="media-body">
                 <?php if ($this->params->get('show_title', $item->params->get('show_title', 1))) {?>
                 <h4 class="media-heading">
-                    <a href="<?php echo JRoute::_(UserIdeasHelperRoute::getDetailsRoute($item->slug, $item->catid)); ?>">
+                    <a href="<?php echo JRoute::_(UserideasHelperRoute::getDetailsRoute($item->slug, $item->catid)); ?>">
                         <?php echo $this->escape($item->title); ?>
                     </a>
                 </h4>
@@ -61,20 +70,17 @@ defined('_JEXEC') or die; ?>
 
                 <?php
                 if ($this->params->get('show_intro', $item->params->get('show_intro', 1))) { ?>
-                    <?php echo JHtmlString::truncate($item->description, $this->params->get("items_description_length", 255), true, $this->params->get('items_description_html', 0)); ?>
+                    <?php echo JHtmlString::truncate($item->description, $this->params->get("items_description_length", 255), true, $this->params->get('allow_html', 0)); ?>
                 <?php } ?>
             </div>
             <?php
-            $this->canEditResult = UserIdeasHelper::isValidOwner($this->userId, $item->user_id) and $this->canEdit;
-
-            if (UserIdeasHelper::shouldDisplayFootbar($item->params, $item->params, false) or $this->canEditResult or $this->commentsEnabled) {
+            if (UserideasHelper::shouldDisplayFootbar($item->params, $item->params, false) or $this->commentsEnabled) {
                 echo '<div class="clearfix"></div>';
                 $layoutData = new stdClass;
                 $layoutData->item  = $item;
                 $layoutData->socialProfiles  = $this->socialProfiles;
                 $layoutData->integrationOptions  = $this->integrationOptions;
                 $layoutData->commentsEnabled  = $this->commentsEnabled;
-                $layoutData->canEditResult  = $this->canEditResult;
                 $layoutData->params  = $this->params;
                 $layoutData->commentsNumber  = $commentsNumber;
 

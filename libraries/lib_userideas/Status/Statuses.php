@@ -1,25 +1,25 @@
 <?php
 /**
- * @package         UserIdeas
+ * @package         Userideas
  * @subpackage      Statuses
  * @author          Todor Iliev
- * @copyright       Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright       Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 namespace Userideas\Status;
 
-use Prism\Database\ArrayObject;
+use Prism\Database;
 
 defined('JPATH_PLATFORM') or die;
 
 /**
  * This class contains methods that are used for managing statuses.
  *
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Statuses
  */
-class Statuses extends ArrayObject
+class Statuses extends Database\Collection
 {
     protected $options = array();
 
@@ -68,21 +68,19 @@ class Statuses extends ArrayObject
      *
      * @param array $options
      */
-    public function load($options = array())
+    public function load(array $options = array())
     {
-        $sortDir = (!array_key_exists('sort_direction', $options)) ? 'DESC' : $options['sort_direction'];
-        $sortDir = (strcmp('DESC', $sortDir) === 0) ? 'DESC' : 'ASC';
-
-        $limit   = (!array_key_exists('limit', $options)) ? 0 : (int)$options['limit'];
+        $orderDirection = $this->getOptionOrderDirection($options);
+        $limit          = $this->getOptionLimit($options);
 
         // Create a new query object.
         $query = $this->db->getQuery(true);
         $query
             ->select('a.id, a.name, a.default')
             ->from($this->db->quoteName('#__uideas_statuses', 'a'))
-            ->order('a.name ' . $sortDir);
+            ->order('a.name ' . $orderDirection);
 
-        if (!empty($limit)) {
+        if ($limit > 0) {
             $this->db->setQuery($query, 0, $limit);
         } else {
             $this->db->setQuery($query);

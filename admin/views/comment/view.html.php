@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasViewComment extends JViewLegacy
+class UserideasViewComment extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -27,18 +27,12 @@ class UserIdeasViewComment extends JViewLegacy
 
     protected $option;
     protected $documentTitle;
+    protected $canDo;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
-
-    /**
-     * Display the view
-     */
     public function display($tpl = null)
     {
+        $this->option = JFactory::getApplication()->input->get('option');
+        
         $this->state = $this->get('State');
         $this->item  = $this->get('Item');
         $this->form  = $this->get('Form');
@@ -58,12 +52,16 @@ class UserIdeasViewComment extends JViewLegacy
     {
         JFactory::getApplication()->input->set('hidemainmenu', true);
 
+        $this->canDo  = JHelperContent::getActions('com_userideas');
+
         $this->documentTitle = JText::_('COM_USERIDEAS_EDIT_ITEM');
 
         JToolbarHelper::title($this->documentTitle);
 
-        JToolbarHelper::apply('comment.apply');
-        JToolbarHelper::save('comment.save');
+        if ($this->canDo->get('core.edit')) {
+            JToolbarHelper::apply('comment.apply');
+            JToolbarHelper::save('comment.save');
+        }
 
         JToolbarHelper::cancel('comment.cancel', 'JTOOLBAR_CANCEL');
     }

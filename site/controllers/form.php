@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -11,12 +11,12 @@
 defined('_JEXEC') or die;
 
 /**
- * UserIdeas form controller
+ * Userideas form controller
  *
- * @package     UserIdeas
+ * @package     Userideas
  * @subpackage  Component
  */
-class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
+class UserideasControllerForm extends Prism\Controller\Form\Frontend
 {
     /**
      * Method to get a model object, loading it if required.
@@ -25,13 +25,12 @@ class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
      * @param    string $prefix The class prefix. Optional.
      * @param    array  $config Configuration array for model. Optional.
      *
-     * @return    UserIdeasModelForm    The model.
+     * @return    UserideasModelForm    The model.
      * @since    1.5
      */
-    public function getModel($name = 'Form', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Form', $prefix = 'UserideasModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
-
         return $model;
     }
 
@@ -66,13 +65,13 @@ class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
         $params = JComponentHelper::getParams('com_userideas');
 
         $model = $this->getModel();
-        /** @var $model UserIdeasModelForm */
+        /** @var $model UserideasModelForm */
 
         $form = $model->getForm($data, false);
         /** @var $form JForm */
 
         if (!$form) {
-            throw new Exception(JText::_('COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED'), 500);
+            throw new Exception(JText::_('COM_USERIDEAS_ERROR_FORM_CANNOT_BE_LOADED'));
         }
 
         // Test if the data is valid.
@@ -85,16 +84,13 @@ class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
         }
 
         try {
-
             // Set the user ID.
             $validData['user_id']  = (int)$userId;
 
             $itemId                = $model->save($validData);
 
             $redirectOptions['id'] = $itemId;
-
         } catch (Exception $e) {
-
             JLog::add($e->getMessage());
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
 
@@ -102,8 +98,8 @@ class UserIdeasControllerForm extends Prism\Controller\Form\Frontend
 
         $redirectOptions = array(
             'force_direction' => (!$userId or (strcmp('list', $params->get('redirect_when_post')) === 0)) ?
-                    UserIdeasHelperRoute::getItemsRoute() :
-                    UserIdeasHelperRoute::getFormRoute($itemId)
+                    UserideasHelperRoute::getItemsRoute() :
+                    UserideasHelperRoute::getFormRoute($itemId)
         );
 
         // Redirect to next page

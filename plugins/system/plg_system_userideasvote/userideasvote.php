@@ -1,17 +1,15 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Plugins
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.helper');
-jimport('joomla.plugin.plugin');
 jimport('Prism.init');
 jimport('Userideas.init');
 
@@ -19,10 +17,10 @@ jimport('Userideas.init');
  * This plugin initializes the job of the button
  * which is used for voting.
  *
- * @package        UserIdeas
+ * @package        Userideas
  * @subpackage     Plugins
  */
-class plgSystemUserIdeasVote extends JPlugin
+class plgSystemUserideasVote extends JPlugin
 {
     /**
      * Include a script that initialize vote buttons.
@@ -66,6 +64,5 @@ class plgSystemUserIdeasVote extends JPlugin
 
         JHtml::_('Prism.ui.joomlaHelper');
         JHtml::_('Userideas.loadVoteScript');
-
     }
 }

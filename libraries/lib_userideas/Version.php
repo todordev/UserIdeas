@@ -1,20 +1,20 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Version
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
-namespace UserIdeas;
+namespace Userideas;
 
 defined('JPATH_PLATFORM') or die;
 
 /**
  * This class provides version information about the component.
  *
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Version
  */
 class Version
@@ -38,7 +38,7 @@ class Version
      *
      * @var integer
      */
-    public $devLevel = '2.1';
+    public $devLevel = '3';
 
     /**
      * Release Type
@@ -59,7 +59,7 @@ class Version
      *
      * @var string
      */
-    public $releaseDate = '11 November, 2015';
+    public $releaseDate = '25 April, 2016';
 
     /**
      * License
@@ -73,7 +73,7 @@ class Version
      *
      * @var string
      */
-    public $copyright = '&copy; 2015 ITPrism. All rights reserved.';
+    public $copyright = '&copy; 2016 ITPrism. All rights reserved.';
 
     /**
      * URL
@@ -101,7 +101,7 @@ class Version
      *
      * @var string
      */
-    public $requiredPrismVersion = '1.8';
+    public $requiredPrismVersion = '1.11';
 
     /**
      *  Build long format of the version text

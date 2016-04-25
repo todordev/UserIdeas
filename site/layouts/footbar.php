@@ -3,7 +3,7 @@
  * @package      Crowdfunding
  * @subpackage   Components
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -14,8 +14,9 @@ $item   = $displayData->item;
 $socialProfiles = $displayData->socialProfiles;
 $integrationOptions = $displayData->integrationOptions;
 $params = $displayData->params;
+/** @var Joomla\Registry\Registry $params */
 
-$showAuthor = $params->get('show_author', $item->params->get('show_author', 1));
+$showAuthor = $params->get('show_author', $item->params->get('show_author'));
 $showCreateDate = $params->get('show_create_date', $item->params->get('show_create_date'))
 ?>
 <div class="well well-sm clearfix">
@@ -23,7 +24,7 @@ $showCreateDate = $params->get('show_create_date', $item->params->get('show_crea
         <?php
 
         if ($showAuthor or $showCreateDate) {
-            $name = (strcmp('name', $params->get('name_type')) === 0) ? $item->name : $item->username;
+            $name = (strcmp('name', $params->get('integration_name_type')) === 0) ? $item->name : $item->username;
 
             if ($socialProfiles !== null) {
                 $profile = JHtml::_('userideas.profile', $socialProfiles, $item->user_id);
@@ -60,18 +61,26 @@ $showCreateDate = $params->get('show_create_date', $item->params->get('show_crea
     </div>
     <div class="pull-right">
         <?php if ($displayData->commentsEnabled) { ?>
-            <a class="btn btn-default btn-sm" href="<?php echo JRoute::_(UserIdeasHelperRoute::getDetailsRoute($item->slug, $item->catid)) . '#comments'; ?>">
+            <a class="btn btn-default btn-sm" href="<?php echo JRoute::_(UserideasHelperRoute::getDetailsRoute($item->slug, $item->catid)) . '#comments'; ?>">
                 <span class="fa fa-comment"></span>
                 <?php echo JText::_('COM_USERIDEAS_COMMENTS'); ?>
-                <?php echo '( ' . $displayData->commentsNumber . ' )'; ?>
+                <?php echo ($displayData->commentsNumber !== null) ? '( ' . $displayData->commentsNumber . ' )' : ''; ?>
             </a>
         <?php } ?>
 
-        <?php if ($displayData->canEditResult) { ?>
-            <a class="btn btn-default btn-sm" href="<?php echo JRoute::_(UserIdeasHelperRoute::getFormRoute($item->id)); ?>">
+        <?php
+        if ($item->params->get('access-edit')) { ?>
+            <a class="btn btn-default btn-sm" href="<?php echo JRoute::_(UserideasHelperRoute::getFormRoute($item->id)); ?>">
                 <span class="fa fa-edit"></span>
                 <?php echo JText::_('COM_USERIDEAS_EDIT'); ?>
             </a>
         <?php } ?>
     </div>
+    <?php
+    if ($params->get('show_tags', $item->params->get('show_tags')) and !empty($item->tags)) { ?>
+        <?php
+        $tagLayout = new JLayoutFile('joomla.content.tags');
+        echo $tagLayout->render($item->tags);
+        ?>
+    <?php } ?>
 </div>

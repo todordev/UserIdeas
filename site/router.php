@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -19,7 +19,7 @@ jimport('Userideas.init');
  *
  * @return array
  */
-function UserIdeasBuildRoute(&$query)
+function UserideasBuildRoute(&$query)
 {
     $segments = array();
 
@@ -70,7 +70,7 @@ function UserIdeasBuildRoute(&$query)
 
                 if (isset($query['catid'])) {
                     $catId = $query['catid'];
-                    UserIdeasHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
+                    UserideasHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
                     unset($query['catid']);
                 }
 
@@ -83,7 +83,7 @@ function UserIdeasBuildRoute(&$query)
 
                 // If slug missing, generate one.
                 if (false === strpos($query['id'], ':')) {
-                    $category = UserIdeasHelperRoute::getCategory((int)$query['id']);
+                    $category = UserideasHelperRoute::getCategory((int)$query['id']);
 
                     if (!empty($category['slug'])) {
                         $query['id'] = $category['slug'];
@@ -121,7 +121,7 @@ function UserIdeasBuildRoute(&$query)
  *
  * @return array
  */
-function UserIdeasParseRoute($segments)
+function UserideasParseRoute($segments)
 {
     $vars = array();
 
@@ -155,7 +155,7 @@ function UserIdeasParseRoute($segments)
         list($id, $alias) = explode(':', $segments[0], 2);
 
         // first we check if it is a category
-        $category = JCategories::getInstance('UserIdeas')->get($id);
+        $category = JCategories::getInstance('Userideas')->get($id);
 
         if ($category and (strcmp($category->alias, $alias) === 0)) { // Category
 
@@ -166,7 +166,7 @@ function UserIdeasParseRoute($segments)
 
         } else {
 
-            $idea = UserIdeasHelperRoute::getItem($id);
+            $idea = UserideasHelperRoute::getItem($id);
             if (count($idea) > 0 and ($idea['alias'] === $alias)) {
                 $vars['view']  = 'details';
                 $vars['catid'] = (int)$idea['catid'];

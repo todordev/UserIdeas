@@ -1,16 +1,16 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
 // no direct access
 defined('_JEXEC') or die;
 
-class UserIdeasViewDashboard extends JViewLegacy
+class UserideasViewDashboard extends JViewLegacy
 {
     /**
      * @var JDocumentHtml
@@ -33,25 +33,21 @@ class UserIdeasViewDashboard extends JViewLegacy
 
     protected $sidebar;
 
-    public function __construct($config)
-    {
-        parent::__construct($config);
-        $this->option = JFactory::getApplication()->input->get("option");
-    }
-
     public function display($tpl = null)
     {
+        $this->option = JFactory::getApplication()->input->get('option');
+        
         $this->version = new Userideas\Version();
 
         // Load ITPrism library version
-        if (!class_exists("Prism\\Version")) {
-            $this->prismVersion = JText::_("COM_USERIDEAS_PRISM_LIBRARY_DOWNLOAD");
+        if (!class_exists('Prism\\Version')) {
+            $this->prismVersion = JText::_('COM_USERIDEAS_PRISM_LIBRARY_DOWNLOAD');
         } else {
             $prismVersion       = new Prism\Version();
             $this->prismVersion = $prismVersion->getShortVersion();
 
-            if (version_compare($this->prismVersion, $this->version->requiredPrismVersion, "<")) {
-                $this->prismVersionLowerMessage = JText::_("COM_USERIDEAS_PRISM_LIBRARY_LOWER_VERSION");
+            if (version_compare($this->prismVersion, $this->version->requiredPrismVersion, '<')) {
+                $this->prismVersionLowerMessage = JText::_('COM_USERIDEAS_PRISM_LIBRARY_LOWER_VERSION');
             }
         }
 
@@ -62,15 +58,15 @@ class UserIdeasViewDashboard extends JViewLegacy
 
         // Get popular items.
         $this->popular = new Userideas\Statistic\Items\Popular(JFactory::getDbo());
-        $this->popular->load(array("limit" => 5));
+        $this->popular->load(array('limit' => 5));
 
         // Get most voted items.
         $this->mostVoted = new Userideas\Statistic\Items\MostVoted(JFactory::getDbo());
-        $this->mostVoted->load(array("limit" => 5));
+        $this->mostVoted->load(array('limit' => 5));
 
         // Get latest items.
         $this->latest = new Userideas\Statistic\Items\Latest(JFactory::getDbo());
-        $this->latest->load(array("limit" => 5));
+        $this->latest->load(array('limit' => 5));
 
         $this->addToolbar();
         $this->addSidebar();
@@ -84,7 +80,7 @@ class UserIdeasViewDashboard extends JViewLegacy
      */
     protected function addSidebar()
     {
-        UserIdeasHelper::addSubmenu($this->getName());
+        UserideasHelper::addSubmenu($this->getName());
 
         $this->sidebar = JHtmlSidebar::render();
     }
@@ -96,7 +92,7 @@ class UserIdeasViewDashboard extends JViewLegacy
      */
     protected function addToolbar()
     {
-        JToolbarHelper::title(JText::_("COM_USERIDEAS_DASHBOARD"));
+        JToolbarHelper::title(JText::_('COM_USERIDEAS_DASHBOARD'));
 
         JToolbarHelper::preferences('com_userideas');
         JToolbarHelper::divider();
@@ -114,7 +110,5 @@ class UserIdeasViewDashboard extends JViewLegacy
     protected function setDocument()
     {
         $this->document->setTitle(JText::_('COM_USERIDEAS_DASHBOARD'));
-
-        $this->document->addStyleSheet("../media/" . $this->option . '/css/backend.style.css');
     }
 }

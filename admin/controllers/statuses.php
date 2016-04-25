@@ -1,9 +1,9 @@
 <?php
 /**
- * @package      UserIdeas
+ * @package      Userideas
  * @subpackage   Component
  * @author       Todor Iliev
- * @copyright    Copyright (C) 2015 Todor Iliev <todor@itprism.com>. All rights reserved.
+ * @copyright    Copyright (C) 2016 Todor Iliev <todor@itprism.com>. All rights reserved.
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
@@ -11,14 +11,23 @@
 defined('_JEXEC') or die();
 
 /**
- * UserIdeas statuses controller class
+ * Userideas statuses controller class
  *
- * @package     UserIdeas
+ * @package     Userideas
  * @subpackage  Components
  */
-class UserIdeasControllerStatuses extends Prism\Controller\Admin
+class UserideasControllerStatuses extends Prism\Controller\Admin
 {
-    public function getModel($name = 'Status', $prefix = 'UserIdeasModel', $config = array('ignore_request' => true))
+    /**
+     * Method to get a model object, loading it if required.
+     *
+     * @param string $name
+     * @param string $prefix
+     * @param array  $config
+     *
+     * @return UserideasModelStatus
+     */
+    public function getModel($name = 'Status', $prefix = 'UserideasModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
         return $model;
@@ -38,17 +47,16 @@ class UserIdeasControllerStatuses extends Prism\Controller\Admin
         $pks = Joomla\Utilities\ArrayHelper::toInteger($pks);
 
         $redirectOptions = array(
-            "view" => $this->view_list,
+            'view' => $this->view_list,
         );
 
         // Check for errors
         if (!$pks) {
-            $this->displayNotice(JText::_("COM_USERIDEAS_ERROR_NO_ITEM_SELECTED"), $redirectOptions);
+            $this->displayNotice(JText::_('COM_USERIDEAS_ERROR_NO_ITEM_SELECTED'), $redirectOptions);
             return;
         }
 
         try {
-
             // Pop off the first element.
             $id = array_shift($pks);
 
@@ -57,7 +65,7 @@ class UserIdeasControllerStatuses extends Prism\Controller\Admin
             $model->setDefault($id);
 
         } catch (Exception $e) {
-            JLog::add($e->getMessage());
+            JLog::add($e->getMessage(), JLog::ERROR, $this->option);
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
 
@@ -79,18 +87,16 @@ class UserIdeasControllerStatuses extends Prism\Controller\Admin
         $pks = Joomla\Utilities\ArrayHelper::toInteger($pks);
 
         $redirectOptions = array(
-            "view" => $this->view_list,
+            'view' => $this->view_list,
         );
 
         // Check for errors
         if (!$pks) {
-            $this->displayNotice(JText::_("COM_USERIDEAS_ERROR_NO_ITEM_SELECTED"), $redirectOptions);
-
+            $this->displayNotice(JText::_('COM_USERIDEAS_ERROR_NO_ITEM_SELECTED'), $redirectOptions);
             return;
         }
 
         try {
-
             // Pop off the first element.
             $id = array_shift($pks);
 
@@ -99,7 +105,7 @@ class UserIdeasControllerStatuses extends Prism\Controller\Admin
             $model->unsetDefault($id);
 
         } catch (Exception $e) {
-            JLog::add($e->getMessage());
+            JLog::add($e->getMessage(), JLog::ERROR, $this->option);
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
 
