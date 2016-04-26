@@ -46,14 +46,14 @@ class UserideasViewDetails extends JViewLegacy
     protected $option;
 
     protected $pageclass_sfx;
-    
+
     public function display($tpl = null)
     {
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
 
         $this->option = JFactory::getApplication()->input->getCmd('option');
-        
+
         $this->state  = $this->get('State');
         $this->item   = $this->get('Item');
         $this->params = $this->state->get('params');
@@ -61,10 +61,10 @@ class UserideasViewDetails extends JViewLegacy
         $this->category = new Userideas\Category\Category(JFactory::getDbo());
         $this->category->load($this->item->catid);
 
-        $user = JFactory::getUser();
+        $user         = JFactory::getUser();
         $this->userId = $user->get('id');
 
-        $helperBus     = new Prism\Helper\HelperBus($this->item);
+        $helperBus = new Prism\Helper\HelperBus($this->item);
         $helperBus->addCommand(new Userideas\Helper\PrepareItemParams());
         $helperBus->addCommand(new Userideas\Helper\PrepareItemStatus());
         $helperBus->addCommand(new Userideas\Helper\PrepareItemAccess(JFactory::getUser()));
@@ -75,8 +75,16 @@ class UserideasViewDetails extends JViewLegacy
 
         $helperBus->handle();
 
+        // Check the view access to the article (the model has already computed the values).
+        if ($this->item->params->get('access-view') === false) {
+            $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            $app->setHeader('status', 403, true);
+
+            return;
+        }
+
         // Set permission state. Is it possible to be edited items?
-        $this->canEdit         = $user->authorise('core.edit.own', 'com_userideas');
+        $this->canEdit = $user->authorise('core.edit.own', 'com_userideas');
 
         $this->commentsEnabled = $this->params->get('comments_enabled', 1);
         $this->canComment      = $user->authorise('userideas.comment.create', 'com_userideas');
@@ -99,6 +107,7 @@ class UserideasViewDetails extends JViewLegacy
             if (!$comment) {
                 $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_INVALID_COMMENT'), 'error');
                 $app->redirect(JRoute::_(UserideasHelperRoute::getItemsRoute(), false));
+
                 return;
             }
         }
@@ -281,7 +290,7 @@ class UserideasViewDetails extends JViewLegacy
         // If there are no users, do not continue.
         if (count($usersIds) > 0) {
             $this->integrationOptions = array(
-                'size' => $params->get('integration_avatars_size', 'small'),
+                'size'    => $params->get('integration_avatars_size', 'small'),
                 'default' => $params->get('integration_avatars_default', '/media/com_userideas/images/no-profile.png')
             );
 
