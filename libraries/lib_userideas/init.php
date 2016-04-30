@@ -31,6 +31,8 @@ JLoader::register('UserideasHelperRoute', USERIDEAS_PATH_COMPONENT_SITE .'/helpe
 // Register Observers
 JLoader::register('UserideasObserverVote', USERIDEAS_PATH_COMPONENT_ADMINISTRATOR .'/tables/observers/vote.php');
 JObserverMapper::addObserverClassToClass('UserideasObserverVote', 'UserideasTableVote', array('typeAlias' => 'com_userideas.vote'));
+JLoader::register('UserideasObserverItem', USERIDEAS_PATH_COMPONENT_ADMINISTRATOR .'/tables/observers/item.php');
+JObserverMapper::addObserverClassToClass('UserideasObserverItem', 'UserideasTableItem', array('typeAlias' => 'com_userideas.item'));
 
 // Include HTML helpers
 JHtml::addIncludePath(USERIDEAS_PATH_COMPONENT_SITE . '/helpers/html');

@@ -51,16 +51,16 @@ class UserideasModelItems extends JModelList
         $this->setState('filter.search', $value);
 
         // Get filter state
-        $value = $this->getUserStateFromRequest($this->context . '.filter.state', 'filter_state', '', 'string');
+        $value = $this->getUserStateFromRequest($this->context . '.filter.state', 'filter_state', 0, 'int');
         $this->setState('filter.state', $value);
 
         // Get filter category
-        $value = $this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category', '', 'string');
+        $value = $this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category', 0, 'int');
         $this->setState('filter.category', $value);
 
         // Get filter status
-        $value = $this->getUserStateFromRequest($this->context . '.filter.status', 'filter_status', '', 'string');
-        $this->setState('filter.status', $value);
+        $value = $this->getUserStateFromRequest($this->context . '.filter.status_id', 'filter_status_id', 0, 'int');
+        $this->setState('filter.status_id', $value);
 
         // Get filter author
         $value = $this->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', null);
@@ -94,7 +94,7 @@ class UserideasModelItems extends JModelList
     {
         $id .= ':' . $this->getState('filter.search');
         $id .= ':' . $this->getState('filter.category');
-        $id .= ':' . $this->getState('filter.status');
+        $id .= ':' . $this->getState('filter.status_id');
         $id .= ':' . $this->getState('filter.state');
         $id .= ':' . $this->getState('filter.author');
         $id .= ':' . $this->getState('filter.access');
@@ -143,7 +143,7 @@ class UserideasModelItems extends JModelList
         }
 
         // Filter by status
-        $statusId = (int)$this->getState('filter.status');
+        $statusId = (int)$this->getState('filter.status_id');
         if ($statusId > 0) {
             $query->where('a.status_id = ' . (int)$statusId);
         }

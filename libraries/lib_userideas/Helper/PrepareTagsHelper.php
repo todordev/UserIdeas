@@ -9,7 +9,6 @@
 
 namespace Userideas\Helper;
 
-use Joomla\Registry\Registry;
 use Prism\Helper\HelperInterface;
 use Prism\Utilities\TagHelper;
 
@@ -21,7 +20,7 @@ defined('JPATH_PLATFORM') or die;
  * @package      Userideas
  * @subpackage   Helpers
  */
-class PrepareTags implements HelperInterface
+class PrepareTagsHelper implements HelperInterface
 {
     /**
      * Prepare the parameters of the items.
@@ -31,17 +30,21 @@ class PrepareTags implements HelperInterface
      */
     public function handle(&$data, array $options = array())
     {
-        $ids = array();
-        foreach ($data as $item) {
-            $ids[] = $item->id;
-        }
+        if (count($data) > 0) {
+            $ids = array();
+            foreach ($data as $item) {
+                $ids[] = $item->id;
+            }
 
-        $tagsHelper = new TagHelper();
-        $tags = $tagsHelper->getItemTags($ids, $options);
+            if (count($ids) > 0) {
+                $tagsHelper = new TagHelper();
+                $tags       = $tagsHelper->getItemTags($ids, $options);
 
-        if (count($tags) > 0) {
-            foreach ($data as $key => $item) {
-                $item->tags = (isset($tags[$item->id])) ? $tags[$item->id] : array();
+                if (count($tags) > 0) {
+                    foreach ($data as $key => $item) {
+                        $item->tags = (isset($tags[$item->id])) ? $tags[$item->id] : array();
+                    }
+                }
             }
         }
     }

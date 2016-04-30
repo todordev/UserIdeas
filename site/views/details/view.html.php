@@ -65,12 +65,12 @@ class UserideasViewDetails extends JViewLegacy
         $this->userId = $user->get('id');
 
         $helperBus = new Prism\Helper\HelperBus($this->item);
-        $helperBus->addCommand(new Userideas\Helper\PrepareItemParams());
-        $helperBus->addCommand(new Userideas\Helper\PrepareItemStatus());
-        $helperBus->addCommand(new Userideas\Helper\PrepareItemAccess(JFactory::getUser()));
+        $helperBus->addCommand(new Userideas\Helper\PrepareItemParamsHelper());
+        $helperBus->addCommand(new Userideas\Helper\PrepareItemStatusHelper());
+        $helperBus->addCommand(new Userideas\Helper\PrepareItemAccessHelper(JFactory::getUser()));
 
         if ($this->params->get('show_tags')) {
-            $helperBus->addCommand(new Userideas\Helper\PrepareItemTags());
+            $helperBus->addCommand(new Userideas\Helper\PrepareItemTagsHelper());
         }
 
         $helperBus->handle();
@@ -79,7 +79,6 @@ class UserideasViewDetails extends JViewLegacy
         if ($this->item->params->get('access-view') === false) {
             $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
             $app->setHeader('status', 403, true);
-
             return;
         }
 

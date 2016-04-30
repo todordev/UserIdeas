@@ -53,9 +53,11 @@ class UserideasViewForm extends JViewLegacy
         $user   = JFactory::getUser();
         if (!$user->authorise('core.create', 'com_userideas')) {
             $returnUrl = UserideasHelperRoute::getFormRoute();
+            $loginUrl  = JRoute::_('index.php?option=com_users&view=login&return='.base64_encode($returnUrl), false);
+            $loginUrl  = trim($this->params->get('login_page_url', $loginUrl));
 
             $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), 'notice');
-            $app->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($returnUrl), false));
+            $app->redirect($loginUrl);
             return;
         }
 
@@ -71,9 +73,11 @@ class UserideasViewForm extends JViewLegacy
         // Redirect the user to login form if he is not authorized.
         if (!$authorised) {
             $returnUrl = UserideasHelperRoute::getFormRoute();
+            $loginUrl  = JRoute::_('index.php?option=com_users&view=login&return='.base64_encode($returnUrl));
+            $loginUrl  = trim($this->params->get('login_page_url', $loginUrl));
 
             $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), 'notice');
-            $app->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . base64_encode($returnUrl), false));
+            $app->redirect($loginUrl);
             return;
         }
 
@@ -97,7 +101,7 @@ class UserideasViewForm extends JViewLegacy
         $params          = $this->state->get('params');
         $this->debugMode = $params->get('debug_item_adding_disabled', 0);
         if ($this->debugMode) {
-            $msg = JString::trim($params->get('debug_disabled_functionality_msg'));
+            $msg = trim($params->get('debug_disabled_functionality_msg'));
             if (!$msg) {
                 $msg = JText::_('COM_USERIDEAS_DEBUG_MODE_DEFAULT_MSG');
             }

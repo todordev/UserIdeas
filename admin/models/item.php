@@ -154,14 +154,16 @@ class UserideasModelItem extends JModelAdmin
         if (!$data) {
             $data = $this->getItem();
 
-            $filters = (array) $app->getUserState('com_userideas.items.filter');
+            if ((int)$this->getState('item.id') === 0) {
+                $filters = (array)$app->getUserState('com_userideas.items.filter');
 
-            $state = (isset($filters['state']) and $filters['state'] !== '') ? $filters['state'] : null;
-            $data->published = $app->input->getInt('published', $state);
+                $state           = (isset($filters['state']) and $filters['state'] !== '') ? $filters['state'] : null;
+                $data->published = $app->input->getInt('published', $state);
 
-            $data->catid = $app->input->getInt('catid', (!empty($filters['category']) ? $filters['category'] : null));
-            $data->access = $app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access')));
-            $data->status_id = $app->input->getInt('status', (!empty($filters['status']) ? $filters['status'] : null));
+                $data->catid     = $app->input->getInt('catid', (!empty($filters['category']) ? $filters['category'] : null));
+                $data->access    = $app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access')));
+                $data->status_id = $app->input->getInt('status_id', (!empty($filters['status_id']) ? $filters['status_id'] : null));
+            }
         }
 
         return $data;

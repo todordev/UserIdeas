@@ -15,29 +15,29 @@ use Prism\Helper\HelperInterface;
 defined('JPATH_PLATFORM') or die;
 
 /**
- * This class provides functionality to prepare the statuses of the items.
+ * This class provides functionality to prepare an item params.
  *
  * @package      Userideas
  * @subpackage   Helpers
  */
-class PrepareParams implements HelperInterface
+class PrepareItemParamsHelper implements HelperInterface
 {
     /**
-     * Prepare the parameters of the items.
+     * Prepare an item parameters.
      *
-     * @param array $data
+     * @param \stdClass $data
      * @param array $options
      */
     public function handle(&$data, array $options = array())
     {
-        foreach ($data as $key => $item) {
-            if ($item->params === null) {
-                $item->params = '{}';
+        if (is_object($data)) {
+            if ($data->params === null) {
+                $data->params = '{}';
             }
 
-            if (is_string($item->params) and $item->params !== '') {
-                $item->params = new Registry();
-                $item->params->loadString($item->params);
+            if (is_string($data->params) and $data->params !== '') {
+                $data->params = new Registry();
+                $data->params->loadString($data->params);
             }
         }
     }

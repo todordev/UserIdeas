@@ -9,34 +9,29 @@
 
 namespace Userideas\Helper;
 
-use Joomla\Registry\Registry;
 use Prism\Helper\HelperInterface;
 
 defined('JPATH_PLATFORM') or die;
 
 /**
- * This class provides functionality to prepare an item params.
+ * This class provides functionality to prepare an item tags.
  *
  * @package      Userideas
  * @subpackage   Helpers
  */
-class PrepareItemParams implements HelperInterface
+class PrepareItemTagsHelper implements HelperInterface
 {
     /**
-     * Prepare an item parameters.
+     * Prepare an item tags.
      *
      * @param \stdClass $data
      * @param array $options
      */
     public function handle(&$data, array $options = array())
     {
-        if ($data->params === null) {
-            $data->params = '{}';
-        }
-
-        if (is_string($data->params) and $data->params !== '') {
-            $data->params = new Registry();
-            $data->params->loadString($data->params);
+        if (is_object($data) and isset($data->id) and (int)$data->id > 0) {
+            $tags       = new \JHelperTags;
+            $data->tags = $tags->getItemTags('com_userideas.item', $data->id);
         }
     }
 }

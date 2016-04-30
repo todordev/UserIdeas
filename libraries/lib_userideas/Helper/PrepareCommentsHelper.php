@@ -9,7 +9,7 @@
 
 namespace Userideas\Comment\Command;
 
-use Prism\Database\Command\CommandAbstract;
+use Prism\Helper\HelperInterface;
 use Userideas\Comment\Comments;
 
 defined('JPATH_PLATFORM') or die;
@@ -20,8 +20,25 @@ defined('JPATH_PLATFORM') or die;
  * @package      Userideas
  * @subpackage   Comments
  */
-class CommandLoadByUsersIds extends CommandAbstract
+class PrepareCommentsHelper implements HelperInterface
 {
+    /**
+     * User object.
+     *
+     * @var \JUser
+     */
+    protected $db;
+
+    /**
+     * Initialize the object.
+     *
+     * @param \JDatabaseDriver $db
+     */
+    public function __construct(\JDatabaseDriver $db)
+    {
+        $this->db = $db;
+    }
+
     /**
      * Handle command that will load items by users IDs.
      *
@@ -40,15 +57,17 @@ class CommandLoadByUsersIds extends CommandAbstract
      * $comments->handle($options);
      * </code>
      *
-     * @param Comments $object
+     * @param mixed $data
      * @param array $options
      */
-    public function handle(&$object, array $options = array())
+    public function handle(&$data, array $options = array())
     {
-        $orderDirection = $this->getOptionOrderDirection($options);
-        $start          = $this->getOptionStart($options);
-        $limit          = $this->getOptionLimit($options);
-        $usersIds       = $this->getOptionIds($options, 'users_ids');
+        $orderDirection = (!array_key_exists('order_direction', $options)) ? 'ASC' : $options['order_direction'];
+        $orderDirection = (strcmp('DESC', $orderDirection) === 0) ? 'DESC' : 'ASC';
+
+        $start          = (!array_key_exists('start', $options)) ? 0 : (int)$options['start'];
+        $limit          = (!array_key_exists('limit', $options)) ? 10 : (int)$options['limit'];
+        $usersIds       = (!array_key_exists('user_ids', $options)) ? array() : $options['user_ids'];
 
         if (count($usersIds) > 0) {
             // Create a new query object.
@@ -66,8 +85,8 @@ class CommandLoadByUsersIds extends CommandAbstract
             }
 
             $results = (array)$this->db->loadAssocList('user_id');
-            $object->setItems($results);
-            $object->flagMultidimensional();
+            $data->setItems($results);
+            $data->flagMultidimensional();
         }
 
     }

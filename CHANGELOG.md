@@ -1,5 +1,12 @@
-User Ideas changelog
+User Ideas Changelog
 ==========================
+
+###v2.3.1
+* Added option to enter alternate page where the user will be redirected to log into the website.
+* Fixed item deleting. Delete comments and votes when delete an item.
+* Fixed the item form on the administration.
+* It was made the helpers compatible with Prism Library 1.12.
+* Fix and issue with PrepareTagsHelper.
 
 ###v2.3
 * It was fixed compatibility issue with Prism Library 1.10.

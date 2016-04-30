@@ -29,7 +29,7 @@
 			<option value="">JOPTION_SELECT_CATEGORY</option>
 		</field>
 		<field
-				name="status"
+				name="status_id"
 				type="uistatuses"
 				label="COM_USERIDEAS_FILTER_STATUS"
 				description="COM_USERIDEAS_FILTER_STATUS_DESC"

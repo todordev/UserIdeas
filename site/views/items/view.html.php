@@ -44,7 +44,9 @@ class UserideasViewItems extends JViewLegacy
 
     public function display($tpl = null)
     {
-        $this->option     = JFactory::getApplication()->input->get('option');
+        $app              = JFactory::getApplication();
+
+        $this->option     = $app->input->get('option');
         
         $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
@@ -55,21 +57,28 @@ class UserideasViewItems extends JViewLegacy
         $user = JFactory::getUser();
         $this->userId = $user->get('id');
 
+        // Check access view.
+        if (!$this->canView($app, $user)) {
+            $app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'error');
+            $app->setHeader('status', 403, true);
+            return;
+        }
+        
         // Set permission state. Is it possible to be edited items?
         $this->canCreate = $user->authorise('core.create', 'com_userideas') || (count($user->getAuthorisedCategories('com_userideas', 'core.create')));
 
         $helpersOptions = array();
         $helperBus      = new Prism\Helper\HelperBus($this->items);
-        $helperBus->addCommand(new Userideas\Helper\PrepareParams());
-        $helperBus->addCommand(new Userideas\Helper\PrepareStatuses());
-        $helperBus->addCommand(new Userideas\Helper\PrepareAccess(JFactory::getUser()));
+        $helperBus->addCommand(new Userideas\Helper\PrepareParamsHelper());
+        $helperBus->addCommand(new Userideas\Helper\PrepareStatusesHelper());
+        $helperBus->addCommand(new Userideas\Helper\PrepareAccessHelper(JFactory::getUser()));
 
         // Set helper command that prepares tags.
         if ($this->params->get('show_tags')) {
             $helpersOptions['content_type']  = 'com_userideas.item';
             $helpersOptions['access_groups'] = \JFactory::getUser()->getAuthorisedViewLevels();
 
-            $helperBus->addCommand(new Userideas\Helper\PrepareTags());
+            $helperBus->addCommand(new Userideas\Helper\PrepareTagsHelper());
         }
         $helperBus->handle($helpersOptions);
 
@@ -174,16 +183,12 @@ class UserideasViewItems extends JViewLegacy
                 'default' => $params->get('integration_avatars_default', '/media/com_userideas/images/no-profile.png')
             );
 
-            $socialProfilesBuilder = new Prism\Integration\Profiles\Builder(
-                array(
-                    'social_platform' => $params->get('integration_social_platform'),
-                    'users_ids'       => $usersIds
-                )
-            );
-
-            $socialProfilesBuilder->build();
-
-            $this->socialProfiles = $socialProfilesBuilder->getProfiles();
+            $options = new \Joomla\Registry\Registry(array(
+                'platform' => $params->get('integration_social_platform'),
+                'user_ids' => $usersIds
+            ));
+            $factory = new Prism\Integration\Profiles\Factory($options);
+            $this->socialProfiles = $factory->create();
         }
     }
 
@@ -203,5 +208,27 @@ class UserideasViewItems extends JViewLegacy
             $comments = new Userideas\Comment\Comments(JFactory::getDbo());
             $this->comments = $comments->advancedCount(array('items_ids' => $itemsIds));
         }
+    }
+
+    /**
+     * Check the access view.
+     *
+     * @param JApplicationCms $app
+     * @param JUser $user
+     *
+     * @return bool
+     * @throws Exception
+     */
+    protected function canView($app, JUser $user)
+    {
+        $activeMenu = $app->getMenu()->getActive();
+        $groups     = $user->getAuthorisedViewLevels();
+
+        $canView    = false;
+        if ($activeMenu !== null) {
+            $canView = in_array((int)$activeMenu->access, $groups, true);
+        }
+
+        return $canView;
     }
 }

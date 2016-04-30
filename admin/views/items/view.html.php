@@ -46,7 +46,7 @@ class UserideasViewItems extends JViewLegacy
         $this->pagination = $this->get('Pagination');
 
         $helperBus     = new Prism\Helper\HelperBus($this->items);
-        $helperBus->addCommand(new Userideas\Helper\PrepareStatuses());
+        $helperBus->addCommand(new Userideas\Helper\PrepareStatusesHelper());
         $helperBus->handle();
 
         // Prepare sorting data

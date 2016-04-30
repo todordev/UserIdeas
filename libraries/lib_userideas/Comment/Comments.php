@@ -10,8 +10,6 @@
 namespace Userideas\Comment;
 
 use Prism\Database;
-use Prism\Database\Command\CommandHandlerInterface;
-use Prism\Database\Command\CommandHandlerTrait;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -21,10 +19,8 @@ defined('JPATH_PLATFORM') or die;
  * @package      Userideas
  * @subpackage   Statuses
  */
-class Comments extends Database\Collection implements CommandHandlerInterface
+class Comments extends Database\Collection
 {
-    use CommandHandlerTrait;
-
     protected $counts   = array();
 
     /**
@@ -91,6 +87,8 @@ class Comments extends Database\Collection implements CommandHandlerInterface
      * @param int|string $id Country ID or Country code.
      *
      * @return null|Comment
+     *
+     * @throws \UnexpectedValueException
      */
     public function getComment($id)
     {

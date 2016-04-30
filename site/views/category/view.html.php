@@ -80,16 +80,16 @@ class UserideasViewCategory extends JViewLegacy
 
         $helpersOptions = array();
         $helperBus      = new Prism\Helper\HelperBus($this->items);
-        $helperBus->addCommand(new Userideas\Helper\PrepareParams());
-        $helperBus->addCommand(new Userideas\Helper\PrepareStatuses());
-        $helperBus->addCommand(new Userideas\Helper\PrepareAccess(JFactory::getUser()));
+        $helperBus->addCommand(new Userideas\Helper\PrepareParamsHelper());
+        $helperBus->addCommand(new Userideas\Helper\PrepareStatusesHelper());
+        $helperBus->addCommand(new Userideas\Helper\PrepareAccessHelper(JFactory::getUser()));
 
         // Set helper command that prepares tags.
         if ($this->params->get('show_tags')) {
             $helpersOptions['content_type']  = 'com_userideas.item';
             $helpersOptions['access_groups'] = \JFactory::getUser()->getAuthorisedViewLevels();
 
-            $helperBus->addCommand(new Userideas\Helper\PrepareTags());
+            $helperBus->addCommand(new Userideas\Helper\PrepareTagsHelper());
         }
         $helperBus->handle($helpersOptions);
 

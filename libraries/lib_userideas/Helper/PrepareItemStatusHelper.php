@@ -20,7 +20,7 @@ defined('JPATH_PLATFORM') or die;
  * @package      Userideas
  * @subpackage   Helpers
  */
-class PrepareItemStatus implements HelperInterface
+class PrepareItemStatusHelper implements HelperInterface
 {
     /**
      * Prepare an item status.
@@ -30,19 +30,21 @@ class PrepareItemStatus implements HelperInterface
      */
     public function handle(&$data, array $options = array())
     {
-        if ($data->status_params !== '') {
-            $statusParams        = json_decode($data->status_params, true);
-            $data->status_params = (!is_array($statusParams)) ? null : $statusParams;
+        if (is_object($data)) {
+            if ($data->status_params !== '') {
+                $statusParams        = json_decode($data->status_params, true);
+                $data->status_params = (!is_array($statusParams)) ? null : $statusParams;
+            }
+
+            $statusData = array(
+                'id'      => $data->status_id,
+                'name'    => $data->status_name,
+                'default' => $data->status_default,
+                'params'  => $data->status_params
+            );
+
+            $data->status = new Status();
+            $data->status->bind($statusData);
         }
-
-        $statusData = array(
-            'id'      => $data->status_id,
-            'name'    => $data->status_name,
-            'default' => $data->status_default,
-            'params'  => $data->status_params
-        );
-
-        $data->status = new Status();
-        $data->status->bind($statusData);
     }
 }

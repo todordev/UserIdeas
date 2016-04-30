@@ -20,7 +20,7 @@ JFormHelper::loadFieldClass('list');
  * @subpackage   Component
  * @since        1.6
  */
-class JFormFieldUiStatuses extends JFormFieldList
+class JFormFieldUistatuses extends JFormFieldList
 {
     /**
      * The form field type.
@@ -28,7 +28,7 @@ class JFormFieldUiStatuses extends JFormFieldList
      * @var     string
      * @since   1.6
      */
-    protected $type = 'UiStatuses';
+    protected $type = 'uistatuses';
 
     /**
      * Method to get the field options.
@@ -43,8 +43,8 @@ class JFormFieldUiStatuses extends JFormFieldList
 
         $query
             ->select('a.id AS value, a.name AS text')
-            ->from($db->quoteName("#__uideas_statuses", "a"))
-            ->order("a.name ASC");
+            ->from($db->quoteName('#__uideas_statuses', 'a'))
+            ->order('a.name ASC');
 
         // Get the options.
         $db->setQuery($query);

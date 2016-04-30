@@ -21,7 +21,7 @@ JFormHelper::loadFieldClass('list');
  * @subpackage   Component
  * @since        1.6
  */
-class JFormFieldUiItems extends JFormFieldList
+class JFormFieldUiitems extends JFormFieldList
 {
     /**
      * The form field type.
@@ -29,7 +29,7 @@ class JFormFieldUiItems extends JFormFieldList
      * @var     string
      * @since   1.6
      */
-    protected $type = 'UiItems';
+    protected $type = 'uiitems';
 
     /**
      * Method to get the field options.
