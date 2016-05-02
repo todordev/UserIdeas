@@ -118,7 +118,7 @@ class UserideasModelCategory extends JModelList
                 'list.select',
                 'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, a.params, a.hits, a.access, ' .
                 $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
-                'b.name, b.username, ' .
+                'b.name as author, b.username, ' .
                 'c.title AS category, c.access AS category_access, ' .
                 $query->concatenate(array('c.id', 'c.alias'), ':') . ' AS catslug, ' .
                 'd.name AS status_name, d.params AS status_params, d.default AS status_default'

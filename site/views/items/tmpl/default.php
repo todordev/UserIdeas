@@ -20,7 +20,6 @@ defined('_JEXEC') or die;?>
         <?php echo JText::_('COM_USERIDEAS_POST_ITEM');?>
     </a>
     <?php }?>
-    
 	<?php foreach($this->items as $item) {
         $commentsNumber = 0;
         if (array_key_exists($item->id, $this->comments)) {
@@ -49,7 +48,7 @@ defined('_JEXEC') or die;?>
         if (UserideasHelper::shouldDisplayFootbar($item->params, $item->params, false) or $this->commentsEnabled) {
             echo '<div class="clearfix"></div>';
             $layoutData = new stdClass;
-            $layoutData->item  = $item;
+            $layoutData->item                = $item;
             $layoutData->socialProfiles      = $this->socialProfiles;
             $layoutData->integrationOptions  = $this->integrationOptions;
             $layoutData->commentsEnabled     = $this->commentsEnabled;

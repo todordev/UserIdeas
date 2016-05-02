@@ -39,6 +39,7 @@ if ($this->item->event->beforeDisplayContent) {
             <?php
             $hasTags = (bool)(isset($this->item->tags) and is_array($this->item->tags) and count($this->item->tags) > 0);
             if (UserideasHelper::shouldDisplayFootbar($this->params, $this->item->params, $hasTags)) {
+                echo '<div class="clearfix"></div>';
 
                 $layoutData = new stdClass;
                 $layoutData->item                = $this->item;

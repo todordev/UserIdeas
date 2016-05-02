@@ -1,6 +1,9 @@
 User Ideas Changelog
 ==========================
 
+###v2.3.2
+* It was fixed an issue with author's name when User Ideas is not integrated with third-party community extension.
+
 ###v2.3.1
 * Added option to enter alternate page where the user will be redirected to log into the website.
 * Fixed item deleting. Delete comments and votes when delete an item.

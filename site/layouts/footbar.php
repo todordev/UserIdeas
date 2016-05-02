@@ -22,28 +22,27 @@ $showCreateDate = $params->get('show_create_date', $item->params->get('show_crea
 <div class="well well-sm clearfix">
     <div class="pull-left">
         <?php
-
         if ($showAuthor or $showCreateDate) {
-            $name = (strcmp('name', $params->get('integration_name_type')) === 0) ? $item->name : $item->username;
+            $name = (strcmp('name', $params->get('integration_name_type')) === 0) ? $item->author : $item->username;
 
+            $profileLink   = null;
+            $profileAvatar = null;
             if ($socialProfiles !== null) {
-                $profile = JHtml::_('userideas.profile', $socialProfiles, $item->user_id);
+                $profileLink = JHtml::_('userideas.profile', $socialProfiles, $item->user_id);
 
                 // Prepare item owner avatar.
-                $profileAvatar = null;
                 if ($params->get('integration_display_owner_avatar', 0)) {
                     $profileAvatar = JHtml::_('userideas.avatar', $socialProfiles, $item->user_id, $integrationOptions);
                 }
             }
 
-            if ($showAuthor and $showCreateDate and $socialProfiles !== null) {
-                echo JHtml::_('userideas.publishedByOn', $name, $item->record_date, $profile, $profileAvatar, $integrationOptions);
-            } elseif ($showAuthor and !$showCreateDate and $socialProfiles !== null) {
-                echo JHtml::_('userideas.publishedBy', $name, $profile, $profileAvatar, $integrationOptions);
+            if ($showAuthor and $showCreateDate) {
+                echo JHtml::_('userideas.publishedByOn', $name, $item->record_date, $profileLink, $profileAvatar, $integrationOptions);
+            } elseif ($showAuthor and !$showCreateDate) {
+                echo JHtml::_('userideas.publishedBy', $name, $profileLink, $profileAvatar, $integrationOptions);
             } elseif ($showCreateDate) {
                 echo JHtml::_('userideas.publishedOn', $item->record_date);
             }
-
         }
 
         if ($params->get('show_category', $item->params->get('show_category'))) {
