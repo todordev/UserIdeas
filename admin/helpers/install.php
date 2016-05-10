@@ -24,7 +24,7 @@ class UserideasInstallHelper
 
     public static function endTable()
     {
-        echo "</table></div>";
+        echo '</table></div>';
     }
 
     public static function addRowHeading($heading)
@@ -52,12 +52,11 @@ class UserideasInstallHelper
      */
     public static function addRow($title, $result, $info)
     {
-
         $outputType = Joomla\Utilities\ArrayHelper::getValue($result, 'type');
         $outputText = Joomla\Utilities\ArrayHelper::getValue($result, 'text');
 
         $output = '';
-        if (JString::strlen($outputType) > 0 and JString::strlen($outputText) > 0) {
+        if (strlen($outputType) > 0 and strlen($outputText) > 0) {
             $output = '<span class="label label-' . $outputType . '">' . $outputText . '</span>';
         }
 
@@ -75,14 +74,12 @@ class UserideasInstallHelper
         if (true !== JFolder::create($imagesPath)) {
             JLog::add(JText::sprintf('COM_USERIDEAS_ERROR_CANNOT_CREATE_FOLDER', $imagesPath));
         } else {
-
             // Copy index.html
             $indexFile = JPath::clean($imagesPath . DIRECTORY_SEPARATOR . 'index.html');
             $html      = '<html><body style="background-color: #fff;"></body></html>';
             if (true !== JFile::write($indexFile, $html)) {
                 JLog::add(JText::sprintf('COM_USERIDEAS_ERROR_CANNOT_SAVE_FILE', $indexFile));
             }
-
         }
     }
 

@@ -1,6 +1,9 @@
 User Ideas Changelog
 ==========================
 
+###v2.3.3
+* It was fixed an issue with preparing items parameters.
+
 ###v2.3.2
 * It was fixed an issue with author's name when User Ideas is not integrated with third-party community extension.
 

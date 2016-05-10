@@ -36,8 +36,9 @@ class PrepareItemParamsHelper implements HelperInterface
             }
 
             if (is_string($data->params) and $data->params !== '') {
-                $data->params = new Registry();
-                $data->params->loadString($data->params);
+                $params = new Registry;
+                $params->loadString($data->params);
+                $data->params = $params;
             }
         }
     }
