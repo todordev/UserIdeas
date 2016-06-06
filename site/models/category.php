@@ -24,12 +24,14 @@ class UserideasModelCategory extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'title', 'a.title',
-                'category', 'c.title',
-                'author', 'b.name',
-                'ordering', 'a.ordering',
-                'hits', 'a.hits',
-                'votes', 'a.votes'
+                'alpha', 'ralpha',
+                'category', 'rcategory',
+                'author', 'rauthor',
+                'hits', 'rhits',
+                'votes', 'rvotes',
+                'date', 'rdate',
+                'random',
+                'order'
             );
         }
 
@@ -58,6 +60,8 @@ class UserideasModelCategory extends JModelList
         $orderCol = $app->getUserStateFromRequest($this->context . '.list.' . $itemId . '.filter_order', 'filter_order', '', 'string');
         if (!in_array($orderCol, $this->filter_fields, true)) {
             $orderCol = '';
+        } else {
+            $orderCol = $this->prepareOrderBy($orderCol);
         }
         $this->setState('list.ordering', $orderCol);
 
@@ -163,7 +167,7 @@ class UserideasModelCategory extends JModelList
      *
      * @return string
      */
-    protected function prepareOrderBySecondary($order)
+    protected function prepareOrderBy($order)
     {
         switch ($order) {
             case 'date':
@@ -188,10 +192,6 @@ class UserideasModelCategory extends JModelList
 
             case 'rhits':
                 $orderBy = 'a.hits';
-                break;
-
-            case 'order':
-                $orderBy = 'a.ordering';
                 break;
 
             case 'author':
@@ -225,21 +225,18 @@ class UserideasModelCategory extends JModelList
 
     protected function getOrderString()
     {
-        $db = $this->getDbo();
-
         $orderBy   = array();
         $orderCol  = $this->getState('list.ordering');
-        $orderDirn = $this->getState('list.direction');
         $params    = $this->getState('params');
 
         if ($orderCol) {
-            $orderBy[]   = (!$orderDirn) ? $db->escape($orderCol) : $db->escape($orderCol) . ' ' . $db->escape($orderDirn);
+            $orderBy[]   = $orderCol;
         }
 
         $itemOrderBy     = $params->get('orderby_sec', Prism\Constants::ORDER_MOST_RECENT_FIRST);
         $categoryOrderBy = $params->def('orderby_pri', '');
         $primary         = Prism\Utilities\QueryHelper::orderbyPrimary($categoryOrderBy);
-        $secondary       = $this->prepareOrderBySecondary($itemOrderBy);
+        $secondary       = $this->prepareOrderBy($itemOrderBy);
 
         if ($primary !== '') {
             $orderBy[] = $primary;

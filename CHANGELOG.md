@@ -1,6 +1,9 @@
 User Ideas Changelog
 ==========================
 
+###v2.3.4
+* Improved items sorting.
+
 ###v2.3.3
 * It was fixed an issue with preparing items parameters.
 
