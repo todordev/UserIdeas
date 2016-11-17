@@ -40,6 +40,8 @@ class Items extends Database\Collection
      * </code>
      *
      * @param array $options
+     *
+     * @throws \RuntimeException
      */
     public function load(array $options = array())
     {
@@ -49,9 +51,9 @@ class Items extends Database\Collection
             ->select(
                 'a.id, a.title, a.alias, a.description, a.votes, a.hits, a.record_date, ' .
                 'a.ordering, a.published, a.params, a.status_id, a.catid, a.user_id, a.access, ' .
-                'b.name, b.username, ' .
+                'b.name AS author, b.username, ' .
                 'c.title AS category, c.access AS category_access, ' .
-                'd.name AS status_name, d.params AS status_params, d.default AS status_default, ' .
+                'd.title AS status_title, d.params AS status_params, d.default AS status_default, ' .
                 $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
                 $query->concatenate(array('c.id', 'c.alias'), ':') . ' AS catslug'
             )

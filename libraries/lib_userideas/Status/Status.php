@@ -22,7 +22,7 @@ defined('JPATH_PLATFORM') or die;
 class Status extends TableImmutable
 {
     protected $id;
-    protected $name;
+    protected $title;
     protected $default;
 
     /**
@@ -37,13 +37,15 @@ class Status extends TableImmutable
      *
      * @param int|array $keys
      * @param array $options
+     *
+     * @throws \RuntimeException
      */
     public function load($keys, array $options = array())
     {
         $query = $this->db->getQuery(true);
 
         $query
-            ->select('a.id, a.name, a.default, a.params')
+            ->select('a.id, a.title, a.default, a.params')
             ->from($this->db->quoteName('#__uideas_statuses', 'a'));
 
         if (is_array($keys)) {
@@ -89,7 +91,7 @@ class Status extends TableImmutable
     }
 
     /**
-     * Returns status name.
+     * Returns status title.
      *
      * <code>
      * $statusId = 1;
@@ -97,14 +99,14 @@ class Status extends TableImmutable
      * $status   = new Userideas\Status\Status(\JFactory::getDbo());
      * $status->load($statusId);
      *
-     * $name = $status->getName();
+     * $name = $status->getTitle();
      * </code>
      *
      * @return string
      */
-    public function getName()
+    public function getTitle()
     {
-        return (string)$this->name;
+        return (string)$this->title;
     }
 
     /**

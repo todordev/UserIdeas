@@ -28,7 +28,7 @@ class UserideasObserverItem extends JTableObserver
      * @var    string
      * @since  3.1.2
      */
-    protected $typeAliasPattern = null;
+    protected $typeAliasPattern;
 
     /**
      * Creates the associated observer instance and attaches it to the $observableObject
@@ -55,21 +55,25 @@ class UserideasObserverItem extends JTableObserver
      *
      * @param   mixed $pk An optional primary key value to delete.  If not set the instance property value is used.
      *
+     * @throws  RuntimeException
+     * @throws  UnexpectedValueException
+     * @throws  InvalidArgumentException
+     * @throws  \League\Flysystem\FileNotFoundException
      * @return  void
      *
      * @since   3.1.2
-     * @throws  UnexpectedValueException
      */
     public function onAfterDelete($pk)
     {
-        $db = $this->table->getDbo();
+        $itemId = (int)$this->table->get('id');
+        if ($itemId > 0) {
+            $db = $this->table->getDbo();
 
-        if ((int)$this->table->id > 0) {
             // Delete comments.
             $query = $db->getQuery(true);
             $query
                 ->delete($db->quoteName('#__uideas_comments'))
-                ->where($db->quoteName('item_id') . '=' . (int)$this->table->id);
+                ->where($db->quoteName('item_id') . '=' . (int)$itemId);
 
             $db->setQuery($query);
             $db->execute();
@@ -78,10 +82,28 @@ class UserideasObserverItem extends JTableObserver
             $query = $db->getQuery(true);
             $query
                 ->delete($db->quoteName('#__uideas_votes'))
-                ->where($db->quoteName('item_id') . '=' . (int)$this->table->id);
+                ->where($db->quoteName('item_id') . '=' . (int)$itemId);
 
             $db->setQuery($query);
             $db->execute();
+
+            // Delete attachments.
+            $attachments = new Userideas\Attachment\Attachments($db);
+            $attachments->load(array('item_id' => $itemId));
+
+            if (count($attachments) > 0) {
+                $params = JComponentHelper::getParams('com_userideas');
+
+                $filesystemHelper  = new Prism\Filesystem\Helper($params);
+                $storageFilesystem = $filesystemHelper->getFilesystem();
+
+                foreach ($attachments as $attachment) {
+                    $filepath = $filesystemHelper->getMediaFolder($itemId, Userideas\Constants::ITEM_FOLDER) .'/'. $attachment['filename'];
+                    if ($storageFilesystem->has($filepath)) {
+                        $storageFilesystem->delete($filepath);
+                    }
+                }
+            }
         }
     }
 }

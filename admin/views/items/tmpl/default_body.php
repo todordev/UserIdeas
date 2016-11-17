@@ -35,8 +35,7 @@ $userId = $user->get('id');
     			<i class="icon-menu"></i>
     		</span>
             <?php if ($canChange and $this->saveOrder) { ?>
-                <input type="text" style="display:none" name="order[]" size="5" value="<?php echo $item->ordering; ?>"
-                       class="width-20 text-area-order "/>
+                <input type="text" style="display:none" name="order[]" size="5" value="<?php echo $item->ordering; ?>" class="width-20 text-area-order "/>
             <?php } ?>
         </td>
         <td class="hidden-phone">
@@ -47,7 +46,7 @@ $userId = $user->get('id');
         </td>
         <td class="has-context">
             <?php if ($canEdit || $canEditOwn) { ?>
-                <a href="<?php echo JRoute::_("index.php?option=com_userideas&view=item&layout=edit&id=" . $item->id); ?>"><?php echo $this->escape($item->title); ?></a>
+                <a href="<?php echo JRoute::_('index.php?option=com_userideas&view=item&layout=edit&id=' . $item->id); ?>"><?php echo $this->escape($item->title); ?></a>
             <?php } else { ?>
                 <span title="<?php echo JText::sprintf('JFIELD_ALIAS_LABEL', $this->escape($item->alias)); ?>"><?php echo $this->escape($item->title); ?></span>
             <?php } ?>
@@ -56,6 +55,12 @@ $userId = $user->get('id');
             </div>
             <div class="small">
                 <?php echo JHtml::_('userideas.categoryFilter', $this->escape($item->category), $item->catid); ?>
+            </div>
+            <div class="small">
+                <?php echo JHtml::_('userideas.attachmentNumber', $item, 'item'); ?>
+            </div>
+            <div class="small">
+                <?php echo JHtml::_('userideas.commentsNumber', $item); ?>
             </div>
         </td>
         <td class="center hidden-phone"><?php echo (int)$item->votes; ?></td>

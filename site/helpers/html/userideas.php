@@ -89,7 +89,7 @@ abstract class JHtmlUserideas
         if ($link !== null and $link !== '') {
             $profile = '<a href="' . $link . '" rel="nofollow">' . $name . '</a>';
         } else {
-            $profile = ($name) ?: JText::_('COM_USERIDEAS_ANONYMOUS');
+            $profile = $name ?: JText::_('COM_USERIDEAS_ANONYMOUS');
         }
 
         if ($profileAvatar !== null and $profileAvatar !== '') {
@@ -99,19 +99,18 @@ abstract class JHtmlUserideas
             $profile = '<img src="' . $profileAvatar . '" width="'.$width.'" height="'.$height.'" alt="'.$name.'" /> ' . $profile;
         }
 
-        $html = JText::sprintf('COM_USERIDEAS_PUBLISHED_BY', $profile);
-
-        return $html;
+        return JText::sprintf('COM_USERIDEAS_PUBLISHED_BY', $profile);
     }
 
     public static function publishedByOn($name, $date, $link = null, $profileAvatar = null, array $options = array())
     {
         $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+        $link = (string)$link;
 
-        if ($link !== null and $link !== '') {
+        if ($link !== '' and $name !== '') {
             $profile = '<a href="' . $link . '" rel="nofollow">' . $name . '</a>';
         } else {
-            $profile = ($name) ?: JText::_('COM_USERIDEAS_ANONYMOUS');
+            $profile = $name ?: JText::_('COM_USERIDEAS_ANONYMOUS');
         }
 
         if ($profileAvatar !== null and $profileAvatar !== '') {
@@ -121,18 +120,16 @@ abstract class JHtmlUserideas
             $profile = '<img src="' . $profileAvatar . '" width="'.$width.'" height="'.$height.'" alt="'.$name.'" /> ' . $profile;
         }
 
-        $date = JHTML::_('date', $date, JText::_('DATE_FORMAT_LC3'));
-        $html = JText::sprintf('COM_USERIDEAS_PUBLISHED_BY_ON', $profile, $date);
+        $date = JHtml::_('date', $date, JText::_('DATE_FORMAT_LC3'));
 
-        return $html;
+        return JText::sprintf('COM_USERIDEAS_PUBLISHED_BY_ON', $profile, $date);
     }
 
     public static function publishedOn($date)
     {
-        $date = JHTML::_('date', $date, JText::_('DATE_FORMAT_LC3'));
-        $html = JText::sprintf('COM_USERIDEAS_PUBLISHED_ON', $date);
+        $date = JHtml::_('date', $date, JText::_('DATE_FORMAT_LC3'));
 
-        return $html;
+        return JText::sprintf('COM_USERIDEAS_PUBLISHED_ON', $date);
     }
 
     public static function category($name, $catSlug = '')
@@ -141,13 +138,23 @@ abstract class JHtmlUserideas
             return '';
         }
 
-        if (!empty($catSlug)) {
-            $html = '<a href="' . UserideasHelperRoute::getCategoryRoute($catSlug) . '" class="ui-category-label">' . htmlspecialchars($name, ENT_QUOTES, 'utf-8') . '</a>';
+        if ((string)$catSlug !== '') {
+            $html = '<a href="' . UserideasHelperRoute::getCategoryRoute($catSlug) . '" class="ui-category-label"><span class="fa fa-folder"></span> ' . htmlspecialchars($name, ENT_QUOTES, 'utf-8') . '</a>';
         } else {
-            $html = '<span class="ui-category-label">' . htmlspecialchars($name, ENT_QUOTES, 'utf-8') . '</span>';
+            $html = '<span class="ui-category-label"><span class="fa fa-folder"></span> ' . htmlspecialchars($name, ENT_QUOTES, 'utf-8') . '</span>';
         }
 
         return $html;
+    }
+
+    public static function hits($number)
+    {
+        return '<span class="label label-default"><span class="fa fa-eye"></span> ' . JText::sprintf('COM_USERIDEAS_HITS_D', $number) . '</span>';
+    }
+
+    public static function votes($number)
+    {
+        return '<span class="label label-default"><span class="fa fa-thumbs-up"></span> ' . JText::sprintf('COM_USERIDEAS_VOTES_D', $number) . '</span>';
     }
 
     public static function categoryFilter($category, $categoryId)
@@ -155,10 +162,46 @@ abstract class JHtmlUserideas
         $html = '--';
 
         if ($category !== '' and $categoryId > 0) {
-            $html = JText::sprintf('COM_USERIDEAS_CATEGORY_S', '<a href="' . JRoute::_('index.php?option=com_userideas&view=items&filter_search=id:'.(int)$categoryId). '">' . $category . '</a>');
+            $html = JText::sprintf('COM_USERIDEAS_CATEGORY_S', '<a href="' . JRoute::_('index.php?option=com_userideas&view=items&filter_category='.(int)$categoryId). '">' . $category . '</a>');
         }
 
         return $html;
+    }
+
+    public static function commentsNumber($item)
+    {
+        $html = '';
+        if (isset($item->comments)) {
+            $html = JText::_('COM_USERIDEAS_COMMENTS') .': <a href="' . JRoute::_('index.php?option=com_userideas&view=comments&filter_search=iid:'.(int)$item->id). '">( ' . $item->comments . ' )</a>';
+        }
+
+        return $html;
+    }
+
+    public static function attachmentNumber($item, $type)
+    {
+        $html = '';
+        if (isset($item->attachment)) {
+            $itemId = 0;
+            if (strcmp('item', $type) === 0) {
+                $itemId = (int)$item->id;
+            } elseif (strcmp('comment', $type) === 0) {
+                $itemId = (int)$item->item_id;
+            }
+
+            $html = JText::_('COM_USERIDEAS_ATTACHMENTS') . ': <a href="' . JRoute::_('index.php?option=com_userideas&view=attachments&id='.$itemId.'&filter_source='.$type.'&filter_search=id:'.$item->attachment->id). '">(' .$item->attachment->number. ')</a>';
+        }
+
+        return $html;
+    }
+
+    public static function source($item)
+    {
+        if (strcmp('comment', $item->source) === 0) {
+            return $item->source .' <a href="' . JRoute::_('index.php?option=com_userideas&view=comments&filter_search=id:'.$item->comment_id). '">(#' .$item->comment_id. ')</a>';
+        } else {
+            return $item->source.' <a href="' . JRoute::_('index.php?option=com_userideas&view=items&filter_search=id:'.$item->item_id). '">(#' .$item->item_id. ')</a>';
+        }
     }
 
     public static function status(Userideas\Status\Status $status, $displayLink = true)
@@ -172,10 +215,10 @@ abstract class JHtmlUserideas
         if ($displayLink === true) {
             $html = '
             <a href="' . UserideasHelperRoute::getItemsRoute($status->getId()) . '" class="ui-status-label">
-            <span class="label' . $styles . '">' . htmlspecialchars($status->getName(), ENT_QUOTES, 'utf-8') . '</span>
+            <span class="label ' . $styles . '">' . htmlspecialchars($status->getTitle(), ENT_QUOTES, 'utf-8') . '</span>
             </a>';
         } else {
-            $html = '<span class="label ui-status-label ' . $styles . '">' . htmlspecialchars($status->getName(), ENT_QUOTES, 'utf-8') . '</span>';
+            $html = '<span class="label ui-status-label ' . $styles . '">' . htmlspecialchars($status->getTitle(), ENT_QUOTES, 'utf-8') . '</span>';
         }
 
         return $html;
@@ -190,24 +233,39 @@ abstract class JHtmlUserideas
         return '<div class="label '.$name.'">'.$name.'</div>';
     }
 
+    public static function filterStatus($value, array $status, $url)
+    {
+        $active = '';
+        if ((int)$value === (int)$status['value']) {
+            $active = 'class="active"';
+        }
+
+        return '<li '.$active.'><a href="'.$url.'?filter_status='.$status['value'].'">'.$status['text'].'</a></li>';
+    }
+
     /**
      * Load the script that initialize vote system.
+     *
+     * @param int $counterButton
      */
-    public static function loadVoteScript()
+    public static function loadVoteScript($counterButton = 0)
     {
         // Only load once
         if (!empty(self::$loaded[__METHOD__])) {
             return;
         }
 
-        $document = JFactory::getDocument();
+        $counterButton = $counterButton ? 1 : 0;
+        
+        $document      = JFactory::getDocument();
 
         $document->addScriptDeclaration('
             var userIdeas = {
                 url: "'.JUri::root().'index.php?option=com_userideas&task=item.vote&format=raw",
                 token: {
                     "'.JSession::getFormToken().'": 1
-                }
+                },
+                counter_button: '. $counterButton .'
             };
         ');
 

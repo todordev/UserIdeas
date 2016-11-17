@@ -31,8 +31,6 @@ JLoader::register('UserideasHelperRoute', USERIDEAS_PATH_COMPONENT_SITE .'/helpe
 // Register Observers
 JLoader::register('UserideasObserverVote', USERIDEAS_PATH_COMPONENT_ADMINISTRATOR .'/tables/observers/vote.php');
 JObserverMapper::addObserverClassToClass('UserideasObserverVote', 'UserideasTableVote', array('typeAlias' => 'com_userideas.vote'));
-JLoader::register('UserideasObserverItem', USERIDEAS_PATH_COMPONENT_ADMINISTRATOR .'/tables/observers/item.php');
-JObserverMapper::addObserverClassToClass('UserideasObserverItem', 'UserideasTableItem', array('typeAlias' => 'com_userideas.item'));
 
 // Include HTML helpers
 JHtml::addIncludePath(USERIDEAS_PATH_COMPONENT_SITE . '/helpers/html');
@@ -46,7 +44,7 @@ JLog::addLogger(
         'text_file' => 'com_userideas.errors.php'
     ),
     // Sets messages of all log levels to be sent to the file
-    JLog::CRITICAL + JLog::EMERGENCY + JLog::ERROR,
+    JLog::CRITICAL + JLog::EMERGENCY + JLog::ALERT + JLog::ERROR + JLog::WARNING,
     // The log category/categories which should be recorded in this file
     // In this case, it's just the one category from our extension, still
     // we need to put it inside an array

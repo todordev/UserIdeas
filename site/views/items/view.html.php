@@ -39,6 +39,7 @@ class UserideasViewItems extends JViewLegacy
     protected $commentsEnabled = false;
 
     protected $option;
+    protected $event;
 
     protected $pageclass_sfx;
 
@@ -65,7 +66,7 @@ class UserideasViewItems extends JViewLegacy
         }
         
         // Set permission state. Is it possible to be edited items?
-        $this->canCreate = $user->authorise('core.create', 'com_userideas') || (count($user->getAuthorisedCategories('com_userideas', 'core.create')));
+        $this->canCreate = $user->authorise('core.create', 'com_userideas') || count($user->getAuthorisedCategories('com_userideas', 'core.create'));
 
         $helpersOptions = array();
         $helperBus      = new Prism\Helper\HelperBus($this->items);
@@ -83,7 +84,21 @@ class UserideasViewItems extends JViewLegacy
         $helperBus->handle($helpersOptions);
 
         $this->prepareComments();
-        $this->prepareIntegration($this->params);
+        $this->prepareIntegration();
+
+        // Import content plugins
+        JPluginHelper::importPlugin('content');
+
+        // Events
+        $dispatcher  = JEventDispatcher::getInstance();
+        $this->event = new stdClass();
+
+        $results                                 = $dispatcher->trigger('onContentBeforeDisplay', array('com_userideas.items', &$this->items, &$this->params));
+        $this->event->onContentBeforeDisplay     = trim(implode("\n", $results));
+
+        $results                                 = $dispatcher->trigger('onContentAfterDisplay', array('com_userideas.items', &$this->items, &$this->params));
+        $this->event->onContentAfterDisplay      = trim(implode("\n", $results));
+
         $this->prepareDocument();
 
         parent::display($tpl);
@@ -162,29 +177,21 @@ class UserideasViewItems extends JViewLegacy
 
     /**
      * Prepare social profiles.
-     *
-     * @param Joomla\Registry\Registry $params
      */
-    protected function prepareIntegration($params)
+    protected function prepareIntegration()
     {
         // Get users IDs
-        $usersIds = array();
-        foreach ($this->items as $item) {
-            if ($item->user_id) {
-                $usersIds[] = $item->user_id;
-            }
-        }
-        $usersIds = array_filter(array_unique($usersIds));
+        $usersIds = Prism\Utilities\ArrayHelper::getIds($this->items, 'user_id');
 
         // If there are no users, do not continue.
         if (count($usersIds) > 0) {
             $this->integrationOptions = array(
-                'size' => $params->get('integration_avatars_size', 'small'),
-                'default' => $params->get('integration_avatars_default', '/media/com_userideas/images/no-profile.png')
+                'size' => $this->params->get('integration_avatars_size', 'small'),
+                'default' => $this->params->get('integration_avatars_default', '/media/com_userideas/images/no-profile.png')
             );
 
             $options = new \Joomla\Registry\Registry(array(
-                'platform' => $params->get('integration_social_platform'),
+                'platform' => $this->params->get('integration_social_platform'),
                 'user_ids' => $usersIds
             ));
             $factory = new Prism\Integration\Profiles\Factory($options);
@@ -198,15 +205,12 @@ class UserideasViewItems extends JViewLegacy
     protected function prepareComments()
     {
         if ($this->params->get('comments_enabled') and $this->params->get('show_button_comments')) {
-            $itemsIds = array();
-            foreach ($this->items as $item) {
-                $itemsIds[] = $item->id;
-            }
-
             $this->commentsEnabled = true;
 
+            $itemsIds = Prism\Utilities\ArrayHelper::getIds($this->items);
+
             $comments = new Userideas\Comment\Comments(JFactory::getDbo());
-            $this->comments = $comments->advancedCount(array('items_ids' => $itemsIds));
+            $this->comments = $comments->advancedCount(['items_ids' => $itemsIds, 'state' => Prism\Constants::PUBLISHED]);
         }
     }
 

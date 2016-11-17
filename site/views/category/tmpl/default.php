@@ -50,14 +50,14 @@ defined('_JEXEC') or die; ?>
     <?php
     foreach ($this->items as $item) {
         $commentsNumber = 0;
-        if (array_key_exists($item->id, $this->comments)) {
+        if (is_array($this->comments) and array_key_exists($item->id, $this->comments)) {
             $commentsNumber = (int)$this->comments[$item->id];
         }
         ?>
         <div class="media ui-item">
             <div class="ui-vote pull-left">
-                <div class="ui-vote-counter" id="js-ui-vote-counter-<?php echo $item->id; ?>"><?php echo $item->votes; ?></div>
-                <a class="btn btn-default btn-small ui-btn-vote js-ui-btn-vote" href="javascript: void(0);" data-id="<?php echo $item->id; ?>"><?php echo JText::_('COM_USERIDEAS_VOTE'); ?></a>
+                <div class="ui-vote-counter js-ui-item-counter" id="js-ui-vote-counter-<?php echo $item->id; ?>" data-id="<?php echo $item->id; ?>"><?php echo $item->votes; ?></div>
+                <a class="btn btn-primary btn-small ui-btn-vote js-ui-btn-vote" href="javascript: void(0);" data-id="<?php echo $item->id; ?>"><?php echo JText::_('COM_USERIDEAS_VOTE'); ?></a>
             </div>
             <div class="media-body">
                 <?php if ($this->params->get('show_title', $item->params->get('show_title', 1))) {?>
@@ -89,6 +89,12 @@ defined('_JEXEC') or die; ?>
             }?>
         </div>
     <?php } ?>
+
+    <?php
+    if ($this->showSubcategories and count($this->subcategories) > 0) { ?>
+        <h4><?php echo JText::_('COM_USERIDEAS_SUBCATEGORIES'); ?></h4>
+        <?php echo $this->loadTemplate($this->subcategoriesTemplate);
+    } ?>
 
     <?php if (($this->params->def('show_pagination', 1) == 1 || ($this->params->get('show_pagination') == 2)) && ($this->pagination->get('pages.total') > 1)) { ?>
         <div class="pagination">

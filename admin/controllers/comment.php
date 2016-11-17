@@ -53,7 +53,7 @@ class UserideasControllerComment extends Prism\Controller\Form\Backend
         try {
             $model->save($validData);
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, $this->option);
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_userideas');
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
 

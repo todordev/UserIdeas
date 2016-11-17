@@ -57,7 +57,7 @@ class PrepareItemAccessHelper implements HelperInterface
                 $asset = 'com_userideas.item.' . $data->id;
 
                 // Check general edit permission first.
-                if ($this->user->authorise('core.edit', $asset)) {
+                if ($userId > 0 and $this->user->authorise('core.edit', $asset)) {
                     $data->params->set('access-edit', true);
                 } // Now check if edit.own is available.
                 elseif ($userId > 0 and $this->user->authorise('core.edit.own', $asset)) {

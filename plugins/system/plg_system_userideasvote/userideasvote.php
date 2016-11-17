@@ -25,6 +25,8 @@ class plgSystemUserideasVote extends JPlugin
     /**
      * Include a script that initialize vote buttons.
      *
+     * @throws \InvalidArgumentException
+     *
      * @return void
      */
     public function onBeforeCompileHead()
@@ -44,15 +46,10 @@ class plgSystemUserideasVote extends JPlugin
             return;
         }
 
-        // Check component enabled
-        if (!JComponentHelper::isEnabled('com_userideas')) {
-            return;
-        }
-
         // Check for right extension.
         $option = $app->input->get('option');
         if (strcmp('com_userideas', $option) !== 0) {
-            return null;
+            return;
         }
 
         // Check for view. The extensions will work only on view 'items'
@@ -62,7 +59,8 @@ class plgSystemUserideasVote extends JPlugin
             return;
         }
 
+        JHtml::_('Prism.ui.pnotify');
         JHtml::_('Prism.ui.joomlaHelper');
-        JHtml::_('Userideas.loadVoteScript');
+        JHtml::_('Userideas.loadVoteScript', $this->params->get('counter_button', Prism\Constants::NO));
     }
 }

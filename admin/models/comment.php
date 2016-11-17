@@ -10,6 +10,12 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JLoader::import('Prism.libs.Aws.init');
+JLoader::import('Prism.libs.GuzzleHttp.init');
+
+JLoader::register('UserideasObserverComment', USERIDEAS_PATH_COMPONENT_ADMINISTRATOR .'/tables/observers/comment.php');
+JObserverMapper::addObserverClassToClass('UserideasObserverComment', 'UserideasTableComment', array('typeAlias' => 'com_userideas.comment'));
+
 class UserideasModelComment extends JModelAdmin
 {
     /**

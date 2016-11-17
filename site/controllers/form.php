@@ -54,10 +54,9 @@ class UserideasControllerForm extends Prism\Controller\Form\Frontend
 
         if (!$this->allowSave($data)) {
             $redirectOptions = array(
-                'force_direction' => 'index.php?option=com_users&view=login'
+                'force_direction' => JRoute::_('index.php?option=com_users&view=login', false)
             );
             $this->displayNotice(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), $redirectOptions);
-
             return;
         }
 
@@ -84,14 +83,22 @@ class UserideasControllerForm extends Prism\Controller\Form\Frontend
         }
 
         try {
-            // Set the user ID.
+            // Upload image
+            $file = $this->input->files->get('jform', array(), 'array');
+            $file = Joomla\Utilities\ArrayHelper::getValue($file, 'attachment');
+
+            if (!empty($file['name'])) {
+                $attachment = $model->uploadFile($file);
+                if ($attachment !== null) {
+                    $validData['attachment'] = $attachment;
+                }
+            }
+
             $validData['user_id']  = (int)$userId;
-
             $itemId                = $model->save($validData);
-
             $redirectOptions['id'] = $itemId;
         } catch (Exception $e) {
-            JLog::add($e->getMessage());
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_userideas');
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
 
         }
@@ -140,21 +147,22 @@ class UserideasControllerForm extends Prism\Controller\Form\Frontend
     {
         $user     = JFactory::getUser();
 
-        // Validate action role.
-        if (!$user->authorise('core.edit.own', 'com_userideas')) {
-            return false;
+        if ($user->authorise('core.edit', 'com_userideas')) {
+            return true;
         }
 
         // Validate item owner.
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, $key);
-        $userId = $user->get('id');
+        if ($user->authorise('core.edit.own', 'com_userideas')) {
+            $itemId = Joomla\Utilities\ArrayHelper::getValue($data, $key);
+            $userId = $user->get('id');
 
-        // Validate item owner.
-        $itemValidator = new Userideas\Validator\Item\Owner(JFactory::getDbo(), $itemId, $userId);
-        if (!$itemValidator->isValid()) {
-            return false;
+            // Validate item owner.
+            $itemValidator = new Userideas\Validator\Item\Owner(JFactory::getDbo(), $itemId, $userId);
+            if ($itemValidator->isValid()) {
+                return true;
+            }
         }
 
-        return true;
+        return false;
     }
 }

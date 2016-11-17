@@ -24,6 +24,7 @@ class Category extends Database\TableImmutable
     protected $id;
     protected $title;
     protected $description;
+    protected $slug;
 
     /**
      * @var \JHelperTags
@@ -56,8 +57,10 @@ class Category extends Database\TableImmutable
      * $category->load($categoryId);
      * </code>
      *
-     * @param array $keys
+     * @param array|int $keys
      * @param array $options
+     *
+     * @throws \RuntimeException
      */
     public function load($keys, array $options = array())
     {
@@ -78,6 +81,19 @@ class Category extends Database\TableImmutable
         }
 
         $query->where('a.extension = ' . $this->db->quote('com_userideas'));
+
+        // Filter by state.
+        $state  = array_key_exists('state', $options) ? (int)$options['state'] : null;
+        if ($state !== null) {
+            $query->where('a.published = ' . (int)$state);
+        }
+
+        // Filter by access level.
+        $groups  = array_key_exists('access', $options) ? (array)$options['access'] : array();
+        if (is_array($groups) and count($groups) > 0) {
+            $groups = implode(',', $groups);
+            $query->where('a.access IN (' . $groups . ')');
+        }
 
         $this->db->setQuery($query);
         $result = (array)$this->db->loadAssoc();
@@ -201,5 +217,22 @@ class Category extends Database\TableImmutable
         }
         
         return $this->tags;
+    }
+
+    /**
+     * Return category slug.
+     *
+     * <code>
+     * $categoryId = 1;
+     *
+     * $category   = new Userideas\Category\Category(\JFactory::getDbo());
+     * $category->load($categoryId);
+     *
+     * echo $category->getSlug();
+     * </code>
+     */
+    public function getSlug()
+    {
+        return $this->slug;
     }
 }

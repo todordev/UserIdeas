@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 class UserideasController extends JControllerLegacy
 {
-    protected $cacheableViews = array('category', 'items');
+    protected $cacheableViews = array('category');
 
     /**
      * Method to display a view.
@@ -20,6 +20,7 @@ class UserideasController extends JControllerLegacy
      * @param   boolean $cachable  If true, the view output will be cached
      * @param   array   $urlparams An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
      *
+     * @throws \InvalidArgumentException
      * @return  JController     This object to support chaining.
      * @since   1.5
      */
@@ -31,6 +32,7 @@ class UserideasController extends JControllerLegacy
         $viewName = $this->input->getCmd('view', 'category');
         $this->input->set('view', $viewName);
 
+        JHtml::_('Prism.ui.styles');
         JHtml::stylesheet('com_userideas/frontend.style.css', false, true, false);
 
         // Cache some views.

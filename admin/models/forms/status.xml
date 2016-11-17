@@ -2,9 +2,9 @@
 <form>
     <fieldset>
 
-        <field name="name" type="text"
-               label="COM_USERIDEAS_NAME"
-               description="COM_USERIDEAS_STATUS_NAME_DESC"
+        <field name="title" type="text"
+               label="COM_USERIDEAS_TITLE"
+               description="COM_USERIDEAS_STATUS_TITLE_DESC"
                filter="trim"
                required="true"
                 />
@@ -37,7 +37,8 @@
             <field name="style_class" type="text"
                    label="COM_USERIDEAS_STYLE_CLASS"
                    description="COM_USERIDEAS_STYLE_CLASS_DESC"
-                    />
+                   hint="label-success"
+                   />
 
         </fieldset>
 

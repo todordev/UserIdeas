@@ -13,9 +13,14 @@ defined('_JEXEC') or die;
 class UserideasViewForm extends JViewLegacy
 {
     /**
-     * @var JDocumentHtml
+     * @var JDocument
      */
     public $document;
+
+    /**
+     * @var JApplicationSite
+     */
+    protected $app;
 
     /**
      * @var Joomla\Registry\Registry
@@ -32,69 +37,127 @@ class UserideasViewForm extends JViewLegacy
 
     protected $disabledButton;
     protected $debugMode;
+    protected $formEncrypt = '';
+    protected $maxFileSize;
+    protected $maxFileSizeBites = 0;
+    protected $hasAttachment = false;
+    protected $layoutData;
+    protected $authorised;
 
     protected $option;
-
     protected $pageclass_sfx;
     
     public function display($tpl = null)
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
-        $this->option = JFactory::getApplication()->input->getCmd('option');
+        $this->app     = JFactory::getApplication();
+        $this->option  = $this->app->input->getCmd('option');
         
-//        $this->item   = $this->get('Item');
-        $this->form   = $this->get('Form');
-        $this->state  = $this->get('State');
+        $this->form    = $this->get('Form');
+        $this->state   = $this->get('State');
 
-        $this->params = $this->state->get('params');
+        $this->params    = $this->state->get('params');
 
-        $user   = JFactory::getUser();
+        $user          = JFactory::getUser();
         if (!$user->authorise('core.create', 'com_userideas')) {
-            $returnUrl = UserideasHelperRoute::getFormRoute();
-            $loginUrl  = JRoute::_('index.php?option=com_users&view=login&return='.base64_encode($returnUrl), false);
+            $loginUrl  = JRoute::_('index.php?option=com_users&view=login&return='.base64_encode(UserideasHelperRoute::getFormRoute()), false);
             $loginUrl  = trim($this->params->get('login_page_url', $loginUrl));
 
-            $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), 'notice');
-            $app->redirect($loginUrl);
+            $this->app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), 'notice');
+            $this->app->redirect($loginUrl);
             return;
         }
 
         // Authorize the user to create or edit content.
-        $model       = $this->getModel();
-        $this->item  = $model->getItem();
+        $this->item  = $this->get('Item');
         if (!$this->item or !$this->item->id) { // Check if it is new record.
-            $authorised = $user->authorise('core.create', 'com_userideas') || (count($user->getAuthorisedCategories('com_userideas', 'core.create')));
+            $this->authorised = $user->authorise('core.create', 'com_userideas') || count($user->getAuthorisedCategories('com_userideas', 'core.create'));
         } else {
-            $authorised = $this->item->params->get('access-edit');
+            $this->authorised = $this->item->params->get('access-edit');
         }
 
         // Redirect the user to login form if he is not authorized.
-        if (!$authorised) {
-            $returnUrl = UserideasHelperRoute::getFormRoute();
-            $loginUrl  = JRoute::_('index.php?option=com_users&view=login&return='.base64_encode($returnUrl));
+        if (!$this->authorised) {
+            $loginUrl  = JRoute::_('index.php?option=com_users&view=login&return='.base64_encode(UserideasHelperRoute::getFormRoute()), false);
             $loginUrl  = trim($this->params->get('login_page_url', $loginUrl));
 
-            $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), 'notice');
-            $app->redirect($loginUrl);
+            $this->app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'), 'notice');
+            $this->app->redirect($loginUrl);
             return;
         }
 
         $this->prepareDebugMode();
         $this->prepareDocument();
 
+        // If attachments are allowed, execute the following code.
+        if ($this->params->get('allow_attachment', Prism\Constants::DISABLED)) {
+            $this->prepareAttachment();
+        }
+
         parent::display($tpl);
     }
 
+    /**
+     * Prepare data for attachment layout.
+     *
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     */
+    protected function prepareAttachment()
+    {
+        $this->formEncrypt      = 'enctype="multipart/form-data"';
+        $this->maxFileSize      = Prism\Utilities\FileHelper::getMaximumFileSize((int)$this->params->get('max_size', 5), 'MB');
+        $this->maxFileSizeBites = Prism\Utilities\MathHelper::convertToBytes($this->params->get('max_size', 5), 'MB');
+
+        if ($this->item !== null) {
+            $keys    = array(
+                'item_id' => $this->item->id,
+                'source'  => 'item'
+            );
+
+            $attachment = new Userideas\Attachment\Attachment(JFactory::getDbo());
+            $attachment->load($keys);
+
+            $this->hasAttachment = $attachment->getId() ? true : false;
+
+            if ($this->hasAttachment) {
+                $filesystemHelper = new Prism\Filesystem\Helper($this->params);
+
+                // Get the filename from the session.
+                $mediaFolder = $filesystemHelper->getMediaFolderUri($this->item->id, Userideas\Constants::ITEM_FOLDER);
+                $fileUrl     = $mediaFolder . '/' . $attachment->getFilename();
+
+                // Prepare layout data.
+                $this->layoutData             = new stdClass;
+                $this->layoutData->attachment = $attachment;
+                $this->layoutData->canEdit    = $this->authorised;
+                $this->layoutData->fileUrl    = $fileUrl;
+                $this->layoutData->returnUrl  = JRoute::_(UserideasHelperRoute::getFormRoute($this->item->id), false);
+            }
+        }
+
+        JHtml::_('Prism.ui.bootstrap3FileInput');
+
+        // Include JavaScript translation.
+        JText::script('COM_USERIDEAS_PICK_FILE');
+        JText::script('COM_USERIDEAS_REMOVE');
+
+        if ($this->authorised) {
+            JHtml::_('Prism.ui.sweetAlert');
+            JText::script('COM_USERIDEAS_CANCEL');
+            JText::script('COM_USERIDEAS_YES_DELETE_IT');
+            JText::script('COM_USERIDEAS_ARE_YOU_SURE');
+            JText::script('COM_USERIDEAS_CANNOT_RECOVER_FILE');
+        }
+
+        $version = new Userideas\Version();
+        $this->document->addScript('media/' . $this->option . '/js/site/form.js?v=' . $version->getShortVersion());
+    }
+    
     /**
      * Check the system for debug mode
      */
     protected function prepareDebugMode()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         $this->disabledButton = '';
 
         // Check for maintenance (debug) state
@@ -105,7 +168,7 @@ class UserideasViewForm extends JViewLegacy
             if (!$msg) {
                 $msg = JText::_('COM_USERIDEAS_DEBUG_MODE_DEFAULT_MSG');
             }
-            $app->enqueueMessage($msg, 'notice');
+            $this->app->enqueueMessage($msg, 'notice');
 
             $this->disabledButton = 'disabled="disabled"';
         }
@@ -116,13 +179,10 @@ class UserideasViewForm extends JViewLegacy
      */
     protected function prepareDocument()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Prepare page suffix
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
 
-        $menus = $app->getMenu();
+        $menus = $this->app->getMenu();
 
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
@@ -137,9 +197,9 @@ class UserideasViewForm extends JViewLegacy
         // Prepare page title
         $title = $menu->title;
         if (!$title) {
-            $title = $app->get('sitename');
-        } elseif ((int)$app->get('sitename_pagetitles', 0)) { // Set site name if it is necessary ( the option 'sitename' = 1 )
-            $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
+            $title = $this->app->get('sitename');
+        } elseif ((int)$this->app->get('sitename_pagetitles', 0)) { // Set site name if it is necessary ( the option 'sitename' = 1 )
+            $title = JText::sprintf('JPAGETITLE', $this->app->get('sitename'), $title);
         }
 
         $this->document->setTitle($title);
@@ -151,7 +211,7 @@ class UserideasViewForm extends JViewLegacy
         $this->document->setMetaData('keywords', $this->params->get('menu-meta_keywords'));
 
         // Add current layout into breadcrumbs
-        $pathway = $app->getPathway();
+        $pathway = $this->app->getPathway();
         $pathway->addItem(JText::_('COM_USERIDEAS_PATHWAY_FORM_TITLE'));
 
         // Scripts

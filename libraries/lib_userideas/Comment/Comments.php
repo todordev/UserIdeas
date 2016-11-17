@@ -186,6 +186,7 @@ class Comments extends Database\Collection
     {
         $itemsIds = $this->getOptionIds($options, 'items_ids');
         $usersIds = $this->getOptionIds($options, 'users_ids');
+        $state    = $this->getOptionState($options);
 
         $results   = array();
 
@@ -198,6 +199,10 @@ class Comments extends Database\Collection
                     ->from($this->db->quoteName('#__uideas_comments', 'a'))
                     ->where($this->db->quoteName('a.item_id') . ' IN (' . implode(',', $itemsIds) . ')')
                     ->group('a.item_id');
+
+                if ($state !== null) {
+                    $query->where('a.published = '. (int)$state);
+                }
 
                 $this->db->setQuery($query);
                 $this->counts['items'] = (array)$this->db->loadAssocList('item_id', 'number');
@@ -213,6 +218,10 @@ class Comments extends Database\Collection
                     ->from($this->db->quoteName('#__uideas_comments', 'a'))
                     ->where($this->db->quoteName('a.user_id') . ' IN (' . implode(',', $usersIds) . ')')
                     ->group('a.user_id');
+
+                if ($state !== null) {
+                    $query->where('a.published = '. (int)$state);
+                }
 
                 $this->db->setQuery($query);
                 $this->counts['users'] = (array)$this->db->loadAssocList('user_id', 'number');

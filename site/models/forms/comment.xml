@@ -9,6 +9,8 @@
                required="true"
                />
 
+        <field name="attachment" type="file" label="COM_USERIDEAS_FILE" />
+
         <field name="captcha" type="captcha"
                label="COM_USERIDEAS_CAPTCHA_LABEL"
                description="COM_USERIDEAS_FRONT_CAPTCHA_DESC"

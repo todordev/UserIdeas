@@ -33,9 +33,13 @@ class plgUserideasVote extends JPlugin
      * @param array                    $data
      * @param Joomla\Registry\Registry $params
      *
+     * @throws \Exception
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
+     *
      * @return null|array
      */
-    public function onBeforeVote($context, &$data, $params)
+    public function onBeforeVote($context, $data, $params)
     {
         $app = JFactory::getApplication();
         /** @var $app JApplicationSite */
@@ -57,7 +61,7 @@ class plgUserideasVote extends JPlugin
             return null;
         }
 
-        $numberOfVotes = abs($this->params->get('votes_per_item', 0));
+        $numberOfVotes = $this->params->get('votes_per_item');
 
         $itemId = Joomla\Utilities\ArrayHelper::getValue($data, 'id', 0, 'int');
         $userId = Joomla\Utilities\ArrayHelper::getValue($data, 'user_id', 0, 'int');
@@ -82,11 +86,11 @@ class plgUserideasVote extends JPlugin
         $result = $db->loadResult();
 
         $votingAllowed = false;
-        if (!$result or ($numberOfVotes === 0)) {
+        if (!$result or ($numberOfVotes === null)) {
             $votingAllowed = true;
         }
 
-        if ($numberOfVotes > 0 and ($result < $numberOfVotes)) {
+        if (($numberOfVotes !== null and $numberOfVotes > 0) and ($result < $numberOfVotes)) {
             $votingAllowed = true;
         }
 
@@ -112,6 +116,7 @@ class plgUserideasVote extends JPlugin
      * @param array                    $data   This is a data about user and his vote
      * @param Joomla\Registry\Registry $params The parameters of the component
      *
+     * @throws \Exception
      * @return  null|array
      */
     public function onVote($context, &$data, $params)
@@ -120,7 +125,7 @@ class plgUserideasVote extends JPlugin
         /** @var $app JApplicationSite */
 
         if ($app->isAdmin()) {
-            return;
+            return null;
         }
 
         $doc = JFactory::getDocument();
@@ -130,11 +135,11 @@ class plgUserideasVote extends JPlugin
         $docType = $doc->getType();
 
         if (strcmp('raw', $docType) !== 0) {
-            return;
+            return null;
         }
 
         if (strcmp('com_userideas.vote', $context) !== 0) {
-            return;
+            return null;
         }
 
         $itemId = (!empty($data['id'])) ? (int)$data['id'] : 0;
@@ -143,7 +148,6 @@ class plgUserideasVote extends JPlugin
         // Save vote
         $item = new Userideas\Item\Item(JFactory::getDbo());
         $item->load($itemId);
-
         if (!$item->getId()) {
             return null;
         }
@@ -176,20 +180,12 @@ class plgUserideasVote extends JPlugin
     {
         if (!$this->hash) {
             // Get user IP address
-            $app = JFactory::getApplication();
-            $app->input->server->get('HTTP_CLIENT_IP');
-
-            if ($app->input->server->get('HTTP_CLIENT_IP')) {
-                $ip = $app->input->server->get('HTTP_CLIENT_IP');
-            } elseif ($app->input->server->get('HTTP_X_FORWARDED_FOR')) {
-                $ip = $app->input->server->get('HTTP_X_FORWARDED_FOR');
-            } else {
-                $ip = ($app->input->server->get('REMOTE_ADDR')) ?: '0.0.0.0';
-            }
+            $ip = Prism\Utilities\NetworkHelper::getIpAddress();
 
             // Validate the IP address.
-            $ip = filter_var($ip, FILTER_VALIDATE_IP);
-            $ip = ($ip === false) ? '0.0.0.0' : $ip;
+            if ($ip === '') {
+                $ip = '0.0.0.0';
+            }
 
             $this->hash = md5($ip);
         }

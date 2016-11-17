@@ -65,12 +65,11 @@ class UserideasControllerStatuses extends Prism\Controller\Admin
             $model->setDefault($id);
 
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, $this->option);
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_userideas');
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
 
         $this->displayMessage(JText::_('COM_USERIDEAS_STATUS_SET_DEFAULT'), $redirectOptions);
-
     }
 
     /**
@@ -105,7 +104,7 @@ class UserideasControllerStatuses extends Prism\Controller\Admin
             $model->unsetDefault($id);
 
         } catch (Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, $this->option);
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_userideas');
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_SYSTEM'));
         }
 

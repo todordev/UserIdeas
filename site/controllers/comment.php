@@ -74,14 +74,23 @@ class UserideasControllerComment extends Prism\Controller\Form\Frontend
 
         // Test if the data is valid.
         $validData = $model->validate($form, $data);
-
-        // Check for validation errors.
         if ($validData === false) {
             $this->displayNotice($form->getErrors(), $redirectOptions);
             return;
         }
 
         try {
+            // Upload image
+            $file = $this->input->files->get('jform', array(), 'array');
+            $file = Joomla\Utilities\ArrayHelper::getValue($file, 'attachment');
+
+            if (!empty($file['name'])) {
+                $attachment = $model->uploadFile($file);
+                if ($attachment !== null) {
+                    $validData['attachment'] = $attachment;
+                }
+            }
+
             $model->save($validData);
 
             $item = new Userideas\Item\Item(JFactory::getDbo());
@@ -134,21 +143,22 @@ class UserideasControllerComment extends Prism\Controller\Form\Frontend
     {
         $user     = JFactory::getUser();
 
-        // Validate action role.
-        if (!$user->authorise('userideas.comment.edit.own', 'com_userideas')) {
-            return false;
+        if ($user->authorise('userideas.comment.edit', 'com_userideas')) {
+            return true;
         }
 
         // Validate item owner.
-        $itemId = Joomla\Utilities\ArrayHelper::getValue($data, $key);
-        $userId = $user->get('id');
+        if ($user->authorise('userideas.comment.edit.own', 'com_userideas')) {
+            $itemId = Joomla\Utilities\ArrayHelper::getValue($data, $key);
+            $userId = $user->get('id');
 
-        // Validate item owner.
-        $itemValidator = new Userideas\Validator\Comment\Owner(JFactory::getDbo(), $itemId, $userId);
-        if (!$itemValidator->isValid()) {
-            return false;
+            // Validate comment owner.
+            $commentValidator = new Userideas\Validator\Comment\Owner(JFactory::getDbo(), $itemId, $userId);
+            if ($commentValidator->isValid()) {
+                return true;
+            }
         }
 
-        return true;
+        return false;
     }
 }

@@ -38,7 +38,7 @@ class Version
      *
      * @var integer
      */
-    public $devLevel = '3.4';
+    public $devLevel = '4';
 
     /**
      * Release Type
@@ -59,7 +59,7 @@ class Version
      *
      * @var string
      */
-    public $releaseDate = '06 June, 2016';
+    public $releaseDate = '17 November, 2016';
 
     /**
      * License
@@ -80,7 +80,7 @@ class Version
      *
      * @var string
      */
-    public $url = '<a href="http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions" target="_blank">User Ideas</a>';
+    public $url = '<a href="http://itprism.com/free-joomla-extensions/ecommerce-gamification/feedbacks-ideas-suggestions" target="_blank">UserIdeas</a>';
 
     /**
      * Backlink
@@ -101,7 +101,7 @@ class Version
      *
      * @var string
      */
-    public $requiredPrismVersion = '1.12';
+    public $requiredPrismVersion = '1.17';
 
     /**
      *  Build long format of the version text

@@ -10,6 +10,7 @@
 namespace Userideas\Item;
 
 use Prism\Database;
+use Userideas\Attachment\Attachment;
 
 defined('JPATH_PLATFORM') or die;
 
@@ -62,7 +63,7 @@ class Item extends Database\Table
                 'a.ordering, a.published, a.status_id, a.catid, a.user_id, ' .
                 'b.title AS category, ' .
                 'c.name AS username, ' .
-                'd.name AS status, ' .
+                'd.title AS status, ' .
                 $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
                 $query->concatenate(array('b.id', 'b.alias'), ':') . ' AS catslug'
             )
@@ -336,5 +337,40 @@ class Item extends Database\Table
     public function getUserName()
     {
         return $this->username;
+    }
+
+    /**
+     * Return attachment that belongs to this item.
+     *
+     * <code>
+     * $itemId = 1;
+     *
+     * $item   = new Userideas\Item\Item(\JFactory::getDbo());
+     * $item->load($itemId);
+     *
+     * $attachment = $item->getAttachment();
+     * </code>
+     *
+     * @throws \RuntimeException
+     * @return null|Attachment
+     */
+    public function getAttachment()
+    {
+        $attachment = null;
+        if ($this->id > 0) {
+            $keys = array(
+                'item_id' => $this->id,
+                'source'  => 'item'
+            );
+
+            $attachment = new Attachment($this->db);
+            $attachment->load($keys);
+
+            if (!$attachment->getId()) {
+                $attachment = null;
+            }
+        }
+
+        return $attachment;
     }
 }

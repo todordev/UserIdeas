@@ -116,6 +116,8 @@ class UserideasModelComments extends JModelList
         if ($search !== '') {
             if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = ' . (int)substr($search, 3));
+            } elseif (stripos($search, 'iid:') === 0) {
+                $query->where('a.item_id = ' . (int)substr($search, 4));
             } else {
                 $escaped = $db->escape($search, true);
                 $quoted  = $db->quote('%' . $escaped . '%', false);

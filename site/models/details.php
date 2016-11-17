@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 
 class UserideasModelDetails extends JModelItem
 {
-    protected $item = null;
+    protected $item;
 
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -53,9 +53,11 @@ class UserideasModelDetails extends JModelItem
     /**
      * Method to get an object.
      *
-     * @param    integer $id The id of the object to get.
+     * @param    int $id The id of the object to get.
      *
-     * @return    mixed    Object on success, false on failure.
+     * @return   mixed    Object on success, false on failure.
+     *
+     * @throws \RuntimeException
      */
     public function getItem($id = null)
     {
@@ -69,10 +71,10 @@ class UserideasModelDetails extends JModelItem
         $query->select(
             'a.id, a.title, a.description, a.votes, a.record_date, a.catid, a.user_id, a.status_id, a.hits, a.params, a.access, ' .
             $query->concatenate(array('a.id', 'a.alias'), ':') . ' AS slug, ' .
-            'b.name as author, b.username, ' .
+            'b.name AS author, b.username, ' .
             'c.title AS category, c.access AS category_access, ' .
             $query->concatenate(array('c.id', 'c.alias'), ':') . ' AS catslug, ' .
-            'd.name AS status_name, d.params AS status_params, d.default AS status_default'
+            'd.title AS status_title, d.params AS status_params, d.default AS status_default'
         );
 
         $query->from($db->quoteName('#__uideas_items', 'a'));
@@ -91,7 +93,9 @@ class UserideasModelDetails extends JModelItem
     /**
      * Increase number of hits.
      *
-     * @param integer $id
+     * @param int $id
+     *
+     * @throws \RuntimeException
      */
     public function hit($id)
     {
@@ -100,7 +104,7 @@ class UserideasModelDetails extends JModelItem
 
         $query
             ->update($db->quoteName('#__uideas_items'))
-            ->set($db->quoteName('hits') . ' = ' . $db->quoteName('hits').' + 1')
+            ->set($db->quoteName('hits') . ' = ' . $db->quoteName('hits') . ' + 1')
             ->where($db->quoteName('id') . '=' . (int)$id);
 
         $db->setQuery($query);

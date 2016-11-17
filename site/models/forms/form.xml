@@ -8,6 +8,8 @@
                required="true"
                 />
 
+        <field name="attachment" type="file" label="COM_USERIDEAS_FILE" />
+
         <field name="description" type="editor" class="form-control"
                label="COM_USERIDEAS_FIELD_DESCRIPTION"
                filter="safehtml"

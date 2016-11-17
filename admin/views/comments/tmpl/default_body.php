@@ -29,6 +29,9 @@ defined('_JEXEC') or die;
 			<div class="small">
 				<?php echo JText::sprintf('COM_USERIDEAS_ITEM_S', $this->escape($item->item)); ?>
 			</div>
+			<div class="small">
+				<?php echo JHtml::_('userideas.attachmentNumber', $item, 'comment'); ?>
+			</div>
 	    </td>
 		<td class="hidden-phone">
             <?php echo JHtml::_('date', $item->record_date, JText::_('DATE_FORMAT_LC3')) ; ?>

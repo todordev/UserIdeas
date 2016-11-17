@@ -15,21 +15,25 @@ defined('_JEXEC') or die;?>
     <?php } ?>
 
 	<?php if($this->params->get('show_post_button') and $this->canCreate) {?>
-    <a href="<?php echo JRoute::_(UserideasHelperRoute::getFormRoute(0));?>" class="btn btn-default">
+    <a href="<?php echo JRoute::_(UserideasHelperRoute::getFormRoute(0));?>" class="btn btn-default mb-10" role="button">
     	<span class="fa fa-plus"></span>
         <?php echo JText::_('COM_USERIDEAS_POST_ITEM');?>
     </a>
     <?php }?>
+    <?php // Display dynamically generated code from plugins.
+    if ($this->event->onContentBeforeDisplay) {
+        echo $this->event->onContentBeforeDisplay;
+    } ?>
 	<?php foreach($this->items as $item) {
         $commentsNumber = 0;
-        if (array_key_exists($item->id, $this->comments)) {
+        if (is_array($this->comments) and array_key_exists($item->id, $this->comments)) {
             $commentsNumber = (int)$this->comments[$item->id];
         }
     ?>
     <div class="media ui-item">
     	<div class="ui-vote pull-left">
-    		<div class="ui-vote-counter" id="js-ui-vote-counter-<?php echo $item->id; ?>"><?php echo $item->votes; ?></div>
-    		<a class="btn btn-default ui-btn-vote js-ui-btn-vote" href="javascript: void(0);" data-id="<?php echo $item->id; ?>"><?php echo JText::_('COM_USERIDEAS_VOTE'); ?></a>
+    		<div class="ui-vote-counter js-ui-item-counter" id="js-ui-vote-counter-<?php echo $item->id; ?>" data-id="<?php echo $item->id; ?>"><?php echo $item->votes; ?></div>
+    		<a class="btn btn-primary ui-btn-vote js-ui-btn-vote" href="javascript: void(0);" data-id="<?php echo $item->id; ?>"><?php echo JText::_('COM_USERIDEAS_VOTE'); ?></a>
     	</div>
         <div class="media-body">
             <?php if ($this->params->get('show_title', $item->params->get('show_title'))) {?>
@@ -60,6 +64,11 @@ defined('_JEXEC') or die;?>
         }?>
     </div>
     <?php }?>
+
+    <?php // Display dynamically generated code from plugins.
+    if ($this->event->onContentAfterDisplay) {
+        echo $this->event->onContentAfterDisplay;
+    } ?>
 
     <?php if (($this->params->def('show_pagination') == 1 or ($this->params->get('show_pagination') == 2)) and ($this->pagination->get('pages.total') > 1)) { ?>
         <div class="pagination">

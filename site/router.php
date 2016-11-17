@@ -63,14 +63,11 @@ function UserideasBuildRoute(&$query)
 
     // Views
     if (isset($view)) {
-
         switch ($view) {
-
             case 'details':
-
                 if (isset($query['catid'])) {
                     $catId = $query['catid'];
-                    UserideasHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
+                    $segments = UserideasHelperRoute::prepareCategoriesSegments($catId, $segments, $mId);
                     unset($query['catid']);
                 }
 
@@ -80,7 +77,6 @@ function UserideasBuildRoute(&$query)
                 break;
 
             case 'category':
-
                 // If slug missing, generate one.
                 if (false === strpos($query['id'], ':')) {
                     $category = UserideasHelperRoute::getCategory((int)$query['id']);
@@ -93,9 +89,7 @@ function UserideasBuildRoute(&$query)
                 $segments[] = $query['id'];
                 unset($query['id']);
                 break;
-
         }
-
     }
 
     // Layout
@@ -146,7 +140,6 @@ function UserideasParseRoute($segments)
 
     // Category
     if ($count === 1) {
-
         // Remove last segment, if it is "index.php".
         if (strcmp('index.php', $segments[0]) === 0) {
             return $vars;
@@ -155,7 +148,7 @@ function UserideasParseRoute($segments)
         list($id, $alias) = explode(':', $segments[0], 2);
 
         // first we check if it is a category
-        $category = JCategories::getInstance('Userideas')->get($id);
+        $category = JCategories::getInstance('userideas')->get($id);
 
         if ($category and (strcmp($category->alias, $alias) === 0)) { // Category
 
@@ -165,7 +158,6 @@ function UserideasParseRoute($segments)
             return $vars;
 
         } else {
-
             $idea = UserideasHelperRoute::getItem($id);
             if (count($idea) > 0 and ($idea['alias'] === $alias)) {
                 $vars['view']  = 'details';

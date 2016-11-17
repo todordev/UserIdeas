@@ -244,5 +244,44 @@
                 <option value="order">JGLOBAL_ARTICLE_MANAGER_ORDER</option>
             </field>
         </fieldset>
+
+        <fieldset name="subcategories" label="COM_USERIDEAS_SUBCATEGORIES">
+            <field name="show_category_subcategories" type="list" default="" label="COM_USERIDEAS_SHOW_SUBCATEGOIRES_LABEL" description="COM_USERIDEAS_VIEW_SUBCATEGORIES_DESC" class="chzn-color">
+                <option value="">JGLOBAL_USE_GLOBAL</option>
+                <option value="0">JHIDE</option>
+                <option value="1">JSHOW</option>
+            </field>
+
+            <field name="subcategories_layout" type="list" default="default" label="COM_USERIDEAS_LAYOUT" description="COM_USERIDEAS_SUBCATEGORIES_LAYOUT_DESC" >
+                <option value="subcategories">COM_USERIDEAS_BOXES</option>
+                <option value="subcategorieslist">COM_USERIDEAS_LIST</option>
+            </field>
+
+            <field name="show_categories_title" type="list" class="chzn-color" default="" label="COM_USERIDEAS_CATEGORY_TITLE" description="COM_USERIDEAS_CATEGORY_TITLE_DESC" >
+                <option value="">JGLOBAL_USE_GLOBAL</option>
+                <option value="0">JHIDE</option>
+                <option value="1">JSHOW</option>
+            </field>
+
+            <field name="show_categories_description" type="list" class="chzn-color" default="" label="COM_USERIDEAS_CATEGORY_DESCRIPTION" description="COM_USERIDEAS_CATEGORY_DESCRIPTION_DESC">
+                <option value="">JGLOBAL_USE_GLOBAL</option>
+                <option value="0">JHIDE</option>
+                <option value="1">JSHOW</option>
+            </field>
+
+            <field name="show_categories_image" type="list" class="chzn-color" default="" label="COM_USERIDEAS_CATEGORY_IMAGE" description="COM_USERIDEAS_CATEGORY_IMAGE_DESC">
+                <option value="">JGLOBAL_USE_GLOBAL</option>
+                <option value="0">JHIDE</option>
+                <option value="1">JSHOW</option>
+            </field>
+
+            <field name="show_categories_items_number" type="list" class="chzn-color" default="" label="COM_USERIDEAS_ITEMS_NUMBER" description="COM_USERIDEAS_ITEMS_NUMBER_DESC">
+                <option value="">JGLOBAL_USE_GLOBAL</option>
+                <option value="0">JHIDE</option>
+                <option value="1">JSHOW</option>
+            </field>
+
+            <field name="subcategories_per_row" type="text" default="4" label="COM_USERIDEAS_SUBCATEGORIES_PER_ROW" description="COM_USERIDEAS_SUBCATEGORIES_PER_ROW_DESC" />
+        </fieldset>
     </fields>
 </metadata>

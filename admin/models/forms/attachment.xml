@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="attachment">
+        <field name="filename" type="text" label="COM_USERIDEAS_FILENAME" required="true"/>
+
+        <field name="id" type="text" class="readonly"
+               label="JGLOBAL_FIELD_ID_LABEL"
+               description="JGLOBAL_FIELD_ID_DESC"
+               default="0"
+               readonly="true"
+                />
+
+        <field name="item_id" type="hidden" class="readonly"
+               label="COM_USERIDEAS_ITEM_ID_LABEL"
+               default="0"
+               readonly="true"
+                />
+    </fieldset>
+</form>

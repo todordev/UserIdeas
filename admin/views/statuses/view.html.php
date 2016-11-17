@@ -57,6 +57,8 @@ class UserideasViewStatuses extends JViewLegacy
 
     /**
      * Prepare sortable fields, sort values and filters.
+     *
+     * @throws InvalidArgumentException
      */
     protected function prepareSorting()
     {
@@ -71,8 +73,8 @@ class UserideasViewStatuses extends JViewLegacy
         }
 
         $this->sortFields = array(
-            'a.name' => JText::_('COM_USERIDEAS_NAME'),
-            'a.id'   => JText::_('JGRID_HEADING_ID')
+            'a.title' => JText::_('COM_USERIDEAS_TITLE'),
+            'a.id'    => JText::_('JGRID_HEADING_ID')
         );
     }
 
@@ -119,6 +121,8 @@ class UserideasViewStatuses extends JViewLegacy
 
     /**
      * Method to set up the document properties
+     *
+     * @throws \InvalidArgumentException
      *
      * @return void
      */

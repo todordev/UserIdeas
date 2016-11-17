@@ -11,8 +11,8 @@
 defined('_JEXEC') or die;
 
 // Component Helper
-jimport('joomla.application.component.helper');
-jimport('joomla.application.categories');
+jimport('Prism.init');
+jimport('Userideas.init');
 
 /**
  * Component Route Helper that help to find a menu item.
@@ -44,13 +44,13 @@ abstract class UserideasHelperRoute
         /**
          *
          * # category
-         * We will check for view category first. If find a menu item with view "category" and "id" eqallity of the key,
+         * We will check for view category first. If find a menu item with view "category" and "id" equality of the key,
          * we will get that menu item ( Itemid ).
          *
-         * # categories view
-         * If miss a menu item with view "category" we continue with searchin but now for view "categories".
-         * It is assumed view "categories" will be in the first level of the menu.
-         * The view "categories" won't contain category ID so it has to contain 0 for ID key.
+         * # items view
+         * If miss a menu item with view "category" we continue with searching but now for view "items".
+         * It is assumed view "items" will be in the first level of the menu.
+         * The view "items" won't contain category ID so it has to contain 0 for ID key.
          */
         $needles = array(
             'details'  => array((int)$id),
@@ -58,9 +58,9 @@ abstract class UserideasHelperRoute
             'items'    => array(0),
         );
 
-        //Create the link
+        // Create the link based on views Items or Category.
         $link = 'index.php?option=com_userideas&view=details&id=' . $id;
-        if ($catid > 1) {
+        if ((int)$catid > 1) {
             $categories = JCategories::getInstance('userideas');
             $category   = $categories->get($catid);
 
@@ -72,9 +72,9 @@ abstract class UserideasHelperRoute
         }
 
         // Looking for menu item (Itemid)
-        if ($item = self::_findItem($needles)) {
+        if ($item = self::findItem($needles)) {
             $link .= '&Itemid=' . $item;
-        } elseif ($item = self::_findItem()) { // Get the menu item (Itemid) from the active (current) item.
+        } elseif ($item = self::findItem()) { // Get the menu item (Itemid) from the active (current) item.
             $link .= '&Itemid=' . $item;
         }
 
@@ -102,9 +102,39 @@ abstract class UserideasHelperRoute
         }
 
         // Looking for menu item (Itemid)
-        if ($item = self::_findItem($needles)) {
+        if ($item = self::findItem($needles)) {
             $link .= '&Itemid=' . $item;
-        } elseif ($item = self::_findItem()) { // Get the menu item (Itemid) from the active (current) item.
+        } elseif ($item = self::findItem()) { // Get the menu item (Itemid) from the active (current) item.
+            $link .= '&Itemid=' . $item;
+        }
+
+        return $link;
+    }
+
+    /**
+     * Prepare the link to the categories page.
+     *
+     * @param    int $id The id of the item.
+     *
+     * @return string
+     */
+    public static function getCategoriesRoute($id = 0)
+    {
+        $needles = array(
+            'categories' => array(0)
+        );
+
+        //Create the link
+        $link = 'index.php?option=com_userideas&view=categories';
+
+        if ($id > 0) {
+            $link .= '&id=' . $id;
+        }
+
+        // Looking for menu item (Itemid)
+        if ($item = self::findItem($needles)) {
+            $link .= '&Itemid=' . $item;
+        } elseif ($item = self::findItem()) { // Get the menu item (Itemid) from the active (current) item.
             $link .= '&Itemid=' . $item;
         }
 
@@ -124,8 +154,9 @@ abstract class UserideasHelperRoute
             $id       = $catid->id;
             $category = $catid;
         } else {
-            $id       = (int)$catid;
-            $category = JCategories::getInstance('Userideas')->get($id);
+            $id         = (int)$catid;
+            $categories = JCategories::getInstance('userideas');
+            $category   = $categories->get($id);
         }
 
         if ($id < 1) {
@@ -136,7 +167,7 @@ abstract class UserideasHelperRoute
             );
 
             // Get menu item ( Itemid )
-            if ($item = self::_findItem($needles)) {
+            if ($item = self::findItem($needles)) {
                 $link = 'index.php?Itemid=' . $item;
 
             } else { // Continue to search and deep inside
@@ -153,9 +184,9 @@ abstract class UserideasHelperRoute
                     );
 
                     // Looking for menu item (Itemid)
-                    if ($item = self::_findItem($needles)) {
+                    if ($item = self::findItem($needles)) {
                         $link .= '&Itemid=' . $item;
-                    } elseif ($item = self::_findItem()) { // Get the menu item (Itemid) from the active (current) item.
+                    } elseif ($item = self::findItem()) { // Get the menu item (Itemid) from the active (current) item.
                         $link .= '&Itemid=' . $item;
                     }
                 }
@@ -179,7 +210,7 @@ abstract class UserideasHelperRoute
         );
 
         // Get menu item ( Itemid )
-        if ($item = self::_findItem($needles)) {
+        if ($item = self::findItem($needles)) {
             $link = 'index.php?Itemid=' . $item;
         } else { // Continue to search and deep inside
 
@@ -188,14 +219,14 @@ abstract class UserideasHelperRoute
 
         }
 
-        if (!empty($statusId)) {
+        if ((int)$statusId > 0) {
             $link .= '&filter_status=' . (int)$statusId;
         }
 
         return $link;
     }
 
-    protected static function _findItem($needles = null)
+    protected static function findItem($needles = null)
     {
         $app   = JFactory::getApplication();
         $menus = $app->getMenu('site');
@@ -235,10 +266,8 @@ abstract class UserideasHelperRoute
         }
 
         if ($needles) {
-
             foreach ($needles as $view => $ids) {
                 if (isset(self::$lookup[$view])) {
-
                     foreach ($ids as $id) {
                         if (isset(self::$lookup[$view][(int)$id])) {
                             return self::$lookup[$view][(int)$id];
@@ -266,10 +295,12 @@ abstract class UserideasHelperRoute
      * @param integer $catId Category Id
      * @param array   $segments
      * @param integer $mId   Id parameter from the menu item query
+     *
+     * @return array
      */
-    public static function prepareCategoriesSegments($catId, &$segments, $mId = null)
+    public static function prepareCategoriesSegments($catId, $segments, $mId = null)
     {
-        $categories = JCategories::getInstance('Userideas');
+        $categories = JCategories::getInstance('userideas');
         $category   = $categories->get($catId);
 
         if ($category) {
@@ -288,6 +319,8 @@ abstract class UserideasHelperRoute
 
             $segments = array_merge($segments, array_reverse($array));
         }
+
+        return $segments;
     }
 
     /**
@@ -296,6 +329,7 @@ abstract class UserideasHelperRoute
      *
      * @param int $id
      *
+     * @throws \RuntimeException
      * @return array
      */
     public static function getItem($id)
@@ -325,11 +359,11 @@ abstract class UserideasHelperRoute
      *
      * @param int $id
      *
+     * @throws \RuntimeException
      * @return array
      */
     public static function getCategory($id)
     {
-        // Load all categories.
         if (self::$categories === null) {
             $db    = JFactory::getDbo();
             $query = $db->getQuery(true);

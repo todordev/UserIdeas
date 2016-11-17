@@ -7,12 +7,18 @@
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
+use Joomla\Utilities\ArrayHelper;
+use Joomla\Registry\Registry;
+
 // no direct access
 defined('_JEXEC') or die;
 
+JLoader::import('Prism.libs.Aws.init');
+JLoader::import('Prism.libs.GuzzleHttp.init');
+
 class UserideasModelComment extends JModelForm
 {
-    protected $item = null;
+    protected $item;
 
     /**
      * Returns a reference to the a Table object, always creating it.
@@ -62,14 +68,14 @@ class UserideasModelComment extends JModelForm
      * @param    array   $data     An optional array of data for the form to interrogate.
      * @param    boolean $loadData True if the form is to load its own data (default case), false if not.
      *
-     * @return    JForm    A JForm object on success, false on failure
+     * @return    JForm|bool    A JForm object on success, false on failure
      * @since    1.6
      */
     public function getForm($data = array(), $loadData = true)
     {
         // Get the form.
         $form = $this->loadForm($this->option . '.comment', 'comment', array('control' => 'jform', 'load_data' => $loadData));
-        if (empty($form)) {
+        if (!$form) {
             return false;
         }
 
@@ -136,7 +142,7 @@ class UserideasModelComment extends JModelForm
 
         // Convert to the JObject before adding other data.
         $properties = $table->getProperties();
-        $this->item = Joomla\Utilities\ArrayHelper::toObject($properties);
+        $this->item = ArrayHelper::toObject($properties);
 
         return $this->item;
     }
@@ -146,20 +152,29 @@ class UserideasModelComment extends JModelForm
      *
      * @param    array $data The form data.
      *
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     * @throws \UnexpectedValueException
+     * @throws \Exception
+     *
      * @return  integer
      * @since    1.6
      */
     public function save($data)
     {
-        $id      = Joomla\Utilities\ArrayHelper::getValue($data, 'id', 0, 'int');
-        $comment = Joomla\Utilities\ArrayHelper::getValue($data, 'comment');
-        $itemId  = Joomla\Utilities\ArrayHelper::getValue($data, 'item_id', 0, 'int');
-        $userId  = (int)JFactory::getUser()->get('id');
+        $id      = ArrayHelper::getValue($data, 'id', 0, 'int');
+        $comment = ArrayHelper::getValue($data, 'comment');
+        $itemId  = ArrayHelper::getValue($data, 'item_id', 0, 'int');
+        $userId      = (int)JFactory::getUser()->get('id');
+        $attachment  = ArrayHelper::getValue($data, 'attachment', array(), 'array');
 
-        $isNew = false;
+        $isNew  = false;
+        $params = JComponentHelper::getParams($this->option);
+        /** @var  $params Joomla\Registry\Registry */
 
         // Load a record from the database
         $row = $this->getTable();
+        /** @var UserideasTableComment $row */
 
         if ($id > 0) {
             $keys = array(
@@ -180,15 +195,16 @@ class UserideasModelComment extends JModelForm
             $row->set('item_id', $itemId);
             $row->set('user_id', $userId);
 
-            $params    = JComponentHelper::getParams($this->option);
-            /** @var  $params Joomla\Registry\Registry */
-
             $published = (!$params->get('security_comment_auto_publish', 0)) ? Prism\Constants::UNPUBLISHED : Prism\Constants::PUBLISHED;
 
             $row->set('published', $published);
         }
 
         $row->store(true);
+
+        if (count($attachment) > 0) {
+            $this->prepareAttachment($row, $attachment, $params);
+        }
 
         $this->triggerAfterSaveEvent($row, $isNew);
 
@@ -209,5 +225,146 @@ class UserideasModelComment extends JModelForm
         if (in_array(false, $results, true)) {
             throw new Exception(JText::_('COM_USERIDEAS_ERROR_DURING_ITEM_POSTING_COMMENT'));
         }
+    }
+
+    /**
+     * Store the data about attachment in database.
+     * Move the file from temporary folder to the media folder.
+     *
+     * @param UserideasTableComment $table
+     * @param array              $attachmentData
+     * @param Registry              $params
+     *
+     * @throws \Exception
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
+     * @throws \UnexpectedValueException
+     */
+    protected function prepareAttachment($table, array $attachmentData, Registry $params)
+    {
+        if ($table->get('id')) {
+            $app = JFactory::getApplication();
+            /** @var $app JApplicationSite */
+
+            $filesystemHelper = new Prism\Filesystem\Helper($params);
+
+            // Get the filename from the session.
+            $temporaryFolder = JPath::clean($app->get('tmp_path'));
+            $mediaFolder     = $filesystemHelper->getMediaFolder($table->get('item_id'), Userideas\Constants::ITEM_FOLDER);
+            $newFile         = $mediaFolder . '/' . $attachmentData['filename'];
+
+            $localAdapter      = new League\Flysystem\Adapter\Local($temporaryFolder);
+            $localFilesystem   = new League\Flysystem\Filesystem($localAdapter);
+            $storageFilesystem = $filesystemHelper->getFilesystem();
+
+            $manager = new League\Flysystem\MountManager([
+                'local'   => $localFilesystem,
+                'storage' => $storageFilesystem
+            ]);
+
+            // Load attachment data from database.
+            $keys       = array(
+                'item_id'    => $table->get('item_id'),
+                'comment_id' => $table->get('id'),
+                'source'     => 'comment'
+            );
+            $attachment = new Userideas\Attachment\Attachment(JFactory::getDbo());
+            $attachment->load($keys);
+
+            // Remove old attachment.
+            $oldFile = $mediaFolder . '/' . $attachment->getFilename();
+            if ($attachment->getId() and $manager->has('storage://' . $oldFile)) {
+                $manager->delete('storage://' . $oldFile);
+            }
+
+            $attachment
+                ->setFilename($attachmentData['filename'])
+                ->setFilesize($attachmentData['filesize'])
+                ->setMime($attachmentData['mime'])
+                ->setAttributes($attachmentData['attributes'])
+                ->setItemId($table->get('item_id'))
+                ->setCommentId($table->get('id'))
+                ->setUserId($table->get('user_id'))
+                ->setSource('comment');
+
+            $attachment->store();
+
+            // Check for valid file.
+            if (!$manager->has('local://' . $attachmentData['filename'])) {
+                throw new RuntimeException(JText::sprintf('COM_USERIDEAS_ERROR_FILE_NOT_FOUND_S', $attachmentData['filename']));
+            }
+
+            $manager->move('local://' . $attachmentData['filename'], 'storage://' . $newFile);
+        }
+    }
+
+    /**
+     * Upload a file
+     *
+     * @param  array $uploadedFileData
+     *
+     * @throws Exception
+     * @return array
+     */
+    public function uploadFile($uploadedFileData)
+    {
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
+        $uploadedFile = ArrayHelper::getValue($uploadedFileData, 'tmp_name');
+        $uploadedName = ArrayHelper::getValue($uploadedFileData, 'name');
+        $errorCode    = ArrayHelper::getValue($uploadedFileData, 'error');
+
+        // Joomla! media extension parameters
+        $mediaParams = JComponentHelper::getParams('com_media');
+        /** @var  $mediaParams Joomla\Registry\Registry */
+
+        // Prepare size validator.
+        $KB            = pow(1024, 2);
+        $fileSize      = ArrayHelper::getValue($uploadedFileData, 'size', 0, 'int');
+        $uploadMaxSize = $mediaParams->get('upload_maxsize') * $KB;
+
+        $sizeValidator = new Prism\File\Validator\Size($fileSize, $uploadMaxSize);
+
+        // Prepare server validator.
+        $serverValidator = new Prism\File\Validator\Server($errorCode);
+
+        $file = new Prism\File\File($uploadedFile);
+        $file
+            ->addValidator($sizeValidator)
+            ->addValidator($serverValidator);
+
+        // Prepare image validator.
+        if ($file->hasImageExtension()) {
+            $imageValidator = new Prism\File\Validator\Image($uploadedFile, $uploadedName);
+
+            // Get allowed mime types from media manager options
+            $mimeTypes = explode(',', $mediaParams->get('upload_mime'));
+            $imageValidator->setMimeTypes($mimeTypes);
+
+            // Get allowed image extensions from media manager options
+            $imageExtensions = explode(',', $mediaParams->get('image_extensions'));
+            $imageValidator->setImageExtensions($imageExtensions);
+
+            $file->addValidator($imageValidator);
+        }
+
+        // Validate the file
+        if (!$file->isValid()) {
+            throw new RuntimeException($file->getError());
+        }
+
+        // Upload the file in temporary folder.
+        $temporaryFolder = JPath::clean($app->get('tmp_path'), '/');
+        $filesystemLocal = new Prism\Filesystem\Adapter\Local($temporaryFolder);
+        $sourceFile      = $filesystemLocal->upload($uploadedFileData);
+
+        if (!is_file($sourceFile)) {
+            throw new RuntimeException('COM_USERIDEAS_ERROR_FILE_CANT_BE_UPLOADED');
+        }
+
+        $file = new Prism\File\File($sourceFile);
+
+        return $file->extractFileData();
     }
 }

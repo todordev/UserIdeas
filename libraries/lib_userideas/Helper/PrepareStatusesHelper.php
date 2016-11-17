@@ -39,7 +39,7 @@ class PrepareStatusesHelper implements HelperInterface
 
                 $statusData = array(
                     'id'      => $item->status_id,
-                    'name'    => $item->status_name,
+                    'title'   => $item->status_title,
                     'default' => $item->status_default,
                     'params'  => $item->status_params
                 );

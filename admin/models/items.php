@@ -37,7 +37,7 @@ class UserideasModelItems extends JModelList
                 'user', 'b.name',
                 'category', 'c.title',
                 'access_title', 'ag.title',
-                'status_name', 'd.name'
+                'status_title', 'd.title'
             );
         }
 
@@ -124,7 +124,7 @@ class UserideasModelItems extends JModelList
                 'a.ordering, a.published, a.status_id, a.hits, a.user_id, ' .
                 'b.name AS user, ' .
                 'c.title AS category, ' .
-                'd.name AS status_name, d.params AS status_params, d.default AS status_default,' .
+                'd.title AS status_title, d.params AS status_params, d.default AS status_default,' .
                 'ag.title AS access_level'
             )
         );

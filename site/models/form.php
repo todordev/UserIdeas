@@ -7,8 +7,13 @@
  * @license      GNU General Public License version 3 or later; see LICENSE.txt
  */
 
+use Joomla\Utilities\ArrayHelper;
+
 // no direct access
 defined('_JEXEC') or die;
+
+JLoader::import('Prism.libs.Aws.init');
+JLoader::import('Prism.libs.GuzzleHttp.init');
 
 class UserideasModelForm extends JModelForm
 {
@@ -60,10 +65,10 @@ class UserideasModelForm extends JModelForm
      * The base form is loaded from XML and then an event is fired
      * for users plugins to extend the form with extra fields.
      *
-     * @param    array   $data     An optional array of data for the form to interogate.
+     * @param    array   $data     An optional array of data for the form to interrogate.
      * @param    boolean $loadData True if the form is to load its own data (default case), false if not.
      *
-     * @return    JForm    A JForm object on success, false on failure
+     * @return    JForm|bool    A JForm object on success, false on failure
      * @since    1.6
      */
     public function getForm($data = array(), $loadData = true)
@@ -92,8 +97,7 @@ class UserideasModelForm extends JModelForm
         if (!$data) {
             $itemId = (int)$this->getState('item.id');
             if ($itemId > 0) {
-                $userId = JFactory::getUser()->get('id');
-                $data   = $this->getItem($itemId, $userId);
+                $data = $this->getItem($itemId);
             }
         }
 
@@ -103,19 +107,18 @@ class UserideasModelForm extends JModelForm
     /**
      * Method to get a single record.
      *
-     * @param   int $pk     The id of the primary key.
-     * @param   int $userId The user Id
+     * @param   int $itemId The id of the primary key.
      *
-     * @return  stdClass
+     * @return  stdClass|null
      * @since   11.1
      */
-    public function getItem($pk = 0, $userId = 0)
+    public function getItem($itemId = 0)
     {
-        if (!$this->item) {
-            if (!$pk or !$userId) {
-                return null;
-            }
+        if (!$itemId) {
+            $itemId = (int)$this->getState('item.id');
+        }
 
+        if (!$this->item and $itemId > 0) {
             $db = $this->getDbo();
             /** @var $db JDatabaseDriver */
 
@@ -133,13 +136,8 @@ class UserideasModelForm extends JModelForm
             $query->leftJoin($db->quoteName('#__categories', 'c') . ' ON a.catid = c.id');
 
             // Filter by item ID.
-            if ((int)$pk > 0) {
-                $query->where('a.id = ' . (int)$pk);
-            }
-
-            // Filter by user ID.
-            if ($userId > 0) {
-                $query->where('a.user_id = ' . (int)$userId);
+            if ((int)$itemId > 0) {
+                $query->where('a.id = ' . (int)$itemId);
             }
 
             $db->setQuery($query);
@@ -169,29 +167,27 @@ class UserideasModelForm extends JModelForm
      *
      * @param    array $data The form data.
      *
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     * @throws \UnexpectedValueException
+     *
      * @return    mixed        The record id on success, null on failure.
      * @since    1.6
      */
     public function save($data)
     {
-        $id          = Joomla\Utilities\ArrayHelper::getValue($data, 'id', 0, 'int');
-        $title       = Joomla\Utilities\ArrayHelper::getValue($data, 'title');
-        $description = Joomla\Utilities\ArrayHelper::getValue($data, 'description');
-        $categoryId  = Joomla\Utilities\ArrayHelper::getValue($data, 'catid', 0, 'int');
-        $userId      = Joomla\Utilities\ArrayHelper::getValue($data, 'user_id', 0, 'int');
+        $id          = ArrayHelper::getValue($data, 'id', 0, 'int');
+        $title       = ArrayHelper::getValue($data, 'title');
+        $description = ArrayHelper::getValue($data, 'description');
+        $categoryId  = ArrayHelper::getValue($data, 'catid', 0, 'int');
+        $userId      = ArrayHelper::getValue($data, 'user_id', 0, 'int');
+        $attachment  = ArrayHelper::getValue($data, 'attachment', array(), 'array');
 
-        $keys = array(
-            'id'      => $id,
-            'user_id' => $userId
-        );
-
-        // Load a record from the database
-        $row = $this->getTable();
         /** @var $row UserideasTableItem */
+        $row = $this->getTable();
+        $row->load($id);
 
-        $row->load($keys);
-
-        // If there is an id, the item is not new
+        // If there is an ID, the item is not new
         $isNew = true;
         if ($row->get('id')) {
             $isNew = false;
@@ -223,11 +219,26 @@ class UserideasModelForm extends JModelForm
 
             $access = $params->get('default_access', JFactory::getApplication()->get('access'));
             $row->set('access', $access);
+        } else {
+            $tags   = new JHelperTags;
+            $tagIds = $tags->getTagIds($row->get('id'), 'com_userideas.item');
+            if ($tagIds !== '') {
+                $tagIds = explode(',', $tagIds);
+                $tagIds = ArrayHelper::toInteger($tagIds);
+            }
+
+            // Set the tags.
+            if (is_array($tagIds) and count($tagIds) > 0) {
+                $row->set('newTags', $tagIds);
+            }
         }
 
         $this->prepareTable($row);
-
         $row->store();
+
+        if (count($attachment) > 0) {
+            $this->prepareAttachment($row, $attachment);
+        }
 
         $this->triggerAfterSaveEvent($row, $isNew);
 
@@ -249,7 +260,7 @@ class UserideasModelForm extends JModelForm
         // Trigger the onContentAfterSave event.
         $results = $dispatcher->trigger('onContentAfterSave', array($context, &$row, $isNew));
         if (in_array(false, $results, true)) {
-            throw new Exception(JText::_('COM_USERIDEAS_ERROR_DURING_ITEM_POSTING_PROCESS'));
+            throw new RuntimeException(JText::_('COM_USERIDEAS_ERROR_DURING_ITEM_POSTING_PROCESS'));
         }
     }
 
@@ -279,12 +290,113 @@ class UserideasModelForm extends JModelForm
 
         // If does not exist alias, I will generate the new one from the title
         if (!$table->get('alias')) {
-            if ((int)JFactory::getConfig()->get('unicodeslugs') === 1) {
-                $alias = JFilterOutput::stringURLUnicodeSlug($table->get('title'));
-            } else {
-                $alias = JFilterOutput::stringURLSafe($table->get('title'));
+            $table->set('alias', $table->get('title'));
+        }
+
+        $table->set('alias', Prism\Utilities\StringHelper::stringUrlSafe($table->get('alias')));
+    }
+
+    /**
+     * Store the data about attachment in database.
+     * Move the file from temporary folder to the media folder.
+     *
+     * @param UserideasTableItem $table
+     * @param array              $attachmentData
+     *
+     * @throws \Exception
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
+     * @throws \UnexpectedValueException
+     */
+    protected function prepareAttachment($table, array $attachmentData)
+    {
+        if ($table->get('id')) {
+            $app = JFactory::getApplication();
+            /** @var $app JApplicationSite */
+
+            $params = JComponentHelper::getParams('com_userideas');
+
+            $filesystemHelper = new Prism\Filesystem\Helper($params);
+
+            // Get the filename from the session.
+            $temporaryFolder = JPath::clean($app->get('tmp_path'));
+            $mediaFolder     = $filesystemHelper->getMediaFolder($table->get('id'), Userideas\Constants::ITEM_FOLDER);
+            $newFile         = $mediaFolder . '/' . $attachmentData['filename'];
+
+            $localAdapter      = new League\Flysystem\Adapter\Local($temporaryFolder);
+            $localFilesystem   = new League\Flysystem\Filesystem($localAdapter);
+            $storageFilesystem = $filesystemHelper->getFilesystem();
+
+            $manager = new League\Flysystem\MountManager([
+                'local'   => $localFilesystem,
+                'storage' => $storageFilesystem
+            ]);
+
+            // Load attachment data from database.
+            $keys       = array(
+                'item_id' => $table->get('id'),
+                'source'  => 'item'
+            );
+            $attachment = new Userideas\Attachment\Attachment(JFactory::getDbo());
+            $attachment->load($keys);
+
+            // Remove old attachment.
+            $oldFile = $mediaFolder . '/' . $attachment->getFilename();
+            if ($attachment->getId() and $manager->has('storage://' . $oldFile)) {
+                $manager->delete('storage://' . $oldFile);
             }
-            $table->set('alias', $alias);
+
+            $attachment
+                ->setFilename($attachmentData['filename'])
+                ->setFilesize($attachmentData['filesize'])
+                ->setMime($attachmentData['mime'])
+                ->setAttributes($attachmentData['attributes'])
+                ->setItemId($table->get('id'))
+                ->setCommentId(0)
+                ->setUserId($table->get('user_id'))
+                ->setSource('item');
+
+            $attachment->store();
+
+            // Check for valid file.
+            if (!$manager->has('local://' . $attachmentData['filename'])) {
+                throw new RuntimeException(JText::sprintf('COM_USERIDEAS_ERROR_FILE_NOT_FOUND_S', $attachmentData['filename']));
+            }
+
+            $manager->move('local://' . $attachmentData['filename'], 'storage://' . $newFile);
+        }
+    }
+
+    /**
+     * Delete the profile picture of the user.
+     *
+     * @param int $itemId
+     *
+     * @throws Exception
+     */
+    public function removeFile($itemId)
+    {
+        $item = new Userideas\Item\Item(JFactory::getDbo());
+        $item->load($itemId);
+
+        if ($item->getId() > 0) {
+            $attachment = $item->getAttachment();
+
+            if ($attachment !== null and $attachment->getId()) {
+                $params = JComponentHelper::getParams('com_userideas');
+
+                $filesystemHelper = new Prism\Filesystem\Helper($params);
+
+                $storageFilesystem = $filesystemHelper->getFilesystem();
+                $file              = $filesystemHelper->getMediaFolder($itemId, Userideas\Constants::ITEM_FOLDER) . '/'.$attachment->getFilename();
+
+                // Delete the profile pictures.
+                if ($storageFilesystem->has($file)) {
+                    $storageFilesystem->delete($file);
+                }
+
+                $attachment->remove();
+            }
         }
     }
 
@@ -302,10 +414,10 @@ class UserideasModelForm extends JModelForm
         $asset  = 'com_userideas.item.' . $itemId;
 
         // Check general edit permission first.
-        if ($user->authorise('core.edit', $asset)) {
+        if ($userId > 0 and $user->authorise('core.edit', $asset)) {
             $item->params->set('access-edit', true);
 
-        // Now check if edit.own is available.
+            // Now check if edit.own is available.
         } elseif ($userId > 0 and $user->authorise('core.edit.own', $asset)) {
             // Check for a valid user and that they are the owner.
             if ($userId === (int)$item->user_id) {
@@ -319,7 +431,7 @@ class UserideasModelForm extends JModelForm
             $item->params->set('access-change', $user->authorise('core.edit.state', $asset));
         } else {
             // New item.
-            $catId         = (int)$this->getState('item.catid');
+            $catId = (int)$this->getState('item.catid');
 
             // Set the new category if it is selected and there is enough permissions to be selected.
             if ($catId) {
@@ -329,5 +441,75 @@ class UserideasModelForm extends JModelForm
                 $item->params->set('access-change', $user->authorise('core.edit.state', 'com_userideas'));
             }
         }
+    }
+
+    /**
+     * Upload a file
+     *
+     * @param  array $uploadedFileData
+     *
+     * @throws Exception
+     * @return array
+     */
+    public function uploadFile($uploadedFileData)
+    {
+        $app = JFactory::getApplication();
+        /** @var $app JApplicationSite */
+
+        $uploadedFile = ArrayHelper::getValue($uploadedFileData, 'tmp_name');
+        $uploadedName = ArrayHelper::getValue($uploadedFileData, 'name');
+        $errorCode    = ArrayHelper::getValue($uploadedFileData, 'error');
+
+        // Joomla! media extension parameters
+        $mediaParams = JComponentHelper::getParams('com_media');
+        /** @var  $mediaParams Joomla\Registry\Registry */
+
+        // Prepare size validator.
+        $KB            = pow(1024, 2);
+        $fileSize      = ArrayHelper::getValue($uploadedFileData, 'size', 0, 'int');
+        $uploadMaxSize = $mediaParams->get('upload_maxsize') * $KB;
+
+        $sizeValidator = new Prism\File\Validator\Size($fileSize, $uploadMaxSize);
+
+        // Prepare server validator.
+        $serverValidator = new Prism\File\Validator\Server($errorCode);
+
+        $file = new Prism\File\File($uploadedFile);
+        $file
+            ->addValidator($sizeValidator)
+            ->addValidator($serverValidator);
+
+        // Prepare image validator.
+        if ($file->hasImageExtension()) {
+            $imageValidator = new Prism\File\Validator\Image($uploadedFile, $uploadedName);
+
+            // Get allowed mime types from media manager options
+            $mimeTypes = explode(',', $mediaParams->get('upload_mime'));
+            $imageValidator->setMimeTypes($mimeTypes);
+
+            // Get allowed image extensions from media manager options
+            $imageExtensions = explode(',', $mediaParams->get('image_extensions'));
+            $imageValidator->setImageExtensions($imageExtensions);
+
+            $file->addValidator($imageValidator);
+        }
+
+        // Validate the file
+        if (!$file->isValid()) {
+            throw new RuntimeException($file->getError());
+        }
+
+        // Upload the file in temporary folder.
+        $temporaryFolder = JPath::clean($app->get('tmp_path'), '/');
+        $filesystemLocal = new Prism\Filesystem\Adapter\Local($temporaryFolder);
+        $sourceFile      = $filesystemLocal->upload($uploadedFileData);
+
+        if (!is_file($sourceFile)) {
+            throw new RuntimeException('COM_USERIDEAS_ERROR_FILE_CANT_BE_UPLOADED');
+        }
+
+        $file = new Prism\File\File($sourceFile);
+
+        return $file->extractFileData();
     }
 }

@@ -49,6 +49,7 @@ class Basic
      * $totalItems = $item->getTotalItems();
      * </code>
      *
+     * @throws \RuntimeException
      * @return int
      */
     public function getTotalItems()
@@ -60,13 +61,8 @@ class Basic
             ->from($this->db->quoteName('#__uideas_items', 'a'));
 
         $this->db->setQuery($query);
-        $result = $this->db->loadResult();
 
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -78,6 +74,7 @@ class Basic
      * $totalVotes = $item->getTotalVotes();
      * </code>
      *
+     * @throws \RuntimeException
      * @return int
      */
     public function getTotalVotes()
@@ -89,13 +86,8 @@ class Basic
             ->from($this->db->quoteName('#__uideas_items', 'a'));
 
         $this->db->setQuery($query);
-        $result = $this->db->loadResult();
 
-        if (!$result) {
-            $result = 0;
-        }
-
-        return $result;
+        return (int)$this->db->loadResult();
     }
 
     /**
@@ -107,6 +99,7 @@ class Basic
      * $totalComments = $item->getTotalComments();
      * </code>
      *
+     * @throws \RuntimeException
      * @return int
      */
     public function getTotalComments()
@@ -118,12 +111,50 @@ class Basic
             ->from($this->db->quoteName('#__uideas_comments', 'a'));
 
         $this->db->setQuery($query);
-        $result = $this->db->loadResult();
 
-        if (!$result) {
-            $result = 0;
+        return (int)$this->db->loadResult();
+    }
+
+    /**
+     * This method returns a number of all comments.
+     *
+     * <code>
+     * $item   = new Userideas\Statistics\Items(\JFactory::getDbo());
+     *
+     * $totalComments = $item->getTotalComments();
+     * </code>
+     *
+     * @param array $ids
+     * @param array $options
+     *
+     * @throws \RuntimeException
+     *
+     * @return array
+     */
+    public function getCategoryItems(array $ids, array $options = array())
+    {
+        $results = array();
+
+        if (count($ids) > 0) {
+            $query = $this->db->getQuery(true);
+
+            $query
+                ->select('a.catid, COUNT(*) as number')
+                ->from($this->db->quoteName('#__uideas_items', 'a'))
+                ->where('a.catid IN (' . implode(',', $ids) . ')')
+                ->group($this->db->quoteName('catid'));
+
+            $state = array_key_exists('state', $options) ? $options['state'] : null;
+
+            // Filter by state
+            if ($state !== null) {
+                $query->where('a.published = ' .(int)$state);
+            }
+
+            $this->db->setQuery($query);
+            $results = (array)$this->db->loadAssocList('catid', 'number');
         }
 
-        return $result;
+        return $results;
     }
 }

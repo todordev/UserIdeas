@@ -33,11 +33,11 @@ class UserideasViewComments extends JViewLegacy
     protected $saveOrderingUrl;
     protected $sortFields;
 
-    public $activeFilters;
-    public $filterForm;
-
     protected $sidebar;
     protected $canDo;
+
+    public $activeFilters;
+    public $filterForm;
 
     public function display($tpl = null)
     {
@@ -46,6 +46,10 @@ class UserideasViewComments extends JViewLegacy
         $this->state      = $this->get('State');
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
+
+        $helperBus     = new Prism\Helper\HelperBus($this->items);
+        $helperBus->addCommand(new Userideas\Helper\PrepareAttachmentsNumberHelper());
+        $helperBus->handle(['type' => 'comment']);
 
         // Prepare sorting data
         $this->prepareSorting();

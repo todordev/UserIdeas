@@ -60,8 +60,13 @@ class UserideasModelItems extends JModelList
         $this->setState('filter.status_id', $value);
 
         // Ordering
-        $itemId   = $app->input->get('Itemid', 0, 'int');
-        $orderCol = $app->getUserStateFromRequest($this->context . '.list.' . $itemId . '.filter_order', 'filter_order', '', 'string');
+        $itemId       = $app->input->get('Itemid', 0, 'int');
+        $contextOrder = $this->context . '.list.' . $itemId . '.filter_order';
+
+        $container = Prism\Container::getContainer();
+        $container->set(Userideas\Constants::CONTAINER_FILTER_ORDER_CONTEXT, $contextOrder);
+
+        $orderCol = $app->getUserStateFromRequest($contextOrder, 'filter_order', '', 'cmd');
         if (!in_array($orderCol, $this->filter_fields, true)) {
             $orderCol = '';
         } else {
@@ -69,11 +74,11 @@ class UserideasModelItems extends JModelList
         }
         $this->setState('list.ordering', $orderCol);
 
-        $listOrder = $app->getUserStateFromRequest($this->context . '.list.' . $itemId . '.filter_order_Dir', 'filter_order_Dir', '', 'cmd');
+        /*$listOrder = $app->getUserStateFromRequest($this->context . '.list.' . $itemId . '.filter_order_Dir', 'filter_order_Dir', '', 'cmd');
         if (!in_array(strtoupper($listOrder), array('ASC', 'DESC', ''), true)) {
-            $listOrder = 'ASC';
+            $listOrder = 'DESC';
         }
-        $this->setState('list.direction', $listOrder);
+        $this->setState('list.direction', $listOrder);*/
 
         // Pagination
         $value = $app->getUserStateFromRequest($this->context . '.list.' . $itemId . '.limit', 'limit', $params->get('items_limit'), 'uint');
@@ -129,7 +134,7 @@ class UserideasModelItems extends JModelList
                 'b.name AS author, b.username, ' .
                 'c.title AS category, c.access AS category_access, ' .
                 $query->concatenate(array('c.id', 'c.alias'), ':') . ' AS catslug, ' .
-                'd.name AS status_name, d.params AS status_params, d.default AS status_default'
+                'd.title AS status_title, d.params AS status_params, d.default AS status_default'
             )
         );
         $query->from($db->quoteName('#__uideas_items', 'a'));
@@ -218,7 +223,13 @@ class UserideasModelItems extends JModelList
 
             case 'random':
                 $query   = $this->getDbo()->getQuery(true);
+                /** @var JDatabaseQueryMysqli $query */
+
                 $orderBy = $query->Rand();
+                break;
+
+            case 'order':
+                $orderBy = 'a.ordering';
                 break;
 
             case 'votes':
@@ -230,7 +241,7 @@ class UserideasModelItems extends JModelList
                 break;
 
             default:
-                $orderBy = 'a.ordering';
+                $orderBy = '';
                 break;
         }
 
@@ -243,7 +254,7 @@ class UserideasModelItems extends JModelList
         $orderCol  = $this->getState('list.ordering');
         $params    = $this->getState('params');
 
-        if ($orderCol) {
+        if ($orderCol !== '') {
             $orderBy[]   = $orderCol;
         }
 
@@ -256,7 +267,7 @@ class UserideasModelItems extends JModelList
             $orderBy[] = $primary;
         }
 
-        if ($orderCol !== $secondary) {
+        if ($secondary !== '' and $orderCol !== $secondary) {
             $orderBy[] = $secondary;
         }
 

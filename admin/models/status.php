@@ -33,7 +33,7 @@ class UserideasModelStatus extends JModelAdmin
      * @param   array   $data     An optional array of data for the form to interrogate.
      * @param   boolean $loadData True if the form is to load its own data (default case), false if not.
      *
-     * @return  JForm   A JForm object on success, false on failure
+     * @return  JForm|bool   A JForm object on success, false on failure
      * @since   1.6
      */
     public function getForm($data = array(), $loadData = true)
@@ -74,7 +74,7 @@ class UserideasModelStatus extends JModelAdmin
     {
         // Check the session for previously entered form data.
         $data = JFactory::getApplication()->getUserState($this->option . '.edit.status.data', array());
-        if (empty($data)) {
+        if (!$data) {
             $data = $this->getItem();
         }
 
@@ -86,12 +86,15 @@ class UserideasModelStatus extends JModelAdmin
      *
      * @param array $data The data of item
      *
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     * @throws UnexpectedValueException
      * @return  int
      */
     public function save($data)
     {
         $id      = Joomla\Utilities\ArrayHelper::getValue($data, 'id');
-        $name    = Joomla\Utilities\ArrayHelper::getValue($data, 'name');
+        $title   = Joomla\Utilities\ArrayHelper::getValue($data, 'title');
         $default = Joomla\Utilities\ArrayHelper::getValue($data, 'default');
         $params  = Joomla\Utilities\ArrayHelper::getValue($data, 'params');
 
@@ -104,7 +107,7 @@ class UserideasModelStatus extends JModelAdmin
 
         $row->load($id);
 
-        $row->set('name', $name);
+        $row->set('title', $title);
         $row->set('default', $default);
         $row->set('params', $params);
 
@@ -134,7 +137,7 @@ class UserideasModelStatus extends JModelAdmin
         $status->load($id);
 
         if (!$status->get('id')) {
-            throw new Exception(JText::_('COM_USERIDEAS_ERROR_INVALID_ITEM'));
+            throw new RuntimeException(JText::_('COM_USERIDEAS_ERROR_INVALID_STATUS_ITEM'));
         }
 
         $db = $this->getDbo();
@@ -169,7 +172,7 @@ class UserideasModelStatus extends JModelAdmin
         $status->load($id);
 
         if (!$status->get('id')) {
-            throw new Exception(JText::_('COM_USERIDEAS_ERROR_INVALID_ITEM'));
+            throw new RuntimeException(JText::_('COM_USERIDEAS_ERROR_INVALID_STATUS_ITEM'));
         }
 
         // Set the item as default

@@ -1,5 +1,19 @@
-User Ideas Changelog
+UserIdeas Changelog
 ==========================
+
+###v2.4
+* [New] Added content events onContentBeforeDisplay and onContentAfterDisplay on view Items.
+* [New] Added functionality for uploading files and attaching them to an item or comment.
+* [New] Added functionality to select filesystem where you would like to upload the files - local filesystem or Amazon S3.
+* [New] Added option to convert votes counter to a button. Users will be able to vote for an item clicking on the counter. You will find the option in plugin System - UserIdeas Votes and module UserIdeas Items.
+* [New] Added subcategories on view Category.
+* [New] Added view Categories.
+* [Improvement] Improved all modules and plugins.
+* [Improvement] Improved the performance. It was removed duplicated calls to database and some data was cached.
+* [Fixed] Error occurs if there are no comments.
+* [Fixed] User has permissions to edit an item but he cannot do it, if it is an item created by another user.
+* [Fixed] Item tags are removed when an item be saved on front-end.
+* [Fixed] Issues with records by anonymous users and given permissions.
 
 ###v2.3.4
 * Improved items sorting.
@@ -43,7 +57,7 @@ User Ideas Changelog
 * Added order by votes.
 
 ###v1.6.2
-* Fixed issue [#22] (https://github.com/ITPrism/UserIdeas/issues/22).
+* Fixed issue [#22](https://github.com/ITPrism/UserIdeas/issues/22).
 * Integrated with Easy Social.
 
 ###v1.6.1

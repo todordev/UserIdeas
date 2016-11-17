@@ -47,7 +47,9 @@ class UserideasViewItems extends JViewLegacy
 
         $helperBus     = new Prism\Helper\HelperBus($this->items);
         $helperBus->addCommand(new Userideas\Helper\PrepareStatusesHelper());
-        $helperBus->handle();
+        $helperBus->addCommand(new Userideas\Helper\PrepareAttachmentsNumberHelper());
+        $helperBus->addCommand(new Userideas\Helper\PrepareCommentsNumberHelper());
+        $helperBus->handle(['type' => 'item']);
 
         // Prepare sorting data
         $this->prepareSorting();

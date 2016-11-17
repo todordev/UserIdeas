@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="filter">
+		<field
+			name="search"
+			type="text"
+			label="COM_USERIDEAS_SEARCH_IN_FILENAME"
+			description="COM_USERIDEAS_SEARCH_IN_FILENAME_TOOLTIP"
+			hint="COM_USERIDEAS_SEARCH_IN_FILENAME"
+		/>
+		<field
+			name="source"
+			type="list"
+			label="COM_USERIDEAS_SOURCE"
+			description="COM_USERIDEAS_FILTER_SOURCE_DESC"
+			onchange="this.form.submit();"
+			>
+			<option value="">COM_USERIDEAS_SELECT_SOURCE</option>
+			<option value="item">item</option>
+			<option value="comment">comment</option>
+		</field>
+		<field
+				name="mime"
+				type="uimimetype"
+				label="COM_USERIDEAS_MIMETYPE"
+				description="COM_USERIDEAS_FILTER_MIMETYPE_DESC"
+				onchange="this.form.submit();"
+		>
+			<option value="">COM_USERIDEAS_SELECT_MIMETYPE</option>
+		</field>
+	</fields>
+	<fields name="list">
+		<field
+			name="fullordering"
+			type="list"
+			label="COM_USERIDEAS_LIST_FULL_ORDERING"
+			description="COM_USERIDEAS_LIST_FULL_ORDERING_DESC"
+			onchange="this.form.submit();"
+			default="a.id DESC"
+			>
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="a.filesize ASC">COM_USERIDEAS_FILESIZE_ASC</option>
+			<option value="a.filesize DESC">COM_USERIDEAS_FILESIZE_DESC</option>
+			<option value="a.record_date ASC">JDATE_ASC</option>
+			<option value="a.record_date DESC">JDATE_DESC</option>
+			<option value="a.id ASC">JGRID_HEADING_ID_ASC</option>
+			<option value="a.id DESC">JGRID_HEADING_ID_DESC</option>
+			<option value="a.source ASC">COM_USERIDEAS_SOURCE_ASC</option>
+			<option value="a.source DESC">COM_USERIDEAS_SOURCE_DESC</option>
+			<option value="a.mime ASC">COM_USERIDEAS_MIMETYPE_ASC</option>
+			<option value="a.mime DESC">COM_USERIDEAS_MIMETYPE_DESC</option>
+		</field>
+		<field
+			name="limit"
+			type="limitbox"
+			class="input-mini"
+			default="25"
+			label="COM_USERIDEAS_LIST_LIMIT"
+			description="COM_USERIDEAS_LIST_LIMIT_DESC"
+			onchange="this.form.submit();"
+		/>
+	</fields>
+</form>

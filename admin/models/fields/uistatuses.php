@@ -42,9 +42,9 @@ class JFormFieldUistatuses extends JFormFieldList
         $query = $db->getQuery(true);
 
         $query
-            ->select('a.id AS value, a.name AS text')
+            ->select('a.id AS value, a.title AS text')
             ->from($db->quoteName('#__uideas_statuses', 'a'))
-            ->order('a.name ASC');
+            ->order('a.title ASC');
 
         // Get the options.
         $db->setQuery($query);

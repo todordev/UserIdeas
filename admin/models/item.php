@@ -10,6 +10,12 @@
 // no direct access
 defined('_JEXEC') or die;
 
+JLoader::import('Prism.libs.Aws.init');
+JLoader::import('Prism.libs.GuzzleHttp.init');
+
+JLoader::register('UserideasObserverItem', USERIDEAS_PATH_COMPONENT_ADMINISTRATOR .'/tables/observers/item.php');
+JObserverMapper::addObserverClassToClass('UserideasObserverItem', 'UserideasTableItem', array('typeAlias' => 'com_userideas.item'));
+
 class UserideasModelItem extends JModelAdmin
 {
     /**
@@ -96,7 +102,7 @@ class UserideasModelItem extends JModelAdmin
      * @param   array   $data     An optional array of data for the form to interrogate.
      * @param   boolean $loadData True if the form is to load its own data (default case), false if not.
      *
-     * @return  JForm   A JForm object on success, false on failure
+     * @return  JForm|bool   A JForm object on success, false on failure
      * @since   1.6
      */
     public function getForm($data = array(), $loadData = true)
@@ -157,7 +163,7 @@ class UserideasModelItem extends JModelAdmin
             if ((int)$this->getState('item.id') === 0) {
                 $filters = (array)$app->getUserState('com_userideas.items.filter');
 
-                $state           = (isset($filters['state']) and $filters['state'] !== '') ? $filters['state'] : null;
+                $state           = (array_key_exists('state', $filters) and $filters['state'] !== '') ? $filters['state'] : null;
                 $data->published = $app->input->getInt('published', $state);
 
                 $data->catid     = $app->input->getInt('catid', (!empty($filters['category']) ? $filters['category'] : null));
@@ -174,6 +180,8 @@ class UserideasModelItem extends JModelAdmin
      *
      * @param array $data The data about item
      *
+     * @throws \InvalidArgumentException
+     * @throws \Exception
      * @return  int
      */
     public function save($data)
@@ -268,13 +276,10 @@ class UserideasModelItem extends JModelAdmin
 
         // If does not exist alias, I will generate the new one from the title
         if (!$table->get('alias')) {
-            if ((int)JFactory::getConfig()->get('unicodeslugs') === 1) {
-                $alias = JFilterOutput::stringURLUnicodeSlug($table->get('title'));
-            } else {
-                $alias = JFilterOutput::stringURLSafe($table->get('title'));
-            }
-            $table->set('alias', $alias);
+            $table->set('alias', $table->get('title'));
         }
+
+        $table->set('alias', Prism\Utilities\StringHelper::stringUrlSafe($table->get('alias')));
     }
 
     /**

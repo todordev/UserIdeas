@@ -61,5 +61,25 @@
 }
 
 .ui-category-label {
-	margin: 0 10px;
+	margin: 0 10px 0 0;
+}
+
+.child-block-right a{
+	display: block;
+	float: right;
+	margin-left: 10px;
+}
+
+.ui-tags-wrapper, .ui-tags-wrapper .tags {
+	display: inline;
+}
+
+.ui-tags-wrapper .tags span{
+	margin-left: 10px;
+}
+
+.ui-mod-filters {
+	padding-left: 0px;
+	margin-top: 5px;
+	list-style: none;
 }

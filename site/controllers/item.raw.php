@@ -35,7 +35,10 @@ class UserideasControllerItem extends JControllerLegacy
     }
 
     /**
-     * This method store user vote
+     * This method store user vote.
+     *
+     * @throws \Exception
+     * @throws \InvalidArgumentException
      */
     public function vote()
     {
@@ -53,8 +56,7 @@ class UserideasControllerItem extends JControllerLegacy
         if ($params->get('debug_item_adding_disabled', 0)) {
             $error = JText::_('COM_USERIDEAS_ERROR_VOTING_HAS_BEEN_DISABLED');
             JLog::add($error);
-
-            return null;
+            return;
         }
 
         $requestMethod = $app->input->getMethod();
@@ -69,13 +71,14 @@ class UserideasControllerItem extends JControllerLegacy
         $userId = $user->get('id');
 
         if (!$user->authorise('userideas.vote', 'com_userideas')) {
+            $message = $userId ? JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION') : JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION_NOT_REGISTERED');
             $response
-                ->setTitle(JText::_('COM_USERIDEAS_FAIL'))
-                ->setText(JText::_('COM_USERIDEAS_ERROR_NO_PERMISSIONS_TO_DO_ACTION'))
+                ->setTitle(JText::_('COM_USERIDEAS_FAILURE'))
+                ->setText($message)
                 ->failure();
 
             echo $response;
-            JFactory::getApplication()->close();
+            $app->close();
         }
 
         $data = array(
@@ -100,12 +103,12 @@ class UserideasControllerItem extends JControllerLegacy
                     $message = Joomla\Utilities\ArrayHelper::getValue($result, 'message', JText::_('COM_USERIDEAS_VOTED_UNSUCCESSFULLY'));
 
                     $response
-                        ->setTitle(JText::_('COM_USERIDEAS_FAIL'))
+                        ->setTitle(JText::_('COM_USERIDEAS_FAILURE'))
                         ->setText($message)
                         ->failure();
 
                     echo $response;
-                    JFactory::getApplication()->close();
+                    $app->close();
                 }
             }
 
@@ -119,30 +122,36 @@ class UserideasControllerItem extends JControllerLegacy
             JLog::add($e->getMessage());
 
             $response
-                ->setTitle(JText::_('COM_USERIDEAS_FAIL'))
+                ->setTitle(JText::_('COM_USERIDEAS_FAILURE'))
                 ->setText(JText::_('COM_USERIDEAS_ERROR_SYSTEM'))
                 ->failure();
 
             echo $response;
-            JFactory::getApplication()->close();
-
+            $app->close();
         }
 
-        $responseData = Joomla\Utilities\ArrayHelper::getValue($data, 'response_data', 0);
-        $userVotes    = Joomla\Utilities\ArrayHelper::getValue($responseData, 'user_votes', 0);
-        $votes        = Joomla\Utilities\ArrayHelper::getValue($responseData, 'votes', 0);
+        $responseData = Joomla\Utilities\ArrayHelper::getValue($data, 'response_data', [], 'array');
+        $userVotes    = Joomla\Utilities\ArrayHelper::getValue($responseData, 'user_votes', 0, 'int');
+        $votes        = Joomla\Utilities\ArrayHelper::getValue($responseData, 'votes', 0, 'int');
 
-        $data = array(
-            'votes' => $votes
-        );
+        if ($votes > 0 or $userVotes > 0) {
+            $data = array(
+                'votes' => $votes
+            );
 
-        $response
-            ->setTitle(JText::_('COM_USERIDEAS_SUCCESS'))
-            ->setText(JText::plural('COM_USERIDEAS_VOTED_SUCCESSFULLY', $userVotes))
-            ->setData($data)
-            ->success();
+            $response
+                ->setTitle(JText::_('COM_USERIDEAS_SUCCESS'))
+                ->setText(JText::plural('COM_USERIDEAS_VOTED_SUCCESSFULLY', $userVotes))
+                ->setData($data)
+                ->success();
+        } else {
+            $response
+                ->setTitle(JText::_('COM_USERIDEAS_FAILURE'))
+                ->setText(JText::_('COM_USERIDEAS_VOTED_UNSUCCESSFULLY'))
+                ->failure();
+        }
 
         echo $response;
-        JFactory::getApplication()->close();
+        $app->close();
     }
 }

@@ -67,6 +67,8 @@ class Statuses extends Database\Collection
      * </code>
      *
      * @param array $options
+     *
+     * @throws \RuntimeException
      */
     public function load(array $options = array())
     {
@@ -76,9 +78,9 @@ class Statuses extends Database\Collection
         // Create a new query object.
         $query = $this->db->getQuery(true);
         $query
-            ->select('a.id, a.name, a.default')
+            ->select('a.id, a.title, a.default')
             ->from($this->db->quoteName('#__uideas_statuses', 'a'))
-            ->order('a.name ' . $orderDirection);
+            ->order('a.title ' . $orderDirection);
 
         if ($limit > 0) {
             $this->db->setQuery($query, 0, $limit);
@@ -118,17 +120,17 @@ class Statuses extends Database\Collection
      * $statuses = new Userideas\Status\Statuses(\JFactory::getDbo());
      * $statuses->load($options);
      *
-     * $statusesOptions = $statuses->getStatusesOptions();
+     * $statusOptions = $statuses->getStatusOptions();
      * </code>
      *
      * @return array
      */
-    public function getStatusesOptions()
+    public function getStatusOptions()
     {
         $options = array();
 
         foreach ($this->items as $status) {
-            $options[] = array('text' => $status->name, 'value' => $status->id);
+            $options[] = array('text' => $status->title, 'value' => $status->id);
         }
 
         return $options;

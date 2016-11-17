@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 ?>
 <?php foreach ($this->items as $i => $item) {
-    $itemParams = (!empty($item->params)) ? json_decode($item->params, true) : array();
+    $itemParams = !empty($item->params) ? json_decode($item->params, true) : array();
     $styleClass = Joomla\Utilities\ArrayHelper::getValue($itemParams, 'style_class');
     ?>
 	<tr class="row<?php echo $i % 2;?>">
@@ -21,10 +21,10 @@ defined('_JEXEC') or die;
         <td class="title">
             <?php if ($this->canDo->get('core.edit')) { ?>
                 <a href="<?php echo JRoute::_('index.php?option=com_userideas&view=status&layout=edit&id='.$item->id); ?>" >
-                    <?php echo $this->escape($item->name); ?>
+                    <?php echo $this->escape($item->title); ?>
                 </a>
             <?php } else { ?>
-                <?php echo $this->escape($item->name); ?>
+                <?php echo $this->escape($item->title); ?>
             <?php } ?>
 	    </td>
         <td class="nowrap">

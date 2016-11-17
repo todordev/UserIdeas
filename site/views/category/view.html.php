@@ -13,6 +13,11 @@ defined('_JEXEC') or die;
 class UserideasViewCategory extends JViewLegacy
 {
     /**
+     * @var JApplicationSite
+     */
+    public $app;
+    
+    /**
      * @var JDocumentHtml
      */
     public $document;
@@ -38,6 +43,15 @@ class UserideasViewCategory extends JViewLegacy
     protected $integrationOptions = array();
     protected $commentsEnabled;
     protected $tags;
+    protected $showSubcategories;
+    protected $showCategoriesTitle;
+    protected $showCategoriesImages;
+    protected $showCategoriesDescription;
+    protected $showCategoriesItemNumber;
+    protected $numberOfItems;
+    protected $subcategories;
+    protected $subcategoriesPerRow;
+    protected $subcategoriesTemplate;
 
     protected $option;
 
@@ -47,7 +61,8 @@ class UserideasViewCategory extends JViewLegacy
 
     public function display($tpl = null)
     {
-        $this->option     = JFactory::getApplication()->input->get('option');
+        $this->app        = JFactory::getApplication();
+        $this->option     = $this->app->input->get('option');
         
         $this->items      = $this->get('Items');
         $this->state      = $this->get('State');
@@ -73,8 +88,8 @@ class UserideasViewCategory extends JViewLegacy
             $app = JFactory::getApplication();
             /** @var $app JApplicationSite */
 
-            $app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_INVALID_CATEGORY'), 'notice');
-            $app->redirect(JRoute::_('index.php', false));
+            $this->app->enqueueMessage(JText::_('COM_USERIDEAS_ERROR_INVALID_CATEGORY'), 'notice');
+            $this->app->redirect(JRoute::_('index.php', false));
             return;
         }
 
@@ -94,6 +109,7 @@ class UserideasViewCategory extends JViewLegacy
         $helperBus->handle($helpersOptions);
 
         $this->prepareComments();
+        $this->prepareSubcategories();
         $this->prepareIntegration($this->params);
         $this->prepareDocument();
 
@@ -135,12 +151,9 @@ class UserideasViewCategory extends JViewLegacy
 
     private function preparePageHeading()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
-        $menus = $app->getMenu();
+        $menus = $this->app->getMenu();
         $menu  = $menus->getActive();
 
         // Prepare page heading
@@ -153,19 +166,16 @@ class UserideasViewCategory extends JViewLegacy
 
     private function preparePageTitle()
     {
-        $app = JFactory::getApplication();
-        /** @var $app JApplicationSite */
-
         // Prepare page title
         $title = $this->params->get('page_title', '');
 
         // Add title before or after Site Name
         if (!$title) {
-            $title = $app->get('sitename');
-        } elseif ((int)$app->get('sitename_pagetitles', 0) === 1) {
-            $title = JText::sprintf('JPAGETITLE', $app->get('sitename'), $title);
-        } elseif ((int)$app->get('sitename_pagetitles', 0) === 2) {
-            $title = JText::sprintf('JPAGETITLE', $title, $app->get('sitename'));
+            $title = $this->app->get('sitename');
+        } elseif ((int)$this->app->get('sitename_pagetitles', 0) === 1) {
+            $title = JText::sprintf('JPAGETITLE', $this->app->get('sitename'), $title);
+        } elseif ((int)$this->app->get('sitename_pagetitles', 0) === 2) {
+            $title = JText::sprintf('JPAGETITLE', $title, $this->app->get('sitename'));
         }
 
         $this->document->setTitle($title);
@@ -179,14 +189,8 @@ class UserideasViewCategory extends JViewLegacy
     protected function prepareIntegration($params)
     {
         // Get users IDs
-        $usersIds = array();
-        foreach ($this->items as $item) {
-            if ($item->user_id) {
-                $usersIds[] = $item->user_id;
-            }
-        }
-        $usersIds = array_filter(array_unique($usersIds));
-
+        $usersIds = Prism\Utilities\ArrayHelper::getIds($this->items, 'user_id');
+        
         // If there are no users, do not continue.
         if (count($usersIds) > 0) {
             $this->integrationOptions = array(
@@ -194,22 +198,16 @@ class UserideasViewCategory extends JViewLegacy
                 'default' => $params->get('integration_avatars_default', '/media/com_userideas/images/no-profile.png')
             );
 
-            $socialProfilesBuilder = new Prism\Integration\Profiles\Builder(
-                array(
-                    'social_platform' => $params->get('integration_social_platform'),
-                    'users_ids'       => $usersIds
-                )
-            );
+            $options = new \Joomla\Registry\Registry(array(
+                'platform' => $params->get('integration_social_platform'),
+                'user_ids' => $usersIds
+            ));
 
-            $socialProfilesBuilder->build();
-
-            $this->socialProfiles = $socialProfilesBuilder->getProfiles();
+            $socialProfilesFactory = new Prism\Integration\Profiles\Factory($options);
+            $this->socialProfiles  = $socialProfilesFactory->create();
         }
     }
-
-    /**
-     * Prepare comments.
-     */
+    
     protected function prepareComments()
     {
         if ($this->params->get('comments_enabled') and $this->params->get('show_button_comments')) {
@@ -222,6 +220,33 @@ class UserideasViewCategory extends JViewLegacy
 
             $comments = new Userideas\Comment\Comments(JFactory::getDbo());
             $this->comments = $comments->advancedCount(array('items_ids' => $itemsIds));
+        }
+    }
+
+    protected function prepareSubcategories()
+    {
+        $this->showSubcategories         = (bool)$this->params->get('show_category_subcategories', Prism\Constants::NO);
+        if ($this->showSubcategories) {
+            $parentId = (int)$this->app->input->getInt('id');
+            $parentId = $parentId ?: Prism\Constants::CATEGORY_ROOT;
+
+            $this->showCategoriesTitle       = (bool)$this->params->get('show_categories_title', Prism\Constants::NO);
+            $this->showCategoriesImages      = (bool)$this->params->get('show_categories_image', Prism\Constants::NO);
+            $this->showCategoriesDescription = (bool)$this->params->get('show_categories_description', Prism\Constants::NO);
+            $this->showCategoriesItemNumber  = (int)$this->params->get('show_categories_items_number', Prism\Constants::NO);
+            $this->subcategoriesPerRow       = (int)$this->params->get('subcategories_per_row', 4);
+            $this->subcategoriesTemplate     = $this->params->get('subcategories_layout', 'subcategories');
+            $this->numberOfItems             = array();
+
+            $items = new Userideas\Category\Categories();
+            $current    = $items->get($parentId);
+            
+            $this->subcategories = $current->getChildren();
+
+            // Prepare category parameters.
+            $helperBus           = new Prism\Helper\HelperBus($this->subcategories);
+            $helperBus->addCommand(new Userideas\Helper\PrepareParamsHelper());
+            $helperBus->handle();
         }
     }
 }

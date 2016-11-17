@@ -14,16 +14,15 @@ defined('_JEXEC') or die;?>
 		<?php echo JHtml::_('grid.checkall'); ?>
 	</th>
     <th class="nowrap">
-		<?php echo JHtml::_('grid.sort',  'COM_USERIDEAS_NAME', 'a.name', $this->listDirn, $this->listOrder); ?>
+		<?php echo JHtml::_('grid.sort',  'COM_USERIDEAS_TITLE', 'a.title', $this->listDirn, $this->listOrder); ?>
     </th>
     <th width="10%" class="nowrap">
-        <?php echo JText::_("COM_USERIDEAS_STYLE_CLASS"); ?>
+        <?php echo JText::_('COM_USERIDEAS_STYLE_CLASS'); ?>
     </th>
 	<th width="3%" style="min-width: 55px" class="nowrap center">
-		<?php echo JText::_("COM_USERIDEAS_DEFAULT"); ?>
+		<?php echo JText::_('COM_USERIDEAS_DEFAULT'); ?>
 	</th>
     <th width="3%" class="center nowrap hidden-phone">
         <?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $this->listDirn, $this->listOrder); ?>
     </th>
 </tr>
-	  

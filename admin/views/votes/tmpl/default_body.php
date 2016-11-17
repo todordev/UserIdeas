@@ -16,10 +16,10 @@ defined('_JEXEC') or die;
             <?php echo JHtml::_('grid.id', $i, $item->id); ?>
         </td>
         <td>
-			<?php echo (!empty($item->name)) ? $this->escape($item->name) : JText::_("COM_USERIDEAS_ANONYMOUS"); ?>
-		</td>
+            <?php echo $this->escape($item->title); ?>
+        </td>
         <td class="hidden-phone">
-		    <?php echo $this->escape($item->title); ?>
+			<?php echo (!empty($item->name)) ? $this->escape($item->name) : JText::_('COM_USERIDEAS_ANONYMOUS'); ?>
 		</td>
         <td class="center">
             <?php echo $item->votes;?>
@@ -32,4 +32,3 @@ defined('_JEXEC') or die;
         </td>
 	</tr>
 <?php }?>
-	  

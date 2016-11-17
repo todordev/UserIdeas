@@ -28,7 +28,7 @@ class UserideasModelStatuses extends JModelList
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
                 'id', 'a.id',
-                'name', 'a.name'
+                'title', 'a.title'
             );
         }
 
@@ -72,6 +72,7 @@ class UserideasModelStatuses extends JModelList
     /**
      * Build an SQL query to load the list data.
      *
+     * @throws \RuntimeException
      * @return  JDatabaseQuery
      * @since   1.6
      */
@@ -87,7 +88,7 @@ class UserideasModelStatuses extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.name, a.default, a.params'
+                'a.id, a.title, a.default, a.params'
             )
         );
         $query->from($db->quoteName('#__uideas_statuses', 'a'));
@@ -100,7 +101,7 @@ class UserideasModelStatuses extends JModelList
             } else {
                 $escaped = $db->escape($search, true);
                 $quoted  = $db->quote('%' . $escaped . '%', false);
-                $query->where('a.name LIKE ' . $quoted);
+                $query->where('a.title LIKE ' . $quoted);
             }
         }
 
