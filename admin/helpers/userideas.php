@@ -133,30 +133,30 @@ class UserideasHelper
             case 'alpha':
                 $orderOptions = array(Prism\Constants::ORDER_TITLE_REVERSE_ALPHABETICAL, Prism\Constants::ORDER_TITLE_ALPHABETICAL);
                 if ($orderedBy === 'alpha') {
-                    $iconClass  = 'fa fa-caret-down';
+                    $iconClass  = 'fa fa-sort-alpha-desc';
                     $orderBy    = Prism\Constants::ORDER_TITLE_REVERSE_ALPHABETICAL;
                 } else {
-                    $iconClass  = 'fa fa-caret-up';
+                    $iconClass  = 'fa fa-sort-alpha-asc';
                     $orderBy    = Prism\Constants::ORDER_TITLE_ALPHABETICAL;
                 }
                 break;
             case 'votes':
                 $orderOptions = array('rvotes', 'votes');
                 if ($orderedBy === 'votes') {
-                    $iconClass  = 'fa fa-caret-down';
+                    $iconClass  = 'fa fa-sort-numeric-desc';
                     $orderBy    = 'rvotes';
                 } else {
-                    $iconClass  = 'fa fa-caret-up';
+                    $iconClass  = 'fa fa-sort-numeric-asc';
                     $orderBy    = 'votes';
                 }
                 break;
             case 'date':
                 $orderOptions = array(Prism\Constants::ORDER_MOST_RECENT_FIRST, Prism\Constants::ORDER_OLDEST_FIRST);
                 if ($orderedBy === 'rdate') {
-                    $iconClass  = 'fa fa-caret-down';
+                    $iconClass  = 'fa fa-sort-desc';
                     $orderBy    = Prism\Constants::ORDER_OLDEST_FIRST;
                 } else {
-                    $iconClass  = 'fa fa-caret-up';
+                    $iconClass  = 'fa fa-sort-asc';
                     $orderBy    = Prism\Constants::ORDER_MOST_RECENT_FIRST;
                 }
                 break;
@@ -164,9 +164,9 @@ class UserideasHelper
                 $orderOptions = array(Prism\Constants::ORDER_MOST_HITS, Prism\Constants::ORDER_LEAST_HITS);
                 if ($orderedBy === 'hits') {
                     $orderBy    = Prism\Constants::ORDER_LEAST_HITS;
-                    $iconClass  = 'fa fa-caret-down';
+                    $iconClass  = 'fa fa-sort-amount-desc';
                 } else {
-                    $iconClass  = 'fa fa-caret-up';
+                    $iconClass  = 'fa fa-sort-amount-asc';
                     $orderBy    = Prism\Constants::ORDER_MOST_HITS;
                 }
                 break;
