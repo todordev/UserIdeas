@@ -15,20 +15,16 @@
 	<property name="cfg.mediaDestDir" location="${cfg.pkgDir}/media" />
 	<property name="cfg.siteDestDir" location="${cfg.pkgDir}/site" />
 	<property name="cfg.librariesDestDir" location="${cfg.pkgDir}/libraries" />
-	
 	<property name="cfg.pluginsDestDir" location="${cfg.pkgDir}/plugins" />
-	<property name="cfg.modulesDestDir" location="${cfg.pkgDir}/modules" />
+	<property name="cfg.premiumDestDir" location="${cfg.pkgDir}/premium" />
 
 	<!-- Admin, Site and Media source -->
 	<property name="cfg.adminSourceDir" location="${cfg.sourceDir}/administrator/components" />
 	<property name="cfg.siteSourceDir" location="${cfg.sourceDir}/components" />
 	<property name="cfg.mediaSourceDir" location="${cfg.sourceDir}/media" />
 	<property name="cfg.librariesSourceDir" location="${cfg.sourceDir}/libraries" />
-
-	<!-- plug-ins source -->
+	<property name="cfg.premiumSourceDir" location="${cfg.sourceDir}/premium" />
     <property name="cfg.pluginsSourceDir" location="${cfg.sourceDir}/plugins" />
-	
-	<!-- modules source -->
     <property name="cfg.modulesSourceDir" location="${cfg.sourceDir}/modules" />
 	
 	<target name="build" depends="clean, init, copy, build_component, info" />
@@ -39,12 +35,12 @@
 			<fileset dir="${cfg.adminDestDir}" includes="**/*" />
 			<fileset dir="${cfg.librariesDestDir}" includes="**/*" />
 			<fileset dir="${cfg.mediaDestDir}" includes="**/*" />
-			<fileset dir="${cfg.modulesDestDir}" includes="**/*" />
+			<fileset dir="${cfg.premiumDestDir}" includes="**/*" />
 			<fileset dir="${cfg.pluginsDestDir}" includes="**/*" />
 			<fileset dir="${cfg.siteDestDir}" includes="**/*" />
 			
 			<fileset dir="${cfg.pkgDir}/packages" includes="*"/>
-			
+
 			<fileset dir="${cfg.pkgDir}" includes="CHANGELOG.md"/>
 			<fileset dir="${cfg.pkgDir}" includes="LICENSE.txt"/>
 			<fileset dir="${cfg.pkgDir}" includes="${cfg.name}.xml"/>
@@ -60,7 +56,7 @@
 		<mkdir dir="${cfg.pkgDir}/site" />
 		<mkdir dir="${cfg.pkgDir}/libraries" />
 		<mkdir dir="${cfg.pkgDir}/packages" />
-		<mkdir dir="${cfg.pkgDir}/modules" />
+		<mkdir dir="${cfg.pkgDir}/premium" />
 		<mkdir dir="${cfg.pkgDir}/plugins" />
 		
 		<!-- plug-ins -->
@@ -79,12 +75,12 @@
 				<exclude name="**/README.md" />
 				<exclude name="**/CHANGELOG.md" />
 				<exclude name="**/LICENSE.txt" />
-				<exclude name="**/install.php" />
+				<exclude name="install.php" />
 			</fileset>
 		</copy>
 		
 		<!-- copy install helper of the component -->
-		<copy file="${cfg.adminSourceDir}/${cfg.comName}/helpers/install.php" todir="${cfg.adminDestDir}/helpers/" />
+		<!-- <copy file="${cfg.adminSourceDir}/${cfg.comName}/helpers/install.php" todir="${cfg.adminDestDir}/helpers/" /> -->
 
 		<!-- copy site files of the component -->
 		<copy todir="${cfg.siteDestDir}">
@@ -107,6 +103,16 @@
 		<copy file="${cfg.adminSourceDir}/${cfg.comName}/LICENSE.txt" todir="${cfg.pkgDir}" />
 		<copy file="${cfg.adminSourceDir}/${cfg.comName}/${cfg.pkgName}.xml" todir="${cfg.pkgDir}" />
 		<copy file="${cfg.adminSourceDir}/${cfg.comName}/${cfg.name}.xml" todir="${cfg.pkgDir}" />
+		
+		<copy file="${cfg.premiumSourceDir}/README.md" todir="${cfg.premiumDestDir}" />
+		<copy file="${cfg.modulesSourceDir}/mod_userideascategories/CHANGELOG.md" todir="${cfg.premiumDestDir}/mod_userideascategories" />
+		<copy file="${cfg.modulesSourceDir}/mod_userideasfilters/CHANGELOG.md" todir="${cfg.premiumDestDir}/mod_userideasfilters" />
+		<copy file="${cfg.modulesSourceDir}/mod_userideasitems/CHANGELOG.md" todir="${cfg.premiumDestDir}/mod_userideasitems" />
+		<copy file="${cfg.modulesSourceDir}/mod_userideaslatest/CHANGELOG.md" todir="${cfg.premiumDestDir}/mod_userideaslatest" />
+		<copy file="${cfg.modulesSourceDir}/mod_userideasmostvoted/CHANGELOG.md" todir="${cfg.premiumDestDir}/mod_userideasmostvoted" />
+		<copy file="${cfg.modulesSourceDir}/mod_userideaspopular/CHANGELOG.md" todir="${cfg.premiumDestDir}/mod_userideaspopular" />
+		<copy file="${cfg.modulesSourceDir}/mod_userideassearch/CHANGELOG.md" todir="${cfg.premiumDestDir}/mod_userideassearch" />
+		<copy file="${cfg.pluginsSourceDir}/content/userideastoolbar/CHANGELOG.md" todir="${cfg.premiumDestDir}/plg_content_userideastoolbar" />
 
 		<!-- copy library files of the component -->
 		<copy todir="${cfg.librariesDestDir}/lib_${cfg.name}">
